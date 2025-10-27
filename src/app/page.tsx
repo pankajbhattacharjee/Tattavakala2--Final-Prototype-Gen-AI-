@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useAuth, useUser } from '@/firebase';
 import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
 import { signOut } from 'firebase/auth';
-import Image from 'next/image';
 
 const languages = [
     { code: 'en', name: 'English' },
@@ -82,7 +81,12 @@ export default function LandingPage() {
             <main className="relative w-11/12 max-w-2xl bg-white/75 rounded-2xl shadow-xl p-12 pt-32 text-left backdrop-blur-sm">
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
-                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gIoSUNDX1BST0ZJTEUAAQEAAAIYAAAAAAQwAABtbnRyUkdCIFhZWiAAAAAAAAAAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApkZXNjAAAA/AAAAHxjcHJ0AAABeAAAACh3dHB0AAABoAAAAA5yWFlaAAABpAAAABRnWFlaAAABuAAAABRiWFlaAAABzAAAABRyVFJDAAAB2AAAACBjaGFkAAAB+AAAACxiVFJDAAAB2AAAACBnVFJDAAAB2AAAACBEZXNjAAAAAAAAABFsZW4gZGVzYwBlAG4AIABDAE8AUgBFAGwAIABQAGgAbwB0AG8ALQBQAGEAaQBuAHQAPAAAABhjcHlyaWdodABDAG8AcgBlAGwAIABDAH8AcgBwAG8AcgBhAHQAaQBvAG4AAAAAAABkZXNjAAAAAAAAABJNaWNyb3NvZnQgSUNDIENvbG9yIEFwcGVhcmFuY2UAAP/bAEMABgQFBgUEBgYFBgcHBggKEAoKCQkKFA4PDBAXFBgYFxQWFhodJR8aGyMcFhYgLCAjJicpKikrLTc3OEGEquNkZW/BL/w" alt="Tattvakala Logo" />
+                    <svg viewBox="0 0 162 162" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M41.1364 81C41.1364 57.2917 59.8517 38.5764 83.5599 38.5764H123.32V123.424H83.5599C59.8517 123.424 41.1364 104.708 41.1364 81Z" fill="#F0987C"/>
+                      <path d="M123.32 38.5764H83.5599C59.8517 38.5764 41.1364 57.2917 41.1364 81C41.1364 104.708 59.8517 123.424 83.5599 123.424H123.32V38.5764Z" stroke="#411313" stroke-width="7.16568"/>
+                      <path d="M81 0C36.2625 0 0 36.2625 0 81C0 125.737 36.2625 162 81 162V0Z" fill="#E87C69"/>
+                      <path d="M81 162C125.737 162 162 125.737 162 81C162 36.2625 125.737 0 81 0V162Z" fill="#E87C69"/>
+                    </svg>
                 </div>
 
                 <div className="md:pl-24">
