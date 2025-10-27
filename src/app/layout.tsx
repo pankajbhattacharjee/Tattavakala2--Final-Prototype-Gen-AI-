@@ -29,12 +29,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isLandingPage = true; // Simplified logic for example
   return (
     <html lang="en" suppressHydrationWarning>
        <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
-      <body className={cn('font-body antialiased min-h-screen flex flex-col', bodyFont.variable, headingFont.variable)}>
+      <body className={cn('font-body antialiased min-h-screen flex flex-col', bodyFont.variable, headingFont.variable, isLandingPage ? 'bg-landing-page' : '')}>
         <FirebaseClientProvider>
           <div className="flex-grow">
             {children}

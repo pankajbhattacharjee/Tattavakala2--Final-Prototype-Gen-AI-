@@ -57,13 +57,12 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-@layer utilities {
-  .bg-landing {
+  
+  .bg-landing-page {
     background-image: url('/background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 }

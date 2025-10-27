@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Globe, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,7 +45,7 @@ export default function LandingPage() {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-landing">
+        <div className="relative min-h-screen w-full flex items-center justify-center font-sans">
             {/* Top Navigation */}
             <header className="absolute top-6 right-8 md:top-8 md:right-10 z-20">
                 <div className="flex items-center gap-4 md:gap-6">
@@ -83,7 +82,7 @@ export default function LandingPage() {
             <main className="relative w-11/12 max-w-2xl bg-white/75 rounded-2xl shadow-xl p-12 pt-32 text-left backdrop-blur-sm">
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
-                    <Image src="/logo.svg" alt="Tattvakala Logo" width={120} height={120} />
+                    <img src="/logo.svg" alt="Tattvakala Logo" width={120} height={120} />
                 </div>
 
                 <div className="md:pl-24">
