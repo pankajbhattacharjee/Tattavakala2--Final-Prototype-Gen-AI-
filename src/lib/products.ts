@@ -1,8 +1,9 @@
+
 export const products = [
   {
     id: '1',
     name: 'Odisha Ikat Handloom Fabric',
-    description: 'Traditional warp and weft tie-dye technique for a unique geometric pattern. Soft cotton.',
+    description: 'Traditional warp and weft tie-dye technique for a unique geometric pattern. Soft cotton-silk blend.',
     category: 'Weave',
     region: 'Odisha',
     price: 2499,
@@ -15,7 +16,7 @@ export const products = [
   {
     id: '2',
     name: 'Lord Jagannath Pattachitra',
-    description: 'Scroll painting from Odisha, depicting mythological stories. Finished with natural colors.',
+    description: 'Scroll painting from Odisha, depicting mythological stories. Finished with natural lacquer.',
     category: 'Painting',
     region: 'Odisha',
     price: 1899,
@@ -28,7 +29,7 @@ export const products = [
   {
     id: '3',
     name: 'Channapatna Wooden Toy Set',
-    description: 'Traditional lacquerware toys from Karnataka. Non-toxic, eco-friendly, and safe for children.',
+    description: 'Traditional lacquerware toys from Karnataka. Non-toxic, eco-friendly, and heirloom quality.',
     category: 'Lacquer',
     region: 'Karnataka',
     price: 850,
@@ -40,11 +41,11 @@ export const products = [
   },
     {
     id: '4',
-    name: 'Bandhani Saree',
-    description: 'Vibrant tie-dye saree from Gujarat, known for its intricate patterns and bright colors.',
-    category: 'Textile',
+    name: 'Gujarati Bandhani Silk Saree',
+    description: 'Finely tied-and-dyed silk saree, known for its bright colors and intricate patterns. From Gujarat.',
+    category: 'Tie-Dye',
     region: 'Gujarat',
-    price: 3200,
+    price: 4500,
     type: 'Textiles',
     image: {
       src: 'https://picsum.photos/seed/4/300/300',
@@ -53,11 +54,11 @@ export const products = [
   },
   {
     id: '5',
-    name: 'Blue Pottery Plate',
-    description: 'Hand-painted decorative plate from Jaipur, featuring traditional blue pottery floral motifs.',
-    category: 'Pottery',
+    name: 'Jaipur Blue Pottery Vase',
+    description: 'Traditional blue pottery, handmade with quartz stone powder, not clay. Classic floral motif.',
+    category: 'Ceramic',
     region: 'Rajasthan',
-    price: 1200,
+    price: 2800,
     type: 'Pottery',
     image: {
       src: 'https://picsum.photos/seed/5/300/300',
@@ -66,12 +67,12 @@ export const products = [
   },
   {
     id: '6',
-    name: 'Bamboo Basket',
-    description: 'Handwoven bamboo basket from Assam, perfect for storage or as a decorative piece.',
-    category: 'Weaving',
+    name: 'Assam Cane & Bamboo Basket',
+    description: 'Handwoven storage basket made from sustainable cane and bamboo. Durable and multi-purpose.',
+    category: 'Weave',
     region: 'Assam',
-    price: 650,
-    type: 'Textiles', // Categorizing under textiles for demo
+    price: 1750,
+    type: 'Textiles',
     image: {
       src: 'https://picsum.photos/seed/6/300/300',
       hint: 'bamboo basket',

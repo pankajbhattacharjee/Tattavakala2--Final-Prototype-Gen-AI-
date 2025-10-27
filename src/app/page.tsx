@@ -1,121 +1,59 @@
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import MarketplaceHeader from '@/components/marketplace-header';
-import { ArrowRight, Brush, Gem, ShoppingCart } from 'lucide-react';
-import { products } from '@/lib/products';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import FiltersSidebar from '@/components/filters-sidebar';
+import ProductGrid from '@/components/product-grid';
 
-export default function LandingPage() {
-  const featuredProducts = products.slice(0, 3);
-
+export default function MarketplacePage() {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background min-h-screen font-sans">
       <MarketplaceHeader />
-      
-      {/* Hero Section */}
-      <section className="relative h-[60vh] flex items-center justify-center text-center text-white">
-        <Image 
-          src="https://picsum.photos/seed/hero/1600/900" 
-          alt="Artisanal crafts" 
-          fill={true}
-          objectFit="cover"
-          className="z-0 brightness-50"
-          data-ai-hint="handcrafted pottery"
-        />
-        <div className="relative z-10 p-4">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-tight">Tattvakala</h1>
-          <p className="mt-4 text-xl md:text-2xl max-w-2xl mx-auto">
-            Authentic Handcrafted Treasures from the Heart of India.
-          </p>
-          <Button asChild size="lg" className="mt-8">
-            <Link href="/marketplace">
-              Explore the Marketplace <ArrowRight className="ml-2" />
-            </Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 bg-secondary">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Why Tattvakala?</h2>
-            <p className="text-muted-foreground mt-2">Discover the soul of Indian craftsmanship.</p>
+      <div className="container mx-auto max-w-[1400px] flex flex-col lg:flex-row gap-8 px-4 py-8">
+        <aside className="w-full lg:w-1/4">
+          <FiltersSidebar />
+        </aside>
+        <main className="w-full lg:w-3/4">
+          <h1 className="text-3xl font-bold mb-6 text-primary font-serif">Marketplace</h1>
+          <ProductGrid />
+        </main>
+      </div>
+       <footer className="bg-card py-8 px-[5%] mt-12 border-t">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <h4 className="font-semibold text-primary font-serif mb-4">Sell With Us (For Artisans)</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><i className="fas fa-check-circle text-primary"></i> Step 1: Upload craft photo.</li>
+              <li className="flex items-center gap-2"><i className="fas fa-check-circle text-primary"></i> Step 2: Add short description (AI enhances it).</li>
+              <li className="flex items-center gap-2"><i className="fas fa-check-circle text-primary"></i> Step 3: Auto-generate tags, prices, and story.</li>
+              <li className="flex items-center gap-2"><i className="fas fa-check-circle text-primary"></i> Step 4: Preview how your product will look.</li>
+            </ul>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="flex justify-center items-center mb-4">
-                <div className="bg-primary/10 p-4 rounded-full">
-                  <Brush className="w-8 h-8 text-primary" />
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold">Unique Handicrafts</h3>
-              <p className="text-muted-foreground mt-2">
-                Every item is handmade with love and tells a unique story of its origin.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="flex justify-center items-center mb-4">
-                <div className="bg-primary/10 p-4 rounded-full">
-                  <Gem className="w-8 h-8 text-primary" />
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold">Support Artisans</h3>
-              <p className="text-muted-foreground mt-2">
-                Your purchase directly empowers local artisans and their communities.
-              </p>
-            </div>
-            <div className="text-center">
-               <div className="flex justify-center items-center mb-4">
-                <div className="bg-primary/10 p-4 rounded-full">
-                  <ShoppingCart className="w-8 h-8 text-primary" />
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold">Seamless Shopping</h3>
-              <p className="text-muted-foreground mt-2">
-                Enjoy a secure and easy checkout process with worldwide shipping.
-              </p>
+          <div>
+            <h4 className="font-semibold text-primary font-serif mb-4">Community & Learning</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2"><i className="fas fa-book text-primary"></i> AI-curated articles about craft heritage.</li>
+              <li className="flex items-center gap-2"><i className="fas fa-lightbulb text-primary"></i> "Did You Know?" section (AI facts about Indian art).</li>
+              <li className="flex items-center gap-2"><i className="fas fa-star text-primary"></i> Artisan spotlight stories.</li>
+              <li className="flex items-center gap-2"><i className="fas fa-comments text-primary"></i> Forum for artisans to discuss materials, pricing, etc.</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary font-serif mb-4">About / Impact</h4>
+            <p className="text-sm text-muted-foreground">Mission: "Preserving Heritage with Technology."</p>
+            <p className="text-sm text-muted-foreground">Showcase artisans supported, sales made, and stories shared.</p>
+            <p className="text-sm text-muted-foreground">Option for users to sponsor or donate to artisans.</p>
+            <div className="flex gap-4 mt-4">
+               <i className="fab fa-facebook-f text-muted-foreground hover:text-primary cursor-pointer"></i>
+               <i className="fab fa-instagram text-muted-foreground hover:text-primary cursor-pointer"></i>
+               <i className="fab fa-twitter text-muted-foreground hover:text-primary cursor-pointer"></i>
+               <i className="fab fa-pinterest text-muted-foreground hover:text-primary cursor-pointer"></i>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold">Featured Products</h2>
-                <p className="text-muted-foreground mt-2">Handpicked treasures just for you.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden">
-                    <CardHeader className="p-0">
-                        <div className="relative aspect-square w-full">
-                            <Image src={product.image.src} alt={product.name} fill={true} objectFit="cover" data-ai-hint={product.image.hint} />
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-4">
-                        <h3 className="font-semibold text-lg">{product.name}</h3>
-                        <p className="text-muted-foreground text-sm">{product.region}</p>
-                        <div className="flex justify-between items-center mt-4">
-                            <p className="font-bold text-primary text-lg">₹{product.price.toLocaleString('en-IN')}</p>
-                            <Button variant="outline" size="sm">Add to Cart</Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
-            </div>
-             <div className="text-center mt-12">
-                <Button asChild size="lg" variant="outline">
-                    <Link href="/marketplace">View All Products</Link>
-                </Button>
-            </div>
+        <div className="text-center text-xs text-muted-foreground mt-6 pt-6 border-t">
+          © 2025 Tattvakala. All rights reserved. | Handcrafted with ❤ in India
         </div>
-      </section>
-      
+      </footer>
     </div>
   );
 }
+

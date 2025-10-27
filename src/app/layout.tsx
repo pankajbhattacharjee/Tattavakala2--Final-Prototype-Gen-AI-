@@ -1,13 +1,20 @@
+
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Taviraj } from 'next/font/google';
+import { Playfair_Display, Roboto } from 'next/font/google';
 
-const bodyFont = Taviraj({
+const bodyFont = Roboto({
   subsets: ['latin'],
   weight: ['300', '400', '500', '700'],
   variable: '--font-body',
+});
+
+const headingFont = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-heading',
 });
 
 export const metadata: Metadata = {
@@ -22,7 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-body antialiased min-h-screen', bodyFont.variable)}>
+       <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      </head>
+      <body className={cn('font-body antialiased min-h-screen', bodyFont.variable, headingFont.variable)}>
         {children}
         <Toaster />
       </body>

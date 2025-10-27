@@ -24,35 +24,42 @@ type ProductCardProps = {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
-    <Card className="overflow-hidden flex flex-col">
+    <Card className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardHeader className="p-0">
-        <div className="relative bg-muted aspect-square w-full flex items-center justify-center">
-          <Image src={product.image.src} alt={product.name} width={300} height={300} className="object-cover w-full h-full" data-ai-hint={product.image.hint} />
+        <div className="relative bg-muted aspect-square w-full overflow-hidden">
+          <Image 
+            src={product.image.src} 
+            alt={product.name} 
+            fill={true}
+            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" 
+            data-ai-hint={product.image.hint}
+          />
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <CardTitle className="text-lg font-semibold mb-1">{product.name}</CardTitle>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{product.description}</p>
-        <p className="text-sm font-medium text-foreground">{product.category} | {product.region}</p>
+        <CardTitle className="text-lg font-serif font-semibold mb-2">{product.name}</CardTitle>
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-2 h-[2.5em]">{product.description}</p>
+        <div className="flex justify-between items-center">
+            <p className="text-sm font-medium text-foreground">{product.category} | {product.region}</p>
+            <Badge variant="default" className="text-base font-bold">
+                ₹{product.price.toLocaleString('en-IN')}
+            </Badge>
+        </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex items-center justify-between">
-         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <ShoppingCart />
+      <CardFooter className="p-4 pt-0">
+         <div className="flex items-center gap-2 w-full">
+          <Button variant="outline" size="sm" className="flex-1">
+            <ShoppingCart className="mr-2"/>
             Add to Cart
           </Button>
-          <Button variant="default" size="sm">
-            <Zap />
+          <Button variant="default" size="sm" className="flex-1">
+            <Zap className="mr-2"/>
             Buy Now
           </Button>
-          <Button variant="ghost" size="icon" className="w-auto px-2">
+          <Button variant="ghost" size="icon">
             <Share2 />
-            <span className="ml-2 hidden sm:inline">Share</span>
           </Button>
         </div>
-        <Badge variant="secondary" className="text-base font-bold text-primary bg-primary/10 border-primary/20">
-          ₹{product.price.toLocaleString('en-IN')}
-        </Badge>
       </CardFooter>
     </Card>
   );
