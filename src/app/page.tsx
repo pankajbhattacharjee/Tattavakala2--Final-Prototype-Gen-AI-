@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Globe, LogIn, UserPlus } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -47,9 +48,11 @@ export default function Home() {
                 A place where artisans share their craft and buyers discover culture in every piece.
               </p>
             </div>
-            <Button size="lg" className="mt-6 bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-10 py-6 rounded-full">
-              GET STARTED
-            </Button>
+            <Link href="/crafting-tale" passHref>
+              <Button size="lg" className="mt-6 bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-10 py-6 rounded-full">
+                GET STARTED
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </main>
