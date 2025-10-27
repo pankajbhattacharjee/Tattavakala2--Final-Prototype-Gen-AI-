@@ -1,0 +1,104 @@
+/**
+ * @fileoverview Firestore Security Rules for Crafting Tale.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for artisan data,
+ * while allowing public read access to product stories.  Artisans can only
+ * manage their own profiles and products.
+ *
+ * Data Structure:
+ * - /artisans/{artisanId}: Stores artisan profiles, where artisanId is the Firebase Auth UID.
+ * - /artisans/{artisanId}/products/{productId}: Stores products created by each artisan.
+ * - /stories/{storyId}: Stores AI-generated stories, publicly readable.
+ *
+ * Key Security Decisions:
+ * - Artisans can only create, read, update, and delete their own profiles.
+ * - Artisans can only create, read, update, and delete products under their profile.
+ * - All users can read product stories, but only the application can create, update, or delete stories (not implemented in this prototype).
+ * - Listing all artisans is not allowed.
+ *
+ * Denormalization for Authorization:
+ *  - Product documents include the artisanId to easily verify ownership.
+ *
+ * Structural Segregation:
+ *  - Publicly readable stories are stored in a separate top-level collection (/stories)
+ *    to avoid complex rules based on boolean flags.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to artisan profiles.
+     * @path /artisans/{artisanId}
+     * @allow (create) - An artisan can create their profile if the artisanId matches their auth UID.
+     * @allow (get, update, delete) - An artisan can read, update, and delete their own profile.
+     * @deny (create) - An artisan cannot create a profile with an artisanId that doesn't match their auth UID.
+     * @deny (get, update, delete) - An artisan cannot read, update, or delete another artisan's profile.
+     * @principle Enforces document ownership and prevents unauthorized access to artisan profiles.
+     */
+    match /artisans/{artisanId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow create: if isOwner(artisanId);
+      allow get: if isOwner(artisanId);
+      allow list: if false;
+      allow update: if isExistingOwner(artisanId);
+      allow delete: if isExistingOwner(artisanId);
+    }
+
+    /**
+     * @description Controls access to products created by artisans.
+     * @path /artisans/{artisanId}/products/{productId}
+     * @allow (create) - An artisan can create a product under their profile. Requires artisanId on document to match path.
+     * @allow (get, list, update, delete) - An artisan can read, list, update, and delete their own products.
+     * @deny (create) - An artisan cannot create a product under another artisan's profile.
+     * @deny (get, list, update, delete) - An artisan cannot read, list, update, or delete another artisan's products.
+     * @principle Enforces document ownership for products, ensuring artisans only manage their own products.
+     */
+    match /artisans/{artisanId}/products/{productId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow create: if isOwner(artisanId) && request.resource.data.artisanId == artisanId;
+      allow get: if isOwner(artisanId);
+      allow list: if isOwner(artisanId);
+      allow update: if isExistingOwner(artisanId);
+      allow delete: if isExistingOwner(artisanId);
+    }
+
+    /**
+     * @description Controls access to AI-generated stories for products.
+     * @path /stories/{storyId}
+     * @allow (get, list) - Any user can read the stories.
+     * @deny (create, update, delete) - Stories can only be managed by the application.
+     * @principle Allows public read access to stories while restricting write access.
+     */
+    match /stories/{storyId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false; // TODO: Only allow service accounts to create.
+      allow update: if false; // TODO: Only allow service accounts to update.
+      allow delete: if false; // TODO: Only allow service accounts to delete.
+    }
+  }
+}
