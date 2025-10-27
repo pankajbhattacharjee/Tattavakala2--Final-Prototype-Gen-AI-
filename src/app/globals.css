@@ -75,4 +75,11 @@
     opacity: 0;
     animation: slide-up-fade-in 0.8s ease-out 0.2s forwards;
   }
+
+  .bg-landing {
+    background-image: url('/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 }

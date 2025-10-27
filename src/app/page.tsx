@@ -45,8 +45,7 @@ export default function LandingPage() {
 
     return (
         <div 
-            className="relative min-h-screen w-full flex items-center justify-center font-sans bg-cover bg-center"
-            style={{ backgroundImage: "url('/background.jpg')" }}
+            className="relative min-h-screen w-full flex items-center justify-center font-sans bg-landing"
         >
             {/* Top Navigation */}
             <header className="absolute top-6 right-8 md:top-8 md:right-10 z-20">
@@ -125,5 +124,3 @@ export default function LandingPage() {
         </div>
     );
 }
-
-    
