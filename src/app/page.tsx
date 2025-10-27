@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -33,7 +32,7 @@ export default function LandingPage() {
         <div className="relative min-h-screen w-full flex items-center justify-center font-sans">
             {/* Background Image */}
             <Image
-                src="/back4.png.jpg"
+                src="/background.jpg"
                 alt="Handcrafted texture background"
                 fill={true}
                 className="-z-10 object-cover"
@@ -108,7 +107,7 @@ export default function LandingPage() {
                             <Input id="login-email" type="email" placeholder="Enter your email" />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="login-password">Password</Label>
+                            <Label htmlFor="login-password">Password</-Label>
                             <Input id="login-password" type="password" placeholder="Enter your password" />
                         </div>
                     </div>
