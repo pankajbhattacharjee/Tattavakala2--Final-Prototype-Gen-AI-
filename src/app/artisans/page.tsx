@@ -9,6 +9,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import MarketplaceHeader from '@/components/marketplace-header';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 const forumTopics = [
     { title: 'Best Pricing Strategy for Handloom Textiles', meta: 'tcssassn tasscnsc tawsown' },
@@ -27,6 +29,7 @@ const workshops = [
 
 export default function ArtisansPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
@@ -65,6 +68,15 @@ export default function ArtisansPage() {
       }
     }
   }, [isModalOpen, toast]);
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsRegisterModalOpen(false);
+    toast({
+        title: 'Registration Successful!',
+        description: 'Thank you for registering for the workshop.',
+    })
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -116,17 +128,19 @@ export default function ArtisansPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">Upcaicmde 26 25203</p>
-                    <ul className="space-y-2 list-disc list-inside">
+                    <ul className="space-y-2 list-disc list-inside mb-6">
                         {workshops.map((event, index) => (
                             <li key={index} className="text-sm">{event}</li>
                         ))}
                     </ul>
+                    <Button className="w-full" onClick={() => setIsRegisterModalOpen(true)}>Register Now</Button>
                 </CardContent>
             </Card>
           </div>
         </div>
       </div>
 
+      {/* Live Stream Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
@@ -160,6 +174,34 @@ export default function ArtisansPage() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Workshop Registration Modal */}
+       <Dialog open={isRegisterModalOpen} onOpenChange={setIsRegisterModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Register for Workshop</DialogTitle>
+            <DialogDescription>
+              Fill in your details to reserve your spot.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleRegisterSubmit}>
+            <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input id="name" placeholder="Enter your full name" required />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" placeholder="Enter your email" required />
+                </div>
+            </div>
+            <div className="flex justify-end mt-4">
+                 <Button type="submit">Submit Registration</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
