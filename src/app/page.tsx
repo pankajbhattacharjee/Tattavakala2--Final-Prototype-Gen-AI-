@@ -34,9 +34,8 @@ export default function LandingPage() {
             <Image
                 src="/back4.png.jpg"
                 alt="Handcrafted texture background"
-                layout="fill"
-                objectFit="cover"
-                className="-z-10"
+                fill={true}
+                className="-z-10 object-cover"
             />
 
             {/* Top Navigation */}
@@ -148,19 +147,3 @@ export default function LandingPage() {
         </div>
     );
 }
-
-// Keyframe animation needs to be in a global CSS file.
-// I'll add this to globals.css
-// @keyframes slideUpFadeIn {
-//   0% {
-//     opacity: 0;
-//     transform: translateY(30px);
-//   }
-//   100% {
-//     opacity: 1;
-//     transform: translateY(0);
-//   }
-// }
-// .animate-slide-up {
-//   animation: slideUpFadeIn 0.8s ease-out 0.2s forwards;
-// }
