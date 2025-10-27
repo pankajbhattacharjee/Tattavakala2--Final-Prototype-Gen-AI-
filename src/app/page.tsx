@@ -67,12 +67,11 @@ export default function LandingPage() {
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
                     <Image
-                        src="/logo2.png"
+                        src="https://placehold.co/120x120/ffffff/402102?text=Logo"
                         alt="Tattvakala Logo"
                         width={120}
                         height={120}
                         className="rounded-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/120x120/ffffff/402102?text=Logo'; }}
                     />
                 </div>
 
