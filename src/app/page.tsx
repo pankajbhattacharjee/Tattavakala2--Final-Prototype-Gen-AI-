@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -5,9 +6,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Globe, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth, useUser } from '@/firebase';
+import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
+import { signOut } from 'firebase/auth';
 
 const languages = [
     { code: 'en', name: 'English' },
@@ -19,14 +23,24 @@ const languages = [
 
 export default function LandingPage() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-    const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
     const [currentLanguage, setCurrentLanguage] = useState('English');
+    const { user, isUserLoading } = useUser();
+    const auth = useAuth();
 
     const handleLanguageChange = (langName: string) => {
         setCurrentLanguage(langName);
-        // In a real app, you'd trigger a language change here
         console.log(`Language changed to ${langName}`);
     };
+
+    const handleLogin = () => {
+        initiateGoogleSignIn(auth);
+        setIsLoginModalOpen(false);
+    };
+
+    const handleLogout = () => {
+        signOut(auth);
+    };
+
 
     return (
         <div className="relative min-h-screen w-full flex items-center justify-center font-sans">
@@ -52,13 +66,16 @@ export default function LandingPage() {
                             ))}
                          </div>
                     </div>
-                    <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
-                        <UserIcon className="h-6 w-6 text-purple-700" />
-                        Log In
-                    </a>
-                    <Button onClick={() => setIsSignupModalOpen(true)} variant="outline" className="hidden md:inline-flex bg-transparent border-2 border-[#402102] text-[#402102] rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-[#402102] hover:text-white">
-                        Sign Up
-                    </Button>
+                     {isUserLoading ? null : user ? (
+                        <Button onClick={handleLogout} variant="outline" className="bg-transparent border-2 border-[#402102] text-[#402102] rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-[#402102] hover:text-white">
+                            Log Out
+                        </Button>
+                    ) : (
+                        <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
+                            <UserIcon className="h-6 w-6 text-purple-700" />
+                            Log In
+                        </a>
+                    )}
                 </div>
             </header>
 
@@ -98,47 +115,14 @@ export default function LandingPage() {
             <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
                 <DialogContent className="sm:max-w-md bg-white p-10 rounded-xl">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl text-center font-serif text-[#402102]">Log In</DialogTitle>
+                        <DialogTitle className="text-2xl text-center font-serif text-[#402102]">Welcome Back</DialogTitle>
+                        <DialogDescription className="text-center">Sign in to continue to Tattvakala</DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="login-email">Email</Label>
-                            <Input id="login-email" type="email" placeholder="Enter your email" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="login-password">Password</Label>
-                            <Input id="login-password" type="password" placeholder="Enter your password" />
-                        </div>
-                    </div>
-                    <div className="flex justify-between mt-4">
-                         <Button variant="outline" onClick={() => setIsLoginModalOpen(false)} className="border-2 border-[#402102] text-[#402102] rounded-full px-6">Cancel</Button>
-                         <Button onClick={() => setIsLoginModalOpen(false)} className="bg-gradient-to-r from-[#e87c69] to-[#f0987c] text-white rounded-full px-6">Log In</Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-             {/* Signup Modal */}
-            <Dialog open={isSignupModalOpen} onOpenChange={setIsSignupModalOpen}>
-                <DialogContent className="sm:max-w-md bg-white p-10 rounded-xl">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl text-center font-serif text-[#402102]">Sign Up</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="signup-name">Full Name</Label>
-                            <Input id="signup-name" placeholder="Enter your full name" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="signup-email">Email</Label>
-                            <Input id="signup-email" type="email" placeholder="Enter your email" />
-                        </div>
-                         <div className="grid gap-2">
-                            <Label htmlFor="signup-password">Password</Label>
-                            <Input id="signup-password" type="password" placeholder="Create a password" />
-                        </div>
-                    </div>
-                    <div className="flex justify-between mt-4">
-                         <Button variant="outline" onClick={() => setIsSignupModalOpen(false)} className="border-2 border-[#402102] text-[#402102] rounded-full px-6">Cancel</Button>                         <Button onClick={() => setIsSignupModalOpen(false)} className="bg-gradient-to-r from-[#e87c69] to-[#f0987c] text-white rounded-full px-6">Sign Up</Button>
+                    <div className="py-4">
+                        <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                           <svg className="mr-2 -ml-1 w-4 h-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 109.8 512 0 402.3 0 261.8 0 120.5 109.8 11.8 244 11.8c70.3 0 129.8 27.8 174.4 72.4l-64 64c-22.6-21.6-54.2-34.6-90.4-34.6-72.3 0-131.2 58.9-131.2 131.2s58.9 131.2 131.2 131.2c79.9 0 119.8-53.9 124.9-82.9H244v-87.5h235.9c2.3 12.7 3.7 26.1 3.7 40.2z"></path></svg>
+                            Sign in with Google
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>

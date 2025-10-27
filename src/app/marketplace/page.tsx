@@ -1,9 +1,14 @@
 
+'use client';
+import { useSearchParams } from 'next/navigation';
 import MarketplaceHeader from '@/components/marketplace-header';
 import FiltersSidebar from '@/components/filters-sidebar';
 import ProductGrid from '@/components/product-grid';
 
 export default function MarketplacePage() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
+
   return (
     <div className="bg-background min-h-screen">
       <MarketplaceHeader />
@@ -13,7 +18,7 @@ export default function MarketplacePage() {
             <FiltersSidebar />
           </aside>
           <main className="lg:col-span-3">
-            <ProductGrid />
+            <ProductGrid searchQuery={searchQuery} />
           </main>
         </div>
       </div>

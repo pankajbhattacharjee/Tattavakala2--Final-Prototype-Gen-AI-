@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,14 +7,16 @@ import ProductCard from './product-card';
 import { products as initialProducts } from '@/lib/products';
 import type { Product } from './product-card';
 
+type ProductGridProps = {
+    searchQuery?: string;
+};
 
-export default function ProductGrid() {
+export default function ProductGrid({ searchQuery = '' }: ProductGridProps) {
   const [allProducts, setAllProducts] = useState(initialProducts as Product[]);
 
   useEffect(() => {
     try {
       const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
-      // Combine initial products with stored products, ensuring no duplicates from initial set
       const combinedProducts = [...initialProducts];
       const initialIds = new Set(initialProducts.map(p => p.id));
       storedProducts.forEach((sp: Product) => {
@@ -27,6 +30,13 @@ export default function ProductGrid() {
         setAllProducts(initialProducts as Product[]);
     }
   }, []);
+
+  const filteredProducts = allProducts.filter(product => 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.region.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const categories = ['Textiles', 'Pottery', 'Paintings', 'Jewelry'];
 
@@ -47,7 +57,7 @@ export default function ProductGrid() {
         {categories.map((category) => (
           <TabsContent key={category} value={category}>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {allProducts.filter(p => p.type === category).map((product) => (
+              {filteredProducts.filter(p => p.type === category).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

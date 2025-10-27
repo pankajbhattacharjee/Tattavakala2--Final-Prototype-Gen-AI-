@@ -1,21 +1,49 @@
+
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Search, ShoppingCart, User, Users, Menu, Handshake, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { cn } from '@/lib/utils';
+import { useUser } from '@/firebase';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { signOut } from 'firebase/auth';
+import { useAuth } from '@/firebase';
+import { useState } from 'react';
 
 export default function MarketplaceHeader() {
   const pathname = usePathname();
+  const { user } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
 
   const navLinks = [
     { href: '/marketplace', label: 'Marketplace' },
     { href: '/artisans', label: 'Artisans Community' },
     { href: '/stories', label: 'Stories & Heritage' },
   ];
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push(`/marketplace?q=${searchQuery}`);
+  };
+
+  const handleLogout = () => {
+    signOut(auth);
+  };
 
   return (
     <header className="bg-card shadow-md sticky top-0 z-40">
@@ -48,10 +76,15 @@ export default function MarketplaceHeader() {
             ))}
           </nav>
           
-          <div className="relative hidden lg:block">
+          <form onSubmit={handleSearch} className="relative hidden lg:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search crafts..." className="pl-10 w-48 bg-background" />
-          </div>
+            <Input 
+              placeholder="Search crafts..." 
+              className="pl-10 w-48 bg-background" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </form>
            
           <Button variant="outline" className="hidden md:flex" asChild>
             <Link href="/sell">
@@ -66,12 +99,32 @@ export default function MarketplaceHeader() {
             </Link>
           </Button>
           
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/profile">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Profile</span>
-            </Link>
-          </Button>
+          {user ? (
+             <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                       <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+                       <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
+                  <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+                </DropdownMenuContent>
+             </DropdownMenu>
+          ) : (
+             <Button variant="ghost" size="icon" asChild>
+              <Link href="/profile">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Profile</span>
+              </Link>
+            </Button>
+          )}
+
 
           <div className="md:hidden">
             <Sheet>

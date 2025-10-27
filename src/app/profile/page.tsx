@@ -1,3 +1,4 @@
+
 'use client';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,10 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth, useUser } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { Loader } from 'lucide-react';
 
 const pastOrders = [
     {
@@ -28,11 +33,31 @@ const pastOrders = [
 ]
 
 export default function ProfilePage() {
-    const user = {
-        name: 'Priya Sharma',
-        email: 'priya.sharma@example.com',
-        joined: 'January 2024'
+    const { user, isUserLoading } = useUser();
+    const auth = useAuth();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        signOut(auth).then(() => {
+            router.push('/');
+        });
+    };
+
+    if (isUserLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <Loader className="animate-spin h-8 w-8 text-primary" />
+            </div>
+        );
     }
+    
+    if (!user) {
+        // Optionally, redirect to login page if user is not authenticated
+        // For now, just showing a message.
+         router.push('/');
+         return null;
+    }
+
 
   return (
     <div className="bg-background min-h-screen">
@@ -89,16 +114,16 @@ export default function ProfilePage() {
                     <CardContent className="space-y-4 max-w-md">
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" defaultValue={user.name} />
+                            <Input id="name" defaultValue={user.displayName || ''} />
                         </div>
                         <div className="space-y-2">
                              <Label htmlFor="email">Email Address</Label>
-                            <Input id="email" type="email" defaultValue={user.email} />
+                            <Input id="email" type="email" defaultValue={user.email || ''} readOnly/>
                         </div>
-                         <p className="text-sm text-muted-foreground">Member since {user.joined}.</p>
+                         <p className="text-sm text-muted-foreground">Member since {user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'N/A'}.</p>
                         <div className="flex gap-4 pt-4">
                              <Button>Save Changes</Button>
-                             <Button variant="outline">Logout</Button>
+                             <Button variant="outline" onClick={handleLogout}>Logout</Button>
                         </div>
                     </CardContent>
                 </Card>
