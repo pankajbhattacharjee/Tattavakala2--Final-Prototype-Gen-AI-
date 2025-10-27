@@ -107,7 +107,7 @@ export default function LandingPage() {
                             <Input id="login-email" type="email" placeholder="Enter your email" />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="login-password">Password</-Label>
+                            <Label htmlFor="login-password">Password</Label>
                             <Input id="login-password" type="password" placeholder="Enter your password" />
                         </div>
                     </div>
