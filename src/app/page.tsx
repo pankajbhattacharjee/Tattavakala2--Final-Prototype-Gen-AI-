@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -32,7 +33,7 @@ export default function LandingPage() {
         <div className="relative min-h-screen w-full flex items-center justify-center font-sans">
             {/* Background Image */}
             <Image
-                src="/background.jpg"
+                src="https://placehold.co/1920x1080/f5efe6/f5efe6"
                 alt="Handcrafted texture background"
                 fill={true}
                 className="-z-10 object-cover"
@@ -67,7 +68,7 @@ export default function LandingPage() {
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
                     <Image
-                        src="/logo.png"
+                        src="https://placehold.co/120x120/ffffff/402102?text=Logo"
                         alt="Tattvakala Logo"
                         width={120}
                         height={120}
