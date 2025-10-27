@@ -38,20 +38,14 @@ export default function LandingPage() {
     };
 
     const handleLogout = () => {
-        signOut(auth);
+        if (auth) {
+            signOut(auth);
+        }
     };
 
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center font-sans">
-            {/* Background Image */}
-            <Image
-                src="https://placehold.co/1920x1080/f5efe6/333333?text=Tattvakala"
-                alt="Handcrafted texture background"
-                fill={true}
-                className="-z-10 object-cover"
-            />
-
+        <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[#f5efe6]">
             {/* Top Navigation */}
             <header className="absolute top-6 right-8 md:top-8 md:right-10 z-20">
                 <div className="flex items-center gap-4 md:gap-8">
