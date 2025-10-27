@@ -75,7 +75,7 @@ export default function LandingPage() {
 
             <main className="flex-grow flex items-center justify-center p-4">
                 <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center">
-                     <div className="w-40 h-40 bg-white rounded-2xl shadow-lg flex-shrink-0 -mb-20 md:mb-0 md:-mr-20 z-10 relative"></div>
+                     <div className="w-40 h-40 bg-white rounded-2xl shadow-lg flex-shrink-0 -mb-20 md:mb-0 md:-mr-20 z-10"></div>
                     <div className="bg-white p-12 md:pl-28 md:pr-16 rounded-2xl shadow-lg text-center md:text-left w-full">
                         <h1 className="text-5xl md:text-6xl font-bold font-serif !leading-tight text-stone-800">
                             Join India's<br />Handcrafted<br />Revolution
