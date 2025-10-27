@@ -1,9 +1,12 @@
 
+'use client';
 import Image from 'next/image';
 import { ShoppingCart, Zap, Share2, User } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 export type Product = {
   id: string;
@@ -24,6 +27,24 @@ type ProductCardProps = {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const handleAddToCart = () => {
+    // In a real app, you'd add to a global cart state.
+    // For now, we just show a toast.
+    toast({
+      title: 'Added to Cart!',
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
+
+  const handleBuyNow = () => {
+    // For simulation, we'll add to cart and redirect to checkout
+    handleAddToCart();
+    router.push('/checkout');
+  };
+
   return (
     <Card className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardHeader className="p-0">
@@ -55,11 +76,11 @@ export default function ProductCard({ product }: ProductCardProps) {
       </CardContent>
       <CardFooter className="p-4 pt-0">
          <div className="flex items-center gap-2 w-full">
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button variant="outline" size="sm" className="flex-1" onClick={handleAddToCart}>
             <ShoppingCart className="mr-2"/>
             Add to Cart
           </Button>
-          <Button variant="default" size="sm" className="flex-1">
+          <Button variant="default" size="sm" className="flex-1" onClick={handleBuyNow}>
             <Zap className="mr-2"/>
             Buy Now
           </Button>

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 type Product = (typeof initialProducts)[0];
 
@@ -20,6 +21,7 @@ type StoryProduct = Product & {
 export default function StoriesPage() {
   const [stories, setStories] = useState<StoryProduct[]>([]);
   const [selectedStory, setSelectedStory] = useState<StoryProduct | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Combine initial products with products from local storage
@@ -41,6 +43,15 @@ export default function StoriesPage() {
 
     setStories(generatedStories);
   }, []);
+  
+  const handleAddToCart = (product: StoryProduct) => {
+    // In a real app, this would update a global cart state.
+    // For now, we'll just show a notification.
+    toast({
+        title: "Added to Cart!",
+        description: `${product.name} has been added to your cart.`,
+    });
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -90,7 +101,7 @@ export default function StoriesPage() {
                      <Badge variant="secondary" className="text-xl font-bold text-primary bg-primary/10 border-primary/20">
                         ₹{selectedStory.price.toLocaleString('en-IN')}
                     </Badge>
-                     <Button>
+                     <Button onClick={() => handleAddToCart(selectedStory)}>
                         <ShoppingCart className="mr-2" />
                         Add to Cart
                      </Button>
