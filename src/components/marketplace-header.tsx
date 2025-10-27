@@ -18,7 +18,7 @@ export default function MarketplaceHeader() {
               </p>
             </Link>
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/marketplace" className="text-sm font-medium text-primary border-b-2 border-primary pb-1">
+              <Link href="/" className="text-sm font-medium text-primary border-b-2 border-primary pb-1">
                 Marketplace
               </Link>
               <Link href="/artisans" className="text-sm font-medium text-foreground hover:text-primary transition-colors">

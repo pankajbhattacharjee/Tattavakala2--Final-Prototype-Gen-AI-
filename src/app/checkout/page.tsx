@@ -38,7 +38,7 @@ export default function CheckoutPage() {
               <CardContent>
                 <p className="text-muted-foreground mb-6">You will receive an email confirmation shortly.</p>
                  <Button asChild>
-                    <Link href="/marketplace">Continue Shopping</Link>
+                    <Link href="/">Continue Shopping</Link>
                 </Button>
               </CardContent>
             </Card>
