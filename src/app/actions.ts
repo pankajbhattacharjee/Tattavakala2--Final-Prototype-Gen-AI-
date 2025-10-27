@@ -1,10 +1,9 @@
 "use server";
 
-import { generateProductStory, translateProductStory } from "../ai/flows";
-import type {
-  GenerateProductStoryInput,
-  TranslateProductStoryInput,
-} from "../ai/flows";
+import { generateProductStory } from "@/ai/flows/generate-product-story";
+import { translateProductStory } from "@/ai/flows/translate-product-story";
+import type { GenerateProductStoryInput } from "@/ai/flows/generate-product-story";
+import type { TranslateProductStoryInput } from "@/ai/flows/translate-product-story";
 
 export async function generateStoryAction(
   input: GenerateProductStoryInput
