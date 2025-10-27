@@ -1,25 +1,46 @@
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import MarketplaceHeader from '@/components/marketplace-header';
-import { products } from '@/lib/products';
+import { products as initialProducts } from '@/lib/products';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 
-type Product = (typeof products)[0];
+type Product = (typeof initialProducts)[0];
 
-const stories = products.slice(0, 4).map(p => ({
-  ...p,
-  storyTitle: `The Art of ${p.name}`,
-  storyContent: `Discover the rich heritage and meticulous craftsmanship behind the ${p.name}. Each piece is a testament to the generations of artisans from ${p.region} who have perfected this beautiful ${p.category} technique. ${p.description}`
-}));
+type StoryProduct = Product & {
+  storyTitle: string;
+  storyContent: string;
+};
 
 export default function StoriesPage() {
-  const [selectedStory, setSelectedStory] = useState<Product & { storyTitle: string; storyContent: string; } | null>(null);
+  const [stories, setStories] = useState<StoryProduct[]>([]);
+  const [selectedStory, setSelectedStory] = useState<StoryProduct | null>(null);
+
+  useEffect(() => {
+    // Combine initial products with products from local storage
+    const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
+    const combinedProducts: Product[] = [...initialProducts];
+    const initialIds = new Set(initialProducts.map(p => p.id));
+    
+    storedProducts.forEach(sp => {
+      if (!initialIds.has(sp.id)) {
+        combinedProducts.push(sp);
+      }
+    });
+
+    const generatedStories = combinedProducts.map(p => ({
+      ...p,
+      storyTitle: `The Art of ${p.name}`,
+      storyContent: `Discover the rich heritage and meticulous craftsmanship behind the ${p.name}. Each piece is a testament to the generations of artisans from ${p.region} who have perfected this beautiful ${p.category} technique. ${p.description}`
+    }));
+
+    setStories(generatedStories);
+  }, []);
 
   return (
     <div className="bg-background min-h-screen">

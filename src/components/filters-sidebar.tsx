@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
 const regions = [
   "Andhra Pradesh", "Assam", "Bihar", "Gujarat", "Karnataka", "Kerala", "Maharashtra", "Odisha",
@@ -70,7 +71,9 @@ export default function FiltersSidebar() {
               <span className="text-muted-foreground">Est. Delivery: 5-7 days</span>
               <span className="font-semibold text-primary">Free Shipping</span>
           </div>
-          <Button className="w-full">View Story</Button>
+          <Button asChild className="w-full">
+            <Link href="/stories">View Story</Link>
+          </Button>
       </div>
     </div>
   );
