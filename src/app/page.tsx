@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -22,6 +21,7 @@ import {
 import { useAuth, useUser } from '@/firebase';
 import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
 import { signOut } from 'firebase/auth';
+import { Card, CardContent } from '@/components/ui/card';
 
 const languages = [
   { code: 'en', name: 'English' },
@@ -55,80 +55,87 @@ export default function LandingPage() {
     };
     
   return (
-    <div className="relative min-h-screen w-full bg-landing text-[#6B4F4B]">
-      <div className="absolute inset-0 bg-black/10"></div>
+    <div className="relative min-h-screen w-full bg-landing text-foreground">
       <header className="absolute top-0 left-0 right-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div className="flex items-center">
-                <Image
-                    src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F58756306-0811-4048-9366-511488c0373c%2Flogo.png?alt=media&token=c19989b5-f43b-413e-812f-9372338902d1"
-                    alt="Tattvakala Logo"
-                    width={180}
-                    height={40}
-                    className="object-contain"
-                  />
-            </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-end items-center">
             <div className="flex items-center gap-2 sm:gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="text-white hover:text-white hover:bg-white/10">
-                <Globe className="mr-2 h-4 w-4" />
-                {currentLanguage}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {languages.map((lang) => (
-                <DropdownMenuItem
-                  key={lang.code}
-                  onSelect={() => handleLanguageChange(lang.name)}
-                >
-                  {lang.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-foreground hover:bg-black/5">
+                    <Globe className="mr-2 h-4 w-4" />
+                    {currentLanguage}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {languages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onSelect={() => handleLanguageChange(lang.name)}
+                    >
+                      {lang.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-          {user ? (
-            <Button variant="ghost" className="text-white hover:text-white hover:bg-white/10" onClick={handleLogout}>
-              <UserIcon className="mr-2 h-4 w-4" /> Log Out
-            </Button>
-          ) : (
-            <>
-              <Button
-                variant="ghost"
-                className="text-white hover:text-white hover:bg-white/10"
-                onClick={() => setIsLoginModalOpen(true)}
-              >
-                <UserIcon className="mr-2 h-4 w-4" /> Log In
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-transparent border-white text-white hover:bg-white hover:text-black"
-                onClick={() => setIsLoginModalOpen(true)}
-              >
-                Sign Up
-              </Button>
-            </>
-          )}
-        </div>
-
+              {user ? (
+                <Button variant="ghost" className="text-foreground hover:bg-black/5" onClick={handleLogout}>
+                  <UserIcon className="mr-2 h-4 w-4" /> Log Out
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    className="text-foreground hover:bg-black/5"
+                    onClick={() => setIsLoginModalOpen(true)}
+                  >
+                    <UserIcon className="mr-2 h-4 w-4" /> Log In
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-foreground/50 text-foreground hover:bg-foreground/5"
+                    onClick={() => setIsLoginModalOpen(true)}
+                  >
+                    Sign Up
+                  </Button>
+                </>
+              )}
+            </div>
         </div>
       </header>
       
       <main className="relative z-0 flex items-center justify-center min-h-screen p-4">
-        <div className="text-center text-white">
-            <h1 className="text-4xl md:text-6xl font-bold font-serif !leading-tight drop-shadow-lg">
-              Tattvakala: The Essence of India
-            </h1>
-            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto drop-shadow-md">
-              Discover authentic, handcrafted treasures from the heart of India. Each piece tells a story of tradition, skill, and cultural heritage.
-            </p>
-            <div className="mt-8">
-              <Button asChild size="lg" className="bg-white text-[#6B4F4B] rounded-full px-12 py-7 text-lg font-semibold hover:bg-gray-200 shadow-lg transform hover:scale-105 transition-transform">
-                <Link href="/marketplace">Explore the Collection</Link>
-              </Button>
+        <Card className="relative w-full max-w-2xl bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl pt-16 p-8 md:p-12 text-center">
+            <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-card p-2 rounded-2xl shadow-lg">
+                <Image
+                    src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F58756306-0811-4048-9366-511488c0373c%2Flogo.png?alt=media&token=c19989b5-f43b-413e-812f-9372338902d1"
+                    alt="Tattvakala Logo"
+                    width={100}
+                    height={100}
+                    className="rounded-xl"
+                  />
             </div>
-          </div>
+            <CardContent className="p-0">
+                <h1 className="text-4xl md:text-5xl font-bold font-serif text-primary !leading-tight drop-shadow-sm">
+                  Join India's Handcrafted Revolution
+                </h1>
+                
+                <div className="flex justify-center my-6">
+                    <div className="flex items-start gap-3 max-w-sm">
+                         <div className="w-px h-12 bg-destructive/50 mt-1"></div>
+                         <p className="text-left text-muted-foreground text-base">
+                           A place where artisans share their craft and buyers discover culture in every piece.
+                         </p>
+                    </div>
+                </div>
+
+                <div className="mt-8">
+                  <Button asChild size="lg" className="bg-destructive text-destructive-foreground rounded-full px-12 py-7 text-lg font-semibold hover:bg-destructive/90 shadow-lg transform hover:scale-105 transition-transform">
+                    <Link href="/marketplace">GET STARTED</Link>
+                  </Button>
+                </div>
+            </CardContent>
+        </Card>
       </main>
 
       <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
