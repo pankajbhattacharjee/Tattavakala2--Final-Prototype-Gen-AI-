@@ -10,10 +10,10 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    allowedDevOrigins: [
-      'https://6000-firebase-studio-1761537026032.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev',
-    ],
   },
+  allowedDevOrigins: [
+    'https://6000-firebase-studio-1761537026032.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev',
+  ],
   images: {
     remotePatterns: [
       {
