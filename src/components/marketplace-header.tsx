@@ -18,32 +18,38 @@ export default function MarketplaceHeader() {
               </p>
             </Link>
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="#" className="text-sm font-medium text-primary border-b-2 border-primary pb-1">
+              <Link href="/marketplace" className="text-sm font-medium text-primary border-b-2 border-primary pb-1">
                 Marketplace
               </Link>
-              <Link href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              <Link href="/artisans" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 Artisans Community
               </Link>
-              <Link href="#" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              <Link href="/stories" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 Stories & Heritage
               </Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden md:flex">
-              <Users className="mr-2 h-4 w-4" /> Sell With Us
+            <Button variant="ghost" className="hidden md:flex" asChild>
+              <Link href="/sell">
+                <Users className="mr-2 h-4 w-4" /> Sell With Us
+              </Link>
             </Button>
             <div className="relative hidden sm:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search crafts..." className="pl-10 w-48" />
             </div>
-            <Button variant="ghost" size="icon">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="sr-only">Cart</span>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/cart">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="sr-only">Cart</span>
+              </Link>
             </Button>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Profile</span>
+            <Button variant="ghost" size="icon" asChild>
+               <Link href="/profile">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Profile</span>
+              </Link>
             </Button>
           </div>
         </div>
