@@ -1,4 +1,3 @@
-
 import { Store, CheckCircle, BookOpen, Lightbulb, Star, MessageSquare, Facebook, Twitter, Instagram, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { Separator } from './ui/separator';
@@ -11,7 +10,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-transparent text-gray-800">
+    <footer className="bg-secondary/50 text-foreground">
       <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-sm">
           {/* Sell With Us */}

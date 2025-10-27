@@ -58,7 +58,17 @@ export default function LandingPage() {
     <div className="relative min-h-screen w-full bg-landing text-[#6B4F4B]">
       <div className="absolute inset-0 bg-black/10"></div>
       <header className="absolute top-0 left-0 right-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-end items-center gap-2 sm:gap-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div className="flex items-center">
+                <Image
+                    src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F58756306-0811-4048-9366-511488c0373c%2Flogo.png?alt=media&token=c19989b5-f43b-413e-812f-9372338902d1"
+                    alt="Tattvakala Logo"
+                    width={180}
+                    height={40}
+                    className="object-contain"
+                  />
+            </div>
+            <div className="flex items-center gap-2 sm:gap-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="text-white hover:text-white hover:bg-white/10">
@@ -101,40 +111,24 @@ export default function LandingPage() {
             </>
           )}
         </div>
+
+        </div>
       </header>
       
       <main className="relative z-0 flex items-center justify-center min-h-screen p-4">
-        <div className="relative w-full max-w-2xl">
-          <div
-            className="absolute -top-16 left-1/2 -translate-x-1/2 md:left-0 md:-translate-x-1/2 z-20"
-          >
-            <div className="relative w-32 h-32 md:w-36 md:h-36 bg-white rounded-2xl shadow-lg flex items-center justify-center p-2">
-              <Image
-                src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F58756306-0811-4048-9366-511488c0373c%2Flogo.png?alt=media&token=c19989b5-f43b-413e-812f-9372338902d1"
-                alt="Tattvakala Logo"
-                width={144}
-                height={144}
-                className="rounded-full"
-              />
-            </div>
-          </div>
-          <div className="bg-white/90 backdrop-blur-sm pt-24 pb-12 px-8 sm:px-12 rounded-2xl shadow-2xl text-center">
-            <h1 className="text-4xl md:text-5xl font-bold font-serif text-stone-800 !leading-tight">
-              Join India's Handcrafted Revolution
+        <div className="text-center text-white">
+            <h1 className="text-4xl md:text-6xl font-bold font-serif !leading-tight drop-shadow-lg">
+              Tattvakala: The Essence of India
             </h1>
-            <div className="mt-8 flex items-center justify-center">
-              <div className="w-px h-10 bg-orange-400 mr-4"></div>
-              <p className="text-lg text-gray-600 max-w-md">
-                A place where artisans share their craft and buyers discover culture in every piece.
-              </p>
-            </div>
-            <div className="mt-10">
-              <Button asChild size="lg" className="bg-[#D98468] text-white rounded-full px-12 py-7 text-lg font-semibold hover:bg-[#C97458] shadow-lg transform hover:scale-105 transition-transform">
-                <Link href="/marketplace">GET STARTED</Link>
+            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto drop-shadow-md">
+              Discover authentic, handcrafted treasures from the heart of India. Each piece tells a story of tradition, skill, and cultural heritage.
+            </p>
+            <div className="mt-8">
+              <Button asChild size="lg" className="bg-white text-[#6B4F4B] rounded-full px-12 py-7 text-lg font-semibold hover:bg-gray-200 shadow-lg transform hover:scale-105 transition-transform">
+                <Link href="/marketplace">Explore the Collection</Link>
               </Button>
             </div>
           </div>
-        </div>
       </main>
 
       <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
