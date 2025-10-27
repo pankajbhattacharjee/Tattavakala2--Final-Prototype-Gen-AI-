@@ -1,3 +1,4 @@
+
 import { Store, CheckCircle, BookOpen, Lightbulb, Star, MessageSquare, Facebook, Twitter, Instagram, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { Separator } from './ui/separator';
@@ -10,8 +11,8 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-secondary/50 text-foreground">
-      <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-transparent text-gray-800">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-sm">
           {/* Sell With Us */}
           <div>
@@ -83,7 +84,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <Separator className="my-8" />
+        <Separator className="my-8 bg-border" />
         <div className="text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} Tattvakala. All rights reserved. | Handcrafted with <Heart className="inline h-3 w-3 text-red-500 fill-red-500" /> in India
         </div>
