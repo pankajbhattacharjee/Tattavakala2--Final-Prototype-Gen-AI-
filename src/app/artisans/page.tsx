@@ -1,7 +1,8 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Video, Mic, Sun, User, Camera } from 'lucide-react';
+import { Video, Mic, Sun, User, Camera,Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -91,7 +92,7 @@ export default function ArtisansPage() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Discussion Forum: Connect & Share</CardTitle>
+                <CardTitle>Discussion Forum: Connect &amp; Share</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {forumTopics.map((topic, index) => (
@@ -124,7 +125,7 @@ export default function ArtisansPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Workshops & Events</CardTitle>
+                    <CardTitle>Workshops &amp; Events</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">Upcaicmde 26 25203</p>
@@ -134,6 +135,28 @@ export default function ArtisansPage() {
                         ))}
                     </ul>
                     <Button className="w-full" onClick={() => setIsRegisterModalOpen(true)}>Register Now</Button>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Youtube className="text-red-500"/>
+                        Tutorials &amp; Resources
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground mb-4">Watch our tutorials to learn how to best showcase your products and reach a wider audience.</p>
+                    <div className="aspect-video rounded-lg overflow-hidden">
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            src="https://www.youtube.com/embed/CvHUHgDe8oE" 
+                            title="YouTube video player" 
+                            frameBorder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowFullScreen>
+                        </iframe>
+                    </div>
                 </CardContent>
             </Card>
           </div>
