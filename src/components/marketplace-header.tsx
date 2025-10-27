@@ -6,7 +6,7 @@ import { Input } from './ui/input';
 
 export default function MarketplaceHeader() {
   return (
-    <header className="bg-background border-b border-border">
+    <header className="bg-background border-b border-border sticky top-0 z-40">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center gap-8">
@@ -19,7 +19,7 @@ export default function MarketplaceHeader() {
               </p>
             </Link>
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/" className="text-sm font-medium text-primary border-b-2 border-primary pb-1">
+              <Link href="/marketplace" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
                 Marketplace
               </Link>
               <Link href="/artisans" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
