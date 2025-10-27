@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -20,6 +21,7 @@ const languages = [
 
 export default function LandingPage() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
     const [currentLanguage, setCurrentLanguage] = useState('English');
     const { user, isUserLoading } = useUser();
     const auth = useAuth();
@@ -29,10 +31,11 @@ export default function LandingPage() {
         console.log(`Language changed to ${langName}`);
     };
 
-    const handleLogin = () => {
+    const handleAuthAction = () => {
         if (auth) {
             initiateGoogleSignIn(auth);
             setIsLoginModalOpen(false);
+            setIsSignUpModalOpen(false);
         }
     };
 
@@ -48,7 +51,7 @@ export default function LandingPage() {
         >
             {/* Top Navigation */}
             <header className="absolute top-6 right-8 md:top-8 md:right-10 z-20">
-                <div className="flex items-center gap-4 md:gap-8">
+                <div className="flex items-center gap-4 md:gap-6">
                      <div className="group relative">
                          <a className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
                             <Globe className="h-5 w-5 text-[#4197ff]" />
@@ -65,10 +68,15 @@ export default function LandingPage() {
                             Log Out
                         </Button>
                     ) : (
-                        <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
-                            <UserIcon className="h-6 w-6 text-purple-700" />
-                            Log In
-                        </a>
+                        <div className="flex items-center gap-4">
+                            <Button onClick={() => setIsSignUpModalOpen(true)} variant="default" className="bg-[#402102] text-white rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-opacity-80">
+                                Sign Up
+                            </Button>
+                            <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
+                                <UserIcon className="h-6 w-6 text-purple-700" />
+                                Log In
+                            </a>
+                        </div>
                     )}
                 </div>
             </header>
@@ -113,13 +121,30 @@ export default function LandingPage() {
                         <DialogDescription className="text-center">Sign in to continue to Tattvakala</DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
-                        <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                        <Button onClick={handleAuthAction} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                            <svg className="mr-2 -ml-1 w-4 h-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 109.8 512 0 402.3 0 261.8 0 120.5 109.8 11.8 244 11.8c70.3 0 129.8 27.8 174.4 72.4l-64 64c-22.6-21.6-54.2-34.6-90.4-34.6-72.3 0-131.2 58.9-131.2 131.2s58.9 131.2 131.2 131.2c79.9 0 119.8-53.9 124.9-82.9H244v-87.5h235.9c2.3 12.7 3.7 26.1 3.7 40.2z"></path></svg>
                             Sign in with Google
                         </Button>
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Sign Up Modal */}
+            <Dialog open={isSignUpModalOpen} onOpenChange={setIsSignUpModalOpen}>
+                <DialogContent className="sm:max-w-md bg-white p-10 rounded-xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl text-center font-serif text-[#402102]">Create an Account</DialogTitle>
+                        <DialogDescription className="text-center">Join Tattvakala to discover unique handcrafted treasures.</DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Button onClick={handleAuthAction} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                           <svg className="mr-2 -ml-1 w-4 h-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 109.8 512 0 402.3 0 261.8 0 120.5 109.8 11.8 244 11.8c70.3 0 129.8 27.8 174.4 72.4l-64 64c-22.6-21.6-54.2-34.6-90.4-34.6-72.3 0-131.2 58.9-131.2 131.2s58.9 131.2 131.2 131.2c79.9 0 119.8-53.9 124.9-82.9H244v-87.5h235.9c2.3 12.7 3.7 26.1 3.7 40.2z"></path></svg>
+                            Sign up with Google
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
-}
+
+    
