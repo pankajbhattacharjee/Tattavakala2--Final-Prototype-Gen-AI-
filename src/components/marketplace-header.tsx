@@ -1,11 +1,22 @@
+'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart, User, Users, Menu, Handshake, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { cn } from '@/lib/utils';
 
 export default function MarketplaceHeader() {
+  const pathname = usePathname();
+
+  const navLinks = [
+    { href: '/', label: 'Marketplace' },
+    { href: '/artisans', label: 'Artisans Community' },
+    { href: '/stories', label: 'Stories & Heritage' },
+  ];
+
   return (
     <header className="bg-card shadow-md sticky top-0 z-40">
       <div className="container mx-auto max-w-[1400px] flex items-center justify-between h-20 px-4">
@@ -20,15 +31,21 @@ export default function MarketplaceHeader() {
 
         <div className="flex items-center gap-4">
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
-              Marketplace
-            </Link>
-            <Link href="/artisans" className="text-sm font-medium hover:text-primary transition-colors">
-              Artisans Community
-            </Link>
-            <Link href="/stories" className="text-sm font-medium hover:text-primary transition-colors">
-              Stories & Heritage
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  'text-sm font-medium hover:text-primary transition-colors relative pb-1',
+                  pathname === link.href ? 'text-primary' : 'text-foreground'
+                )}
+              >
+                {link.label}
+                {pathname === link.href && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"></span>
+                )}
+              </Link>
+            ))}
           </nav>
           
           <div className="relative hidden lg:block">
