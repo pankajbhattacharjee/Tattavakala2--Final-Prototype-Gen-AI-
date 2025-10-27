@@ -32,7 +32,7 @@ export default function LandingPage() {
         <div className="relative min-h-screen w-full flex items-center justify-center font-sans">
             {/* Background Image */}
             <Image
-                src="https://placehold.co/1920x1080/f5efe6/f5efe6"
+                src="https://placehold.co/1920x1080/f5efe6/333333?text=Tattvakala"
                 alt="Handcrafted texture background"
                 fill={true}
                 className="-z-10 object-cover"
@@ -67,7 +67,7 @@ export default function LandingPage() {
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
                     <Image
-                        src="https://placehold.co/120x120/ffffff/402102?text=Logo"
+                        src="https://placehold.co/120x120/ffffff/b07a2b?text=Logo"
                         alt="Tattvakala Logo"
                         width={120}
                         height={120}
@@ -138,8 +138,7 @@ export default function LandingPage() {
                         </div>
                     </div>
                     <div className="flex justify-between mt-4">
-                         <Button variant="outline" onClick={() => setIsSignupModalOpen(false)} className="border-2 border-[#402102] text-[#402102] rounded-full px-6">Cancel</Button>
-                         <Button onClick={() => setIsSignupModalOpen(false)} className="bg-gradient-to-r from-[#e87c69] to-[#f0987c] text-white rounded-full px-6">Sign Up</Button>
+                         <Button variant="outline" onClick={() => setIsSignupModalOpen(false)} className="border-2 border-[#402102] text-[#402102] rounded-full px-6">Cancel</Button>                         <Button onClick={() => setIsSignupModalOpen(false)} className="bg-gradient-to-r from-[#e87c69] to-[#f0987c] text-white rounded-full px-6">Sign Up</Button>
                     </div>
                 </DialogContent>
             </Dialog>

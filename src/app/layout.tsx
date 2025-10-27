@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Playfair_Display, Roboto } from 'next/font/google';
+import Footer from '@/components/footer';
 
 const bodyFont = Roboto({
   subsets: ['latin'],
@@ -32,9 +33,12 @@ export default function RootLayout({
        <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
-      <body className={cn('font-body antialiased min-h-screen', bodyFont.variable, headingFont.variable)}>
-        {children}
+      <body className={cn('font-body antialiased min-h-screen flex flex-col', bodyFont.variable, headingFont.variable)}>
+        <div className="flex-grow">
+          {children}
+        </div>
         <Toaster />
+        <Footer />
       </body>
     </html>
   );
