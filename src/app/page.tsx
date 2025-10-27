@@ -19,6 +19,31 @@ const languages = [
     { code: 'bn', name: 'বাংলা (Bengali)' },
 ];
 
+const TattvakalaLogo = () => (
+    <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 120 120"
+        xmlns="http://www.w3.org/2000/svg"
+        className="rounded-full object-cover"
+    >
+        <circle cx="60" cy="60" r="60" fill="#b07a2b" />
+        <text
+            x="50%"
+            y="50%"
+            dominantBaseline="central"
+            textAnchor="middle"
+            fill="white"
+            fontSize="28"
+            fontFamily="serif"
+            fontWeight="bold"
+        >
+            T
+        </text>
+    </svg>
+);
+
+
 export default function LandingPage() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
@@ -85,13 +110,7 @@ export default function LandingPage() {
             <main className="relative w-11/12 max-w-2xl bg-white/75 rounded-2xl shadow-xl p-12 pt-32 text-left animate-slide-up">
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
-                    <Image
-                        src="https://placehold.co/120x120/ffffff/b07a2b?text=Logo"
-                        alt="Tattvakala Logo"
-                        width={120}
-                        height={120}
-                        className="rounded-full object-cover"
-                    />
+                    <TattvakalaLogo />
                 </div>
 
                 <div className="md:pl-24">
