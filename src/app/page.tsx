@@ -108,7 +108,7 @@ export default function LandingPage() {
         <Card className="relative w-full max-w-2xl bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl pt-16 p-8 md:p-12 text-center">
             <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-card p-2 rounded-2xl shadow-lg">
                 <Image
-                    src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F58756306-0811-4048-9366-511488c0373c%2Flogo.png?alt=media&token=c19989b5-f43b-413e-812f-9372338902d1"
+                    src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F71e36058-5d4a-42c2-a63e-d964f51e5927%2Flogo.png?alt=media&token=c4a170e7-3f98-4c07-b089-6330456100f7"
                     alt="Tattvakala Logo"
                     width={100}
                     height={100}
