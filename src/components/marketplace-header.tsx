@@ -12,7 +12,7 @@ export default function MarketplaceHeader() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: '/', label: 'Marketplace' },
+    { href: '/marketplace', label: 'Marketplace' },
     { href: '/artisans', label: 'Artisans Community' },
     { href: '/stories', label: 'Stories & Heritage' },
   ];
@@ -82,7 +82,7 @@ export default function MarketplaceHeader() {
               </SheetTrigger>
               <SheetContent>
                 <nav className="flex flex-col gap-6 mt-8">
-                   <Link href="/" className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors">
+                   <Link href="/marketplace" className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors">
                       <ShoppingCart className="h-5 w-5" /> Marketplace
                     </Link>
                     <Link href="/artisans" className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors">

@@ -1,11 +1,32 @@
+'use client';
 
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProductCard from './product-card';
-import { products } from '@/lib/products';
+import { products as initialProducts } from '@/lib/products';
 
 export default function ProductGrid() {
+  const [allProducts, setAllProducts] = useState(initialProducts);
+
+  useEffect(() => {
+    try {
+      const storedProducts = JSON.parse(localStorage.getItem('products') || '[]');
+      // Combine initial products with stored products, ensuring no duplicates from initial set
+      const combinedProducts = [...initialProducts];
+      const initialIds = new Set(initialProducts.map(p => p.id));
+      storedProducts.forEach((sp: any) => {
+        if (!initialIds.has(sp.id)) {
+          combinedProducts.push(sp);
+        }
+      });
+      setAllProducts(combinedProducts);
+    } catch (error) {
+        console.error("Could not parse products from localStorage", error);
+        setAllProducts(initialProducts);
+    }
+  }, []);
+
   const categories = ['Textiles', 'Pottery', 'Paintings', 'Jewelry'];
-  const allProducts = [...products]; // Create a mutable copy
 
   return (
     <div>

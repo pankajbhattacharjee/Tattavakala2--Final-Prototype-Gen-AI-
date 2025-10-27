@@ -6,12 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { generateProductStory, translateProductStory } from '../actions';
+import { generateProductStory, translateProductStory, speechToText } from '../actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Languages, Facebook, Twitter, Instagram, Upload, FileImage, Mic, Link, Store, Share2, Bot } from 'lucide-react';
+import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link, Store, Share2, Bot, Send } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useRouter } from 'next/navigation';
 
 const regions = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
@@ -51,6 +52,7 @@ export default function SellPage() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const router = useRouter();
 
 
   const { toast } = useToast();
@@ -88,26 +90,28 @@ export default function SellPage() {
             
             recognition.onend = () => {
                 if (isListening) {
-                    recognition.start(); // Restart if we are still supposed to be listening
+                    // It sometimes stops on its own, so we might need to restart it
+                    // recognition.start();
                 }
+                 setIsListening(false);
             };
 
-        } else {
+        }
+    }, [toast]);
+    
+    const handleListen = () => {
+        if (!recognitionRef.current) {
              toast({
                 variant: 'destructive',
                 title: 'Browser Not Supported',
                 description: 'Voice recognition is not supported in this browser.',
             });
+            return;
         }
-    }, [isListening, toast]);
-    
-    const handleListen = () => {
-        if (!recognitionRef.current) return;
 
         if (isListening) {
             recognitionRef.current.stop();
             setIsListening(false);
-            toast({ title: 'Voice input stopped.' });
         } else {
             try {
                 recognitionRef.current.start();
@@ -119,6 +123,7 @@ export default function SellPage() {
                     title: 'Could not start listening',
                     description: 'Please ensure microphone permissions are enabled.',
                 });
+                setIsListening(false);
             }
         }
     };
@@ -209,6 +214,53 @@ export default function SellPage() {
     }
   }
 
+  const handlePublish = () => {
+    if (!photoPreview || !productName || !generatedStory) {
+        toast({
+            variant: 'destructive',
+            title: 'Cannot Publish',
+            description: 'Please ensure you have a product name, photo, and generated story before publishing.',
+        });
+        return;
+    }
+
+    try {
+        const newProduct = {
+            id: `prod_${Date.now()}`,
+            name: productName,
+            description: generatedStory,
+            category: 'Miscellaneous', // Or derive from context
+            region: locationContext,
+            price: Math.floor(Math.random() * (5000 - 500 + 1)) + 500, // Random price for simulation
+            type: 'Textiles', // Defaulting to a category for tab placement
+            image: {
+                src: photoPreview,
+                hint: productName.toLowerCase(),
+            },
+        };
+
+        const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
+        const updatedProducts = [...existingProducts, newProduct];
+        localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+        toast({
+            title: 'Product Published!',
+            description: `${productName} is now live on the marketplace.`,
+        });
+
+        // Redirect to marketplace to see the new product
+        router.push('/marketplace');
+
+    } catch (error) {
+        console.error('Failed to save product to localStorage', error);
+        toast({
+            variant: 'destructive',
+            title: 'Publishing Failed',
+            description: 'There was an error saving your product.',
+        });
+    }
+  };
+
 
   return (
      <div className="bg-background min-h-screen">
@@ -275,7 +327,7 @@ export default function SellPage() {
                                         onChange={(e) => setUserDescription(e.target.value)}
                                     />
                                     <Button variant="outline" className="w-full" onClick={handleListen}>
-                                        <Mic className={`mr-2 ${isListening ? 'text-red-500 animate-pulse' : ''}`}/>
+                                        <Mic className={`mr-2 h-4 w-4 ${isListening ? 'text-red-500 animate-pulse' : ''}`}/>
                                         {isListening ? 'Stop Listening' : 'Add Context with Voice'}
                                     </Button>
                                 </CardContent>
@@ -299,7 +351,7 @@ export default function SellPage() {
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-lg font-semibold">Generate AI Story</h3>
                                     <div className="flex items-center gap-4">
-                                        <Select defaultValue='en' onValueChange={handleTranslate}>
+                                        <Select defaultValue='en' onValueChange={handleTranslate} disabled={!generatedStory}>
                                             <SelectTrigger className="w-[120px]">
                                                 <SelectValue placeholder="Language" />
                                             </SelectTrigger>
@@ -341,10 +393,14 @@ export default function SellPage() {
                                         </div>
                                     )}
                                 </div>
-                                 <div className="flex justify-end mt-4">
-                                    <Button variant="outline" onClick={() => setIsShareModalOpen(true)}>
-                                        <Share2 className="mr-2"/>
+                                 <div className="flex justify-end mt-4 gap-2">
+                                     <Button variant="outline" onClick={() => setIsShareModalOpen(true)} disabled={!generatedStory}>
+                                        <Share2 className="mr-2 h-4 w-4"/>
                                         Share
+                                    </Button>
+                                    <Button onClick={handlePublish} disabled={!generatedStory}>
+                                        <Send className="mr-2 h-4 w-4" />
+                                        Publish to Marketplace
                                     </Button>
                                 </div>
                             </CardContent>
@@ -368,9 +424,9 @@ export default function SellPage() {
                     <Facebook className="h-8 w-8 text-blue-600"/>
                     <span className="text-sm">Facebook</span>
                 </div>
-                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
-                    <Twitter className="h-8 w-8 text-sky-500"/>
-                    <span className="text-sm">Twitter</span>
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
+                   <svg role="img" viewBox="0 0 24 24" className="h-8 w-8 text-sky-500 fill-current" xmlns="http://www.w3.org/2000/svg"><title>X</title><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 7.184L18.901 1.153Zm-1.65 19.545h2.63l-14.28-20.56h-2.75l14.4 20.56Z"/></svg>
+                    <span className="text-sm">Twitter/X</span>
                 </div>
                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
                     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 fill-current">
