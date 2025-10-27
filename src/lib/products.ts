@@ -3,6 +3,7 @@ export const products = [
   {
     id: '1',
     name: 'Odisha Ikat Handloom Fabric',
+    artisanName: 'Prakash Mohanty',
     description: 'Traditional warp and weft tie-dye technique for a unique geometric pattern. Soft cotton-silk blend.',
     category: 'Weave',
     region: 'Odisha',
@@ -16,6 +17,7 @@ export const products = [
   {
     id: '2',
     name: 'Lord Jagannath Pattachitra',
+    artisanName: 'Anaya Das',
     description: 'Scroll painting from Odisha, depicting mythological stories. Finished with natural lacquer.',
     category: 'Painting',
     region: 'Odisha',
@@ -29,6 +31,7 @@ export const products = [
   {
     id: '3',
     name: 'Channapatna Wooden Toy Set',
+    artisanName: 'Ravi Kumar',
     description: 'Traditional lacquerware toys from Karnataka. Non-toxic, eco-friendly, and heirloom quality.',
     category: 'Lacquer',
     region: 'Karnataka',
@@ -42,6 +45,7 @@ export const products = [
     {
     id: '4',
     name: 'Gujarati Bandhani Silk Saree',
+    artisanName: 'Meera Patel',
     description: 'Finely tied-and-dyed silk saree, known for its bright colors and intricate patterns. From Gujarat.',
     category: 'Tie-Dye',
     region: 'Gujarat',
@@ -55,6 +59,7 @@ export const products = [
   {
     id: '5',
     name: 'Jaipur Blue Pottery Vase',
+    artisanName: 'Sanjay Sharma',
     description: 'Traditional blue pottery, handmade with quartz stone powder, not clay. Classic floral motif.',
     category: 'Ceramic',
     region: 'Rajasthan',
@@ -68,6 +73,7 @@ export const products = [
   {
     id: '6',
     name: 'Assam Cane & Bamboo Basket',
+    artisanName: 'Bina Devi',
     description: 'Handwoven storage basket made from sustainable cane and bamboo. Durable and multi-purpose.',
     category: 'Weave',
     region: 'Assam',

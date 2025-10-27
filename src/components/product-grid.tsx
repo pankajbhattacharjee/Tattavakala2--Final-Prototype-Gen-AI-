@@ -4,17 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProductCard from './product-card';
 import { products as initialProducts } from '@/lib/products';
+import type { Product } from './product-card';
+
 
 export default function ProductGrid() {
-  const [allProducts, setAllProducts] = useState(initialProducts);
+  const [allProducts, setAllProducts] = useState(initialProducts as Product[]);
 
   useEffect(() => {
     try {
-      const storedProducts = JSON.parse(localStorage.getItem('products') || '[]');
+      const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
       // Combine initial products with stored products, ensuring no duplicates from initial set
       const combinedProducts = [...initialProducts];
       const initialIds = new Set(initialProducts.map(p => p.id));
-      storedProducts.forEach((sp: any) => {
+      storedProducts.forEach((sp: Product) => {
         if (!initialIds.has(sp.id)) {
           combinedProducts.push(sp);
         }
@@ -22,7 +24,7 @@ export default function ProductGrid() {
       setAllProducts(combinedProducts);
     } catch (error) {
         console.error("Could not parse products from localStorage", error);
-        setAllProducts(initialProducts);
+        setAllProducts(initialProducts as Product[]);
     }
   }, []);
 
@@ -46,18 +48,7 @@ export default function ProductGrid() {
           <TabsContent key={category} value={category}>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {allProducts.filter(p => p.type === category).map((product) => (
-                <ProductCard key={product.id} product={{
-                  id: product.id,
-                  name: product.name,
-                  description: product.description,
-                  category: product.category,
-                  region: product.region,
-                  price: product.price,
-                  image: {
-                    src: product.image.src,
-                    hint: product.image.hint,
-                  }
-                }} />
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           </TabsContent>

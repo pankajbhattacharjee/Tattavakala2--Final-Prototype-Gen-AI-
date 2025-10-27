@@ -1,6 +1,6 @@
 
 import Image from 'next/image';
-import { ShoppingCart, Zap, Share2 } from 'lucide-react';
+import { ShoppingCart, Zap, Share2, User } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 export type Product = {
   id: string;
   name: string;
+  artisanName?: string;
   description: string;
   category: string;
   region: string;
@@ -38,6 +39,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <CardTitle className="text-lg font-serif font-semibold mb-2">{product.name}</CardTitle>
+        {product.artisanName && (
+          <div className="flex items-center text-sm text-muted-foreground mb-2">
+            <User className="h-4 w-4 mr-2" />
+            <span>{product.artisanName}</span>
+          </div>
+        )}
         <p className="text-sm text-muted-foreground line-clamp-2 mb-2 h-[2.5em]">{product.description}</p>
         <div className="flex justify-between items-center">
             <p className="text-sm font-medium text-foreground">{product.category} | {product.region}</p>

@@ -39,6 +39,7 @@ type SocialCaption = {
 
 export default function SellPage() {
   const [productName, setProductName] = useState('');
+  const [artisanName, setArtisanName] = useState('');
   const [locationContext, setLocationContext] = useState('');
   const [userDescription, setUserDescription] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
@@ -215,11 +216,11 @@ export default function SellPage() {
   }
 
   const handlePublish = () => {
-    if (!photoPreview || !productName || !generatedStory) {
+    if (!photoPreview || !productName || !generatedStory || !artisanName) {
         toast({
             variant: 'destructive',
             title: 'Cannot Publish',
-            description: 'Please ensure you have a product name, photo, and generated story before publishing.',
+            description: 'Please ensure you have a product name, artisan name, photo, and generated story before publishing.',
         });
         return;
     }
@@ -228,6 +229,7 @@ export default function SellPage() {
         const newProduct = {
             id: `prod_${Date.now()}`,
             name: productName,
+            artisanName: artisanName,
             description: generatedStory,
             category: 'Miscellaneous', // Or derive from context
             region: locationContext,
@@ -249,7 +251,7 @@ export default function SellPage() {
         });
 
         // Redirect to marketplace to see the new product
-        router.push('/marketplace');
+        router.push('/');
 
     } catch (error) {
         console.error('Failed to save product to localStorage', error);
@@ -302,6 +304,10 @@ export default function SellPage() {
                             <div className="space-y-2">
                                 <Label htmlFor="product-name" className="text-base">Product Name</Label>
                                 <Input id="product-name" placeholder="e.g., Woven Banarasi Saree" value={productName} onChange={(e) => setProductName(e.target.value)} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="artisan-name" className="text-base">Artisan Name</Label>
+                                <Input id="artisan-name" placeholder="e.g., Ramesh Kumar" value={artisanName} onChange={(e) => setArtisanName(e.target.value)} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="location" className="text-base">Location Context (State/Region)</Label>
