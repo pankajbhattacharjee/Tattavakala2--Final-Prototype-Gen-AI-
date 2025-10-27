@@ -25,6 +25,11 @@ export type GenerateProductStoryInput = z.infer<typeof GenerateProductStoryInput
 
 const GenerateProductStoryOutputSchema = z.object({
   story: z.string().describe('The generated product story.'),
+  captions: z.array(z.object({
+    platform: z.enum(['instagram', 'facebook']).describe('The social media platform.'),
+    caption: z.string().describe('The suggested caption for the post.'),
+    hashtags: z.string().describe('A string of relevant hashtags, starting with #.'),
+  })).describe('An array of generated social media captions.'),
 });
 export type GenerateProductStoryOutput = z.infer<typeof GenerateProductStoryOutputSchema>;
 
@@ -36,10 +41,11 @@ const prompt = ai.definePrompt({
   name: 'generateProductStoryPrompt',
   input: {schema: GenerateProductStoryInputSchema},
   output: {schema: GenerateProductStoryOutputSchema},
-  prompt: `You are a master storyteller, crafting captivating narratives for artisanal products.
+  prompt: `You are a master storyteller and social media expert, crafting captivating narratives for artisanal products.
 
-  Create a compelling story for the following product, incorporating its name, origin, and visual details. Focus on evoking emotion and highlighting the craftsmanship.
-  The story should be in the language: {{{language}}}.
+  Task:
+  1.  Create a compelling story for the following product, incorporating its name, origin, and visual details. Focus on evoking emotion and highlighting the craftsmanship. The story should be in the language: {{{language}}}.
+  2.  Generate two social media captions for the product: one for Instagram and one for Facebook. The captions should be engaging and tailored to each platform. Include a set of relevant hashtags for each.
 
   Product Name: {{{productName}}}
   Location Context: {{{locationContext}}}
