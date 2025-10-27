@@ -19,31 +19,6 @@ const languages = [
     { code: 'bn', name: 'বাংলা (Bengali)' },
 ];
 
-const TattvakalaLogo = () => (
-    <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 120 120"
-        xmlns="http://www.w3.org/2000/svg"
-        className="rounded-full object-cover"
-    >
-        <circle cx="60" cy="60" r="60" fill="#b07a2b" />
-        <text
-            x="50%"
-            y="50%"
-            dominantBaseline="central"
-            textAnchor="middle"
-            fill="white"
-            fontSize="28"
-            fontFamily="serif"
-            fontWeight="bold"
-        >
-            T
-        </text>
-    </svg>
-);
-
-
 export default function LandingPage() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
@@ -71,15 +46,13 @@ export default function LandingPage() {
     };
 
     return (
-        <div 
-            className="relative min-h-screen w-full flex items-center justify-center font-sans bg-landing"
-        >
+        <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-landing">
             {/* Top Navigation */}
             <header className="absolute top-6 right-8 md:top-8 md:right-10 z-20">
                 <div className="flex items-center gap-4 md:gap-6">
                      <div className="group relative">
-                         <a className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
-                            <Globe className="h-5 w-5 text-[#4197ff]" />
+                         <a className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white transition-opacity hover:opacity-70">
+                            <Globe className="h-5 w-5 text-white" />
                             <span>{currentLanguage.split(' ')[0]}</span>
                          </a>
                          <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden group-hover:block">
@@ -89,16 +62,16 @@ export default function LandingPage() {
                          </div>
                     </div>
                      {isUserLoading ? null : user ? (
-                        <Button onClick={handleLogout} variant="outline" className="bg-transparent border-2 border-[#402102] text-[#402102] rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-[#402102] hover:text-white">
+                        <Button onClick={handleLogout} variant="outline" className="bg-transparent border-2 border-white text-white rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-white hover:text-[#402102]">
                             Log Out
                         </Button>
                     ) : (
                         <div className="flex items-center gap-4">
-                            <Button onClick={() => setIsSignUpModalOpen(true)} variant="default" className="bg-[#402102] text-white rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-opacity-80">
+                            <Button onClick={() => setIsSignUpModalOpen(true)} variant="default" className="bg-white text-[#402102] rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-opacity-80">
                                 Sign Up
                             </Button>
-                            <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
-                                <UserIcon className="h-6 w-6 text-purple-700" />
+                            <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-white transition-opacity hover:opacity-70">
+                                <UserIcon className="h-6 w-6 text-white" />
                                 Log In
                             </a>
                         </div>
@@ -107,10 +80,10 @@ export default function LandingPage() {
             </header>
 
             {/* Main Content Card */}
-            <main className="relative w-11/12 max-w-2xl bg-white/75 rounded-2xl shadow-xl p-12 pt-32 text-left animate-slide-up">
+            <main className="relative w-11/12 max-w-2xl bg-white/75 rounded-2xl shadow-xl p-12 pt-32 text-left animate-slide-up backdrop-blur-sm">
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
-                    <TattvakalaLogo />
+                    <Image src="/logo.svg" alt="Tattvakala Logo" width={120} height={120} />
                 </div>
 
                 <div className="md:pl-24">
@@ -165,5 +138,4 @@ export default function LandingPage() {
             </Dialog>
         </div>
     );
-
-    
+}
