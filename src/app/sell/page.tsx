@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateProductStory, translateProductStory, speechToText } from '../actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link, Store, Share2, Bot, Send } from 'lucide-react';
+import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link as LinkIcon, Store, Share2, Bot, Send } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -264,6 +264,46 @@ export default function SellPage() {
         });
     }
   };
+  
+  const getShareableContent = () => {
+    const caption = socialCaptions.find(c => c.platform === 'facebook')?.caption || generatedStory;
+    return `${caption} ${socialCaptions.find(c => c.platform === 'facebook')?.hashtags || ''}`;
+  }
+
+  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest' | 'instagram') => {
+      const shareUrl = window.location.origin + '/marketplace'; // A generic link to the marketplace
+      const shareText = encodeURIComponent(getShareableContent());
+      const shareImage = encodeURIComponent(photoPreview || '');
+
+      let url = '';
+      switch(platform) {
+          case 'facebook':
+              url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${shareText}`;
+              break;
+          case 'twitter':
+              url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareText}`;
+              break;
+          case 'pinterest':
+              if(photoPreview) {
+                url = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&media=${shareImage}&description=${shareText}`;
+              } else {
+                 toast({variant: 'destructive', title: 'No Image', description: 'Please upload an image to share on Pinterest.'});
+                 return;
+              }
+              break;
+          case 'instagram':
+              toast({title: 'Share on Instagram', description: 'Direct web sharing to Instagram is not supported. Please share from your mobile device.'});
+              return;
+      }
+      window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  const handleCopyLink = () => {
+      const link = window.location.origin + '/marketplace';
+      navigator.clipboard.writeText(link).then(() => {
+          toast({title: 'Link Copied!', description: 'Marketplace URL copied to clipboard.'});
+      });
+  }
 
 
   return (
@@ -428,27 +468,27 @@ export default function SellPage() {
                 <DialogDescription>Choose a platform to share this generated content.</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4">
-                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('instagram')}>
                     <Instagram className="h-8 w-8 text-pink-600"/>
                     <span className="text-sm">Instagram</span>
                 </div>
-                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
+                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('facebook')}>
                     <Facebook className="h-8 w-8 text-blue-600"/>
                     <span className="text-sm">Facebook</span>
                 </div>
-                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('twitter')}>
                    <svg role="img" viewBox="0 0 24 24" className="h-8 w-8 text-sky-500 fill-current" xmlns="http://www.w3.org/2000/svg"><title>X</title><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 7.184L18.901 1.153Zm-1.65 19.545h2.63l-14.28-20.56h-2.75l14.4 20.56Z"/></svg>
                     <span className="text-sm">Twitter/X</span>
                 </div>
-                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('pinterest')}>
                     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 fill-current">
                         <title>Pinterest</title>
                         <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.027-.655 2.56-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.159-1.492-.695-2.433-2.878-2.433-4.646 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
                     </svg>
                     <span className="text-sm">Pinterest</span>
                 </div>
-                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
-                    <Link className="h-8 w-8"/>
+                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={handleCopyLink}>
+                    <LinkIcon className="h-8 w-8"/>
                     <span className="text-sm">Copy Link</span>
                 </div>
                  <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
