@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Globe, User } from 'lucide-react';
+import { Globe, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -32,28 +32,28 @@ const languages = [
 ];
 
 export default function LandingPage() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('English');
-  const { user } = useUser();
-  const auth = useAuth();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [currentLanguage, setCurrentLanguage] = useState('English');
+    const { user } = useUser();
+    const auth = useAuth();
 
-  const handleLanguageChange = (langName: string) => {
-    setCurrentLanguage(langName);
-  };
-
-  const handleAuthAction = () => {
-    if (auth) {
-      initiateGoogleSignIn(auth);
-      setIsLoginModalOpen(false);
-    }
-  };
-
-  const handleLogout = () => {
-    if (auth) {
-      signOut(auth);
-    }
-  };
-
+    const handleLanguageChange = (langName: string) => {
+        setCurrentLanguage(langName);
+    };
+    
+    const handleAuthAction = () => {
+        if (auth) {
+            initiateGoogleSignIn(auth);
+            setIsLoginModalOpen(false);
+        }
+    };
+    
+    const handleLogout = () => {
+        if (auth) {
+            signOut(auth);
+        }
+    };
+    
   return (
     <div className="relative min-h-screen w-full bg-landing text-[#6B4F4B]">
       <div className="absolute inset-0 bg-black/10"></div>
@@ -80,7 +80,7 @@ export default function LandingPage() {
 
           {user ? (
             <Button variant="ghost" className="text-white hover:text-white hover:bg-white/10" onClick={handleLogout}>
-              <User className="mr-2 h-4 w-4" /> Log Out
+              <UserIcon className="mr-2 h-4 w-4" /> Log Out
             </Button>
           ) : (
             <>
@@ -89,7 +89,7 @@ export default function LandingPage() {
                 className="text-white hover:text-white hover:bg-white/10"
                 onClick={() => setIsLoginModalOpen(true)}
               >
-                <User className="mr-2 h-4 w-4" /> Log In
+                <UserIcon className="mr-2 h-4 w-4" /> Log In
               </Button>
               <Button
                 variant="outline"
@@ -154,4 +154,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
