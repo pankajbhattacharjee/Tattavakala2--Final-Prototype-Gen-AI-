@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateProductStory, translateProductStory } from '../actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Languages, Facebook, Twitter, Instagram, Upload, FileImage, Mic, Link, Store, Share2 } from 'lucide-react';
+import { Loader, Languages, Facebook, Twitter, Instagram, Upload, FileImage, Mic, Link, Store, Share2, Bot } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -39,6 +39,7 @@ type SocialCaption = {
 export default function SellPage() {
   const [productName, setProductName] = useState('');
   const [locationContext, setLocationContext] = useState('');
+  const [userDescription, setUserDescription] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -48,9 +49,79 @@ export default function SellPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognitionRef.current = new SpeechRecognition();
+            const recognition = recognitionRef.current;
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event: any) => {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        setUserDescription(prev => prev + event.results[i][0].transcript + '. ');
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+            };
+
+            recognition.onerror = (event: any) => {
+                console.error('Speech recognition error:', event.error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Voice Recognition Error',
+                    description: `An error occurred: ${event.error}`,
+                });
+                setIsListening(false);
+            };
+            
+            recognition.onend = () => {
+                if (isListening) {
+                    recognition.start(); // Restart if we are still supposed to be listening
+                }
+            };
+
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Browser Not Supported',
+                description: 'Voice recognition is not supported in this browser.',
+            });
+        }
+    }, [isListening, toast]);
+    
+    const handleListen = () => {
+        if (!recognitionRef.current) return;
+
+        if (isListening) {
+            recognitionRef.current.stop();
+            setIsListening(false);
+            toast({ title: 'Voice input stopped.' });
+        } else {
+            try {
+                recognitionRef.current.start();
+                setIsListening(true);
+                toast({ title: 'Listening...', description: 'Start speaking to add context.' });
+            } catch (e) {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Could not start listening',
+                    description: 'Please ensure microphone permissions are enabled.',
+                });
+            }
+        }
+    };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -142,6 +213,17 @@ export default function SellPage() {
   return (
      <div className="bg-background min-h-screen">
       <MarketplaceHeader />
+       <div className="bg-secondary/50 border-b">
+         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-4">
+             <div className="p-3 bg-primary/10 rounded-full text-primary">
+                <Bot className="h-6 w-6"/>
+             </div>
+             <div>
+                <h2 className="font-semibold text-foreground">Meet Your AI Assistant</h2>
+                <p className="text-sm text-muted-foreground">I'm here to help you craft the perfect story for your product. Just upload a photo and provide some details to get started.</p>
+             </div>
+         </div>
+       </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -186,10 +268,15 @@ export default function SellPage() {
                                     <CardDescription className="text-sm">Alternatively, describe your product in your own words.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <Textarea placeholder="Describe the history, process, or what makes your product special..." className="mb-4" />
-                                    <Button variant="outline" className="w-full">
-                                        <Mic className="mr-2"/>
-                                        Add Context with Voice
+                                    <Textarea 
+                                        placeholder="Describe the history, process, or what makes your product special..." 
+                                        className="mb-4" 
+                                        value={userDescription}
+                                        onChange={(e) => setUserDescription(e.target.value)}
+                                    />
+                                    <Button variant="outline" className="w-full" onClick={handleListen}>
+                                        <Mic className={`mr-2 ${isListening ? 'text-red-500 animate-pulse' : ''}`}/>
+                                        {isListening ? 'Stop Listening' : 'Add Context with Voice'}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -250,7 +337,7 @@ export default function SellPage() {
                                         ))
                                     ) : (
                                         <div className="flex items-center justify-center h-full bg-secondary rounded-lg text-muted-foreground">
-                                            <p>AI-generated captions will appear here.</p>
+                                            {generatedStory ? <p>No captions generated.</p> : <p>AI-generated captions will appear here.</p>}
                                         </div>
                                     )}
                                 </div>
