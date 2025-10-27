@@ -70,7 +70,7 @@ export default function Footer() {
             <p className="text-muted-foreground mb-4">Option for users to sponsor or donate to artisans.</p>
             <div className="flex items-center gap-4">
               {socialLinks.map((link, index) => (
-                <Link key={index} href={link.href} aria-label={link['aria-label']} className="text-muted-foreground hover:text-primary">
+                <Link key={`social-${index}`} href={link.href} aria-label={link['aria-label']} className="text-muted-foreground hover:text-primary">
                   {link.icon}
                 </Link>
               ))}
