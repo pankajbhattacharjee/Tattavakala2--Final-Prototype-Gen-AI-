@@ -1,3 +1,4 @@
+
 import MarketplaceHeader from '@/components/marketplace-header';
 import FiltersSidebar from '@/components/filters-sidebar';
 import ProductGrid from '@/components/product-grid';

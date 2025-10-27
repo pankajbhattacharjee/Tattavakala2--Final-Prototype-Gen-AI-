@@ -1,3 +1,4 @@
+
 'use client';
 import React from 'react';
 import Image from 'next/image';
@@ -32,7 +33,7 @@ export default function CartPage() {
                         <React.Fragment key={item.id}>
                             <div className="flex items-center gap-4 p-6">
                                 <div className="relative h-24 w-24 rounded-md overflow-hidden bg-muted">
-                                    <Image src={item.image.src} alt={item.name} layout="fill" objectFit="cover" />
+                                    <Image src={item.image.src} alt={item.name} fill={true} objectFit="cover" />
                                 </div>
                                 <div className="flex-grow">
                                     <h3 className="font-semibold">{item.name}</h3>

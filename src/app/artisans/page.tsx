@@ -1,10 +1,11 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Video, Mic, X, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -16,10 +17,11 @@ export default function ArtisansPage() {
   const { toast } = useToast();
 
   useEffect(() => {
+    let stream: MediaStream | null = null;
     if (isModalOpen) {
       const getCameraPermission = async () => {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           setHasCameraPermission(true);
 
           if (videoRef.current) {
@@ -37,12 +39,15 @@ export default function ArtisansPage() {
       };
 
       getCameraPermission();
-    } else {
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject as MediaStream;
-            stream.getTracks().forEach(track => track.stop());
-            videoRef.current.srcObject = null;
-        }
+    }
+    
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      if(videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
     }
   }, [isModalOpen, toast]);
 

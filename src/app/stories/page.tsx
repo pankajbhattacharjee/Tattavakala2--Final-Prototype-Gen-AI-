@@ -1,3 +1,4 @@
+
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -36,7 +37,7 @@ export default function StoriesPage() {
             <Card key={story.id} className="overflow-hidden cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedStory(story)}>
               <CardHeader className="p-0">
                 <div className="relative aspect-video w-full">
-                  <Image src={story.image.src} alt={story.name} layout="fill" objectFit="cover" data-ai-hint={story.image.hint} />
+                  <Image src={story.image.src} alt={story.name} fill={true} objectFit="cover" data-ai-hint={story.image.hint} />
                 </div>
               </CardHeader>
               <CardContent className="p-6">
@@ -58,7 +59,7 @@ export default function StoriesPage() {
               </DialogHeader>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
                 <div className="relative aspect-square">
-                  <Image src={selectedStory.image.src} alt={selectedStory.name} layout="fill" objectFit="cover" className="rounded-lg" />
+                  <Image src={selectedStory.image.src} alt={selectedStory.name} fill={true} objectFit="cover" className="rounded-lg" />
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-4">{selectedStory.storyContent}</p>

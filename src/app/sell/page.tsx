@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateProductStory, translateProductStory } from '../actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Languages, Facebook, Twitter, Pinterest, Instagram } from 'lucide-react';
+import { Loader, Languages, Facebook, Twitter, Instagram } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
 
 const regions = [
@@ -22,6 +22,24 @@ const languages = [
     { value: 'bn', label: 'Bengali' },
     { value: 'te', label: 'Telugu' },
 ];
+
+const PinterestIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M12.017 10.938c.31-.623.49-1.312.49-2.042 0-2.29-1.48-4.81-4.036-4.81-3.37 0-4.964 2.754-4.964 5.92 0 2.375 1.25 3.99 3.163 3.99.96 0 1.68-.99 1.68-1.996 0-.866-.39-1.636-.88-2.12-.34-.33-.56-.41-.45-.66.12-.29.38-.61.53-.88.23-.42.6-.82.6-1.22 0-.63-.45-1.12-.9-1.12-.87 0-1.65.94-1.65 2.52 0 .83.25 1.68.25 1.68s-1.2 5.09-1.42 6.02c-.22 1.05.47 1.95 1.42 1.95 1.65 0 2.82-2.4 2.82-4.56 0-1.78-1.14-3.15-2.6-3.15-.98 0-1.75.82-1.75 1.75 0 .57.2.98.48 1.22.03.02.05.05.05.05s-.62 2.54-.72 2.94c-.12.42-.1.75-.05 1.01.07.38.28.63.53.63 1.13 0 1.9-2.32 2.3-3.9.3-1.17.47-2.32.47-2.32s.43.14.53.18c1.7.7 2.3 2.52 2.3 4.32 0 3.15-2.2 5.6-5.85 5.6-3.97 0-6.84-2.9-6.84-6.33 0-3.23 2.33-5.65 5.4-5.65 2.2 0 3.48 1.1 3.48 2.62 0 1-.43 2.1-.63 2.7Z" />
+    </svg>
+);
+
 
 export default function SellPage() {
   const [productName, setProductName] = useState('');
@@ -193,7 +211,7 @@ export default function SellPage() {
                                             <div className="flex gap-2">
                                                 <Button variant="outline" size="icon"><Twitter /></Button>
                                                 <Button variant="outline" size="icon"><Facebook/></Button>
-                                                <Button variant="outline" size="icon"><Pinterest /></Button>
+                                                <Button variant="outline" size="icon"><PinterestIcon className="h-4 w-4" /></Button>
                                                 <Button variant="outline" size="icon"><Instagram/></Button>
                                             </div>
                                         </div>
