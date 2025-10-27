@@ -60,24 +60,8 @@
 }
 
 @layer utilities {
-  @keyframes slide-up-fade-in {
-    0% {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-slide-up {
-    opacity: 0;
-    animation: slide-up-fade-in 0.8s ease-out 0.2s forwards;
-  }
-
   .bg-landing {
-    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAA5AEYDASIAAhEBAxEB/8QAGQABAQEAAwAAAAAAAAAAAAAAAAEDBQYC/8QAHxABAQEBAQEAAgMBAAAAAAAAAAECERIDBBMhQXFR/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQF/8QAGBEBAQEBAQAAAAAAAAAAAAAAAAERAgP/2gAMAwEAAhEDEQA/APi8dJt7M6q49tXNbTjeo886s17jB4w6XlrTq3k21sY83XqfPjPcvY+f4P/AJ2e4P8Ayz7Z1PlqPN+e8vU+O9R5bxP8N4njPUee8j894yevU8Vze9T5c479D6fgXn7/x9z8/n9e5+f5fXufneO69T5bxy+p878X6nznmPqfOea/U+c8V+p85w39V/t/E/Vf7/FfrP0/A/V+g/wA/P6v0P8AHy/6/Q/wP9f6P/A5/V/9X4/P6z9L8fP6v0vx8v8Aq/S/Hy/6/S/Hx/6vS/Hy/wCz9D8fL/t/Q/xsf6/R/wAa/wB/on8a/wB/on8a/wB/on8bL9/p/wAa/wB/of41/v9D/Gt+p/T/xrvU/T/xrPU/T/xrTqfT/jWnVPT/AMa46/0/+NcdP6T/AFrjn9P/ANa8+f6D9a8+ftX1rz5+xfU/Pv8AYvp8X/Y/T8XL/sfh+Jl+z+D5mPsfhfNz+H4Ofxf4fgx8v+H4bPy7+G4bnyd+A4zng9+Bxnjb7/wAZ4W+/wDCeBt7z8PwNt7nwfjb93x/B0Hd5nx9h2OZ4Ww7XO8PZdr2OHq5r2OMq6te5xddbHucHTVxfY+W00cH1fJaZcf1vkrTLm9byGoy5W+R1GXNW+S1GW9r5bUZ72eR1Ge1rydRnua8nUZrmvI1ma5ryNVmuc8jVZrnPI1WaxxydRmscek1WOOTTaw4/Saaw5/Saew4fWaeo4PSaijj9JqKeP0mqg4vVaqDi9ZpIOJ1ujg4vXaaDi9hpIOF2Ggg4PYaaDg9npoOD2umg4Xa6aDg9w00HB7jTwcHulPA+7qaCBd3UzwPu7pTwPu6pTwPupTwvupTwPuxTwvuvTwvunTwPuunTwPuuvTwPuyng/dTwPuueD93PB+54/ceP3Pj9x4/deP3Xn915/deX3Xn9z5fceX3Pm9z5fc+X3Pm9x8/ufN7nz+783u/N73ze/wDP3vzfUfN9R8f1Hx/UfH9z4/c+H3Xw+8+L3nw+8+H3Xge48D3ngd/wDgdz8/uOd4Hc+P3Hn/xAAmEAABAwMEAgIDAQEAAAAAAAACAAESAwQQExQgQFAVMRUyQUNg/9oACAEBAAE/AfdY1+M/u7j/AI3bY4dI8G7cI8S68Xw6Y9f/AHYh8vYj42m3iU2+Ntt5b9k268QW03XlY0+68o7i0q/5r0wF+32v+s1J7C3v9/8AE37e1+Jv0Nq/E367l+N+tq/G/wBf/G/Xf/P+vvj9j/j9b433/jfpfG/V/wAf9L8f9X/P/TfG/X+N/qvj97/j9q+N7/wfxf8H6n+D+X/P/Q/x/wBX8f8Aqfx/9n8f9P8Aj+J/w/E/4/6fx/8AsfxP6fxuP+38fjf/AMfx+N/4343F/wCP4//xAAWEQEBAQAAAAAAAAAAAAAAAAAAEUD/2gAIAQIBAT8AaUv//xAAYEQEBAQEBAAAAAAAAAAAAAAAAAREQE//aAAgBAwEBPwDqHl//2Q==');
+    background-image: url('/background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

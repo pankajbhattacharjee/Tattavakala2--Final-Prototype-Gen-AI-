@@ -80,7 +80,7 @@ export default function LandingPage() {
             </header>
 
             {/* Main Content Card */}
-            <main className="relative w-11/12 max-w-2xl bg-white/75 rounded-2xl shadow-xl p-12 pt-32 text-left animate-slide-up backdrop-blur-sm">
+            <main className="relative w-11/12 max-w-2xl bg-white/75 rounded-2xl shadow-xl p-12 pt-32 text-left backdrop-blur-sm">
                 {/* Logo */}
                 <div className="absolute -top-10 -left-5 w-32 h-32 bg-white rounded-xl shadow-2xl flex items-center justify-center p-2">
                     <Image src="/logo.svg" alt="Tattvakala Logo" width={120} height={120} />
