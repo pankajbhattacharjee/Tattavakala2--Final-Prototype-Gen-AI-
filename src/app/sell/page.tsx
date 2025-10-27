@@ -8,12 +8,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateProductStory, translateProductStory } from '../actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Languages, Facebook, Twitter, Instagram } from 'lucide-react';
+import { Loader, Languages, Facebook, Twitter, Instagram, Upload, FileImage } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
+import Image from 'next/image';
 
 const regions = [
-  "Andhra Pradesh", "Assam", "Bihar", "Gujarat", "Karnataka", "Kerala", "Maharashtra", "Odisha",
-  "Punjab", "Rajasthan", "Tamil Nadu", "Telangana", "Uttar Pradesh", "West Bengal"
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+    "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands",
+    "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh",
+    "Lakshadweep", "Puducherry"
 ];
 
 const languages = [
@@ -23,30 +28,14 @@ const languages = [
     { value: 'te', label: 'Telugu' },
 ];
 
-const PinterestIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M12.017 10.938c.31-.623.49-1.312.49-2.042 0-2.29-1.48-4.81-4.036-4.81-3.37 0-4.964 2.754-4.964 5.92 0 2.375 1.25 3.99 3.163 3.99.96 0 1.68-.99 1.68-1.996 0-.866-.39-1.636-.88-2.12-.34-.33-.56-.41-.45-.66.12-.29.38-.61.53-.88.23-.42.6-.82.6-1.22 0-.63-.45-1.12-.9-1.12-.87 0-1.65.94-1.65 2.52 0 .83.25 1.68.25 1.68s-1.2 5.09-1.42 6.02c-.22 1.05.47 1.95 1.42 1.95 1.65 0 2.82-2.4 2.82-4.56 0-1.78-1.14-3.15-2.6-3.15-.98 0-1.75.82-1.75 1.75 0 .57.2.98.48 1.22.03.02.05.05.05.05s-.62 2.54-.72 2.94c-.12.42-.1.75-.05 1.01.07.38.28.63.53.63 1.13 0 1.9-2.32 2.3-3.9.3-1.17.47-2.32.47-2.32s.43.14.53.18c1.7.7 2.3 2.52 2.3 4.32 0 3.15-2.2 5.6-5.85 5.6-3.97 0-6.84-2.9-6.84-6.33 0-3.23 2.33-5.65 5.4-5.65 2.2 0 3.48 1.1 3.48 2.62 0 1-.43 2.1-.63 2.7Z" />
-    </svg>
-);
-
 
 export default function SellPage() {
-  const [productName, setProductName] = useState('');
-  const [locationContext, setLocationContext] = useState('');
+  const [productName, setProductName] = useState('drawing');
+  const [locationContext, setLocationContext] = useState('West Bengal');
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [generatedStory, setGeneratedStory] = useState('');
+  const [fileName, setFileName] = useState<string | null>('Screenshot 2025-10-26 051318');
+  const [generatedStory, setGeneratedStory] = useState('সোনার সুতোয় বোনা এক কাহিনী।\nএটা শুধু একটি শাড়ি নয়, এটি বেনারসের কারিগরদের প্রজন্মের পর প্রজন্মের শিল্পের প্রতীক। প্রতিটি সুতো ঐতিহ্যের গল্প বলে।');
   const [translatedStory, setTranslatedStory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -57,6 +46,7 @@ export default function SellPage() {
     const file = event.target.files?.[0];
     if (file) {
       setPhoto(file);
+      setFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoPreview(reader.result as string);
@@ -94,7 +84,7 @@ export default function SellPage() {
             photoDataUri,
             productName,
             locationContext,
-            language: 'en',
+            language: 'bn', // Default to Bengali as per image
         });
         setGeneratedStory(result.story);
     } catch (error) {
@@ -135,29 +125,34 @@ export default function SellPage() {
      <div className="bg-background min-h-screen">
       <MarketplaceHeader />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="max-w-4xl mx-auto">
-                 <h1 className="text-3xl font-bold mb-2">Sell With Us</h1>
-                 <p className="text-muted-foreground mb-6">Let our AI help you craft the perfect story for your product.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <Card>
-                        <CardHeader>
-                            <CardTitle>Product Details</CardTitle>
-                            <CardDescription>Enter the details for your handcrafted item.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                             <div className="space-y-2">
-                                <Label htmlFor="product-photo">Product Photo</Label>
+            <div className="max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    <div className="md:col-span-5">
+                        <div className="space-y-6">
+                            <Card 
+                                className="border-dashed border-2 text-center p-6 cursor-pointer hover:bg-accent"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <Upload className="mx-auto h-12 w-12 text-pink-500" />
+                                <h3 className="mt-4 text-lg font-medium text-foreground">Upload to Marketplace</h3>
+                                <p className="mt-1 text-sm text-muted-foreground">Click here to upload product photos or videos.</p>
+                                <Button className="mt-4 bg-pink-500 hover:bg-pink-600 text-white w-full sm:w-auto">Upload Files</Button>
                                 <Input id="product-photo" type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-                                <Button variant="outline" onClick={() => fileInputRef.current?.click()}>Upload File</Button>
-                                {photoPreview && <div className="mt-4"><img src={photoPreview} alt="Product Preview" className="rounded-md object-cover w-full aspect-square" /></div>}
-                            </div>
+                            </Card>
+
+                            {fileName && (
+                                <div className="flex items-center gap-3 rounded-lg bg-secondary p-3">
+                                    <FileImage className="h-6 w-6 text-muted-foreground"/>
+                                    <p className="text-sm font-medium text-foreground truncate">{fileName}</p>
+                                </div>
+                            )}
+
                             <div className="space-y-2">
-                                <Label htmlFor="product-name">Product Name</Label>
+                                <Label htmlFor="product-name" className="text-base">Product Name</Label>
                                 <Input id="product-name" placeholder="e.g., Woven Banarasi Saree" value={productName} onChange={(e) => setProductName(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="location">Location Context (State/Region)</Label>
+                                <Label htmlFor="location" className="text-base">Location Context (State/Region)</Label>
                                 <Select onValueChange={setLocationContext} value={locationContext}>
                                     <SelectTrigger id="location">
                                         <SelectValue placeholder="Select State/Region" />
@@ -167,58 +162,65 @@ export default function SellPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                             <Button onClick={handleGenerateStory} disabled={isLoading} className="w-full">
-                                {isLoading ? <Loader className="animate-spin mr-2" /> : null}
-                                Generate AI Story
-                            </Button>
-                        </CardContent>
-                        </Card>
+                        </div>
                     </div>
 
-                    <div>
-                        <Card>
-                             <CardHeader>
-                                <CardTitle>Generated AI Story</CardTitle>
-                                <CardDescription>Use this story for your product listing and social media.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {isLoading && <div className="flex items-center justify-center p-8"><Loader className="animate-spin text-primary" size={40}/></div>}
+                    <div className="md:col-span-7">
+                        <Card className="h-full">
+                            <CardContent className="p-6">
+                                <div className="relative w-full aspect-video rounded-lg bg-black mb-6">
+                                     {photoPreview ? (
+                                        <Image src={photoPreview} alt="Product Preview" fill objectFit="contain" className="rounded-lg" />
+                                     ) : (
+                                        <div className="flex items-center justify-center h-full">
+                                            <div className="text-center text-gray-500 p-4 bg-gray-800 rounded-md">
+                                                <p className="font-semibold">The image you are requesting does not exist or is no longer available.</p>
+                                                <p className="text-sm">imgur.com</p>
+                                            </div>
+                                        </div>
+                                     )}
+                                </div>
                                 
-                                {generatedStory && (
-                                    <div className="space-y-6">
-                                        <Textarea value={generatedStory} readOnly rows={8} className="bg-muted"/>
-                                        
-                                        <div>
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h3 className="font-semibold flex items-center gap-2"><Languages size={18}/> Translate</h3>
-                                                {isTranslating && <Loader className="animate-spin" size={16}/>}
-                                            </div>
-                                            <div className="flex gap-2">
-                                                {languages.map(lang => (
-                                                    <Button key={lang.value} variant="outline" size="sm" onClick={() => handleTranslate(lang.value)} disabled={isTranslating}>
-                                                        {lang.label}
-                                                    </Button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {translatedStory && (
-                                             <Textarea value={translatedStory} readOnly rows={8} />
-                                        )}
-
-                                        <div className="space-y-2">
-                                            <h3 className="font-semibold">Share on Social Media</h3>
-                                            <div className="flex gap-2">
-                                                <Button variant="outline" size="icon"><Twitter /></Button>
-                                                <Button variant="outline" size="icon"><Facebook/></Button>
-                                                <Button variant="outline" size="icon"><PinterestIcon className="h-4 w-4" /></Button>
-                                                <Button variant="outline" size="icon"><Instagram/></Button>
-                                            </div>
-                                        </div>
-
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-lg font-semibold">Generate AI Story</h3>
+                                    <div className="flex items-center gap-4">
+                                        <Select defaultValue='bn' onValueChange={handleTranslate}>
+                                            <SelectTrigger className="w-[120px]">
+                                                <SelectValue placeholder="Language" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {languages.map(lang => <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                        <Button variant="link" className="text-pink-500 p-0 h-auto" onClick={handleGenerateStory} disabled={isLoading}>
+                                            {isLoading ? <Loader className="animate-spin" /> : 'Generate'}
+                                        </Button>
                                     </div>
-                                )}
-                                {!generatedStory && !isLoading && <p className="text-muted-foreground text-center py-8">Your generated story will appear here.</p>}
+                                </div>
+                                
+                                <div className="bg-secondary rounded-lg p-4 min-h-[120px] text-muted-foreground mb-6">
+                                     {isLoading ? (
+                                        <div className="flex items-center justify-center h-full"><Loader className="animate-spin text-primary"/></div>
+                                     ) : (
+                                        <p className="whitespace-pre-wrap">{translatedStory || generatedStory}</p>
+                                     )}
+                                </div>
+
+                                <h3 className="text-lg font-semibold mb-4">Social Media Captions</h3>
+                                <div className="space-y-4">
+                                    <div className="flex items-start gap-4">
+                                        <Instagram className="h-6 w-6 text-pink-700 mt-1"/>
+                                        <div className="flex-grow">
+                                            <p className="text-foreground">Elegance Woven in Gold. ✨ #BanarasiSaree #IndianWeaves #HandloomLove #SareeStyle #EthnicFashion</p>
+                                        </div>
+                                    </div>
+                                     <div className="flex items-start gap-4">
+                                        <Facebook className="h-6 w-6 text-blue-600 mt-1"/>
+                                        <div className="flex-grow">
+                                            <p className="text-foreground">Timeless Tradition, Modern Grace. Discover the rich heritage of Banarasi silk. Perfect for weddings and festive occasions. #IndianTextiles #SilkSaree</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
