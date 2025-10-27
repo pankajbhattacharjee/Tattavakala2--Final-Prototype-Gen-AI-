@@ -4,7 +4,6 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Playfair_Display, Roboto } from 'next/font/google';
-import Footer from '@/components/footer';
 import { FirebaseClientProvider } from '@/firebase';
 
 const bodyFont = Roboto({
@@ -43,3 +42,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

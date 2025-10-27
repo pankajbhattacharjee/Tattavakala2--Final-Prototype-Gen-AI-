@@ -3,14 +3,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Globe, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAuth, useUser } from '@/firebase';
 import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
 import { signOut } from 'firebase/auth';
-import Footer from '@/components/footer';
 
 const languages = [
     { code: 'en', name: 'English' },
@@ -57,66 +55,52 @@ export default function LandingPage() {
 
     return (
       <div className="bg-landing min-h-screen w-full font-sans text-white">
-        <div className="flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="absolute top-0 right-0 p-6 w-full">
+            <div className="container mx-auto flex justify-end items-center gap-4 md:gap-6">
+                 <div className="group relative">
+                    <a className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
+                        <Globe className="h-5 w-5 text-[#402102]" />
+                        <span>{currentLanguage.split(' ')[0]}</span>
+                    </a>
+                    <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden group-hover:block z-30">
+                        {languages.map(lang => (
+                            <a key={lang.code} href="#" onClick={() => handleLanguageChange(lang.name)} className="block px-4 py-2 text-sm text-[#402102] hover:bg-gray-100">{lang.name}</a>
+                        ))}
+                    </div>
+                </div>
+                {isUserLoading ? null : user ? (
+                    <Button onClick={handleLogout} variant="outline" className="bg-transparent border-2 border-[#B07A2B] text-[#B07A2B] rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-[#B07A2B] hover:text-white">
+                        Log Out
+                    </Button>
+                ) : (
+                    <div className="flex items-center gap-4">
+                        <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
+                            <UserIcon className="h-6 w-6 text-[#402102]" />
+                            Log In
+                        </a>
+                        <Button onClick={() => setIsSignUpModalOpen(true)} variant="default" className="bg-transparent border border-[#402102] text-[#402102] rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-[#402102] hover:text-white">
+                            Sign Up
+                        </Button>
+                    </div>
+                )}
+            </div>
+        </header>
 
-          <main className="flex-grow flex items-center justify-center">
-            <div className="w-11/12 max-w-6xl mx-auto flex items-center justify-center">
-              
-              {/* Logo */}
-              <div className="hidden md:block w-1/3 flex-shrink-0 pr-12">
-                 <div className="w-48 h-48 bg-white/90 rounded-2xl shadow-2xl flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="flex flex-col min-h-screen items-center justify-center">
+            {/* Content Card */}
+            <div className="relative w-11/12 max-w-4xl bg-white/75 rounded-2xl shadow-xl p-10 md:p-16 text-center backdrop-blur-sm mt-20">
+                {/* Logo overlapping the card */}
+                 <div className="absolute -top-12 left-1/2 md:left-16 transform -translate-x-1/2 md:-translate-x-1/2 w-24 h-24 bg-white/90 rounded-2xl shadow-2xl flex items-center justify-center p-3 backdrop-blur-sm">
                     <Logo />
                 </div>
-              </div>
-
-              {/* Content Card */}
-              <div className="relative w-full md:w-2/3 bg-white/75 rounded-2xl shadow-xl p-10 text-left backdrop-blur-sm">
                 
-                 {/* Header inside the card */}
-                <header className="flex items-center justify-between mb-8">
-                    <div className="block md:hidden">
-                       <div className="w-20 h-20 bg-white/90 rounded-lg shadow-xl flex items-center justify-center p-2">
-                           <Logo />
-                       </div>
-                    </div>
-                    <div className="flex items-center gap-4 md:gap-6">
-                        <div className="group relative">
-                            <a className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
-                                <Globe className="h-5 w-5 text-[#402102]" />
-                                <span>{currentLanguage.split(' ')[0]}</span>
-                            </a>
-                            <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden group-hover:block z-30">
-                                {languages.map(lang => (
-                                    <a key={lang.code} href="#" onClick={() => handleLanguageChange(lang.name)} className="block px-4 py-2 text-sm text-[#402102] hover:bg-gray-100">{lang.name}</a>
-                                ))}
-                            </div>
-                        </div>
-                        {isUserLoading ? null : user ? (
-                            <Button onClick={handleLogout} variant="outline" className="bg-transparent border-2 border-[#B07A2B] text-[#B07A2B] rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-[#B07A2B] hover:text-white">
-                                Log Out
-                            </Button>
-                        ) : (
-                            <div className="flex items-center gap-4">
-                                <Button onClick={() => setIsSignUpModalOpen(true)} variant="default" className="bg-[#B07A2B] text-white rounded-full h-auto px-5 py-2 text-base font-semibold hover:bg-opacity-80">
-                                    Sign Up
-                                </Button>
-                                <a onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 cursor-pointer text-base font-semibold text-[#402102] transition-opacity hover:opacity-70">
-                                    <UserIcon className="h-6 w-6 text-[#402102]" />
-                                    Log In
-                                </a>
-                            </div>
-                        )}
-                    </div>
-                </header>
-
-                <div>
+                <div className="mt-8 md:mt-0">
                     <h1 className="font-serif text-4xl md:text-5xl font-bold text-[#402102] leading-tight mb-8">
-                        Join India's<br/>
-                        <span className="md:pl-2">Handcrafted Revolution</span>
+                        Join India's Handcrafted Revolution
                     </h1>
-                    <p className="relative text-base md:text-lg text-[#411313] italic leading-snug mb-12 pl-5
-                                before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-gradient-to-b before:from-[#e87c69] before:to-[#f0987c] before:rounded-sm">
-                        A place where artisans share their craft and<br/>
+                    <p className="relative text-base md:text-lg text-[#411313] italic leading-snug mb-12 max-w-md mx-auto">
+                        A place where artisans share their craft and
                         buyers discover culture in every piece.
                     </p>
                 </div>
@@ -127,10 +111,6 @@ export default function LandingPage() {
                     </Button>
                 </div>
               </div>
-            </div>
-          </main>
-
-          <Footer />
         </div>
 
         {/* Login Modal */}
