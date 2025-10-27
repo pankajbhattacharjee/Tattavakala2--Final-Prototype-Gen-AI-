@@ -2,13 +2,7 @@ import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Taviraj, Sorts_Mill_Goudy } from 'next/font/google';
-
-const headingFont = Sorts_Mill_Goudy({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-heading',
-});
+import { Taviraj } from 'next/font/google';
 
 const bodyFont = Taviraj({
   subsets: ['latin'],
@@ -17,8 +11,8 @@ const bodyFont = Taviraj({
 });
 
 export const metadata: Metadata = {
-  title: 'Vishwa Tatva',
-  description: "Join India's Handcrafted Revolution",
+  title: 'Tattvakala',
+  description: 'Authentic Handcrafted Treasures',
 };
 
 export default function RootLayout({
@@ -28,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-body antialiased min-h-screen', headingFont.variable, bodyFont.variable)}>
+      <body className={cn('font-body antialiased min-h-screen', bodyFont.variable)}>
         {children}
         <Toaster />
       </body>
