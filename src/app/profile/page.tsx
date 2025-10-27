@@ -4,7 +4,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import MarketplaceHeader from '@/components/marketplace-header';
-import { products } from '@/lib/products';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -15,22 +14,7 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Loader } from 'lucide-react';
 
-const pastOrders = [
-    {
-        id: '123456',
-        date: 'June 15, 2024',
-        total: 3748,
-        status: 'Delivered',
-        items: products.slice(0,2)
-    },
-    {
-        id: '123455',
-        date: 'May 20, 2024',
-        total: 1200,
-        status: 'Delivered',
-        items: [products[4]]
-    }
-]
+const pastOrders: any[] = [];
 
 export default function ProfilePage() {
     const { user, isUserLoading } = useUser();
@@ -76,7 +60,7 @@ export default function ProfilePage() {
                         <CardDescription>View your past purchases and their status.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-8">
-                        {pastOrders.map(order => (
+                        {pastOrders.length > 0 ? pastOrders.map(order => (
                             <div key={order.id}>
                                 <div className="flex justify-between items-center mb-4">
                                     <div>
@@ -89,7 +73,7 @@ export default function ProfilePage() {
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                {order.items.map(item => (
+                                {order.items.map((item:any) => (
                                     <div key={item.id} className="flex items-center gap-4">
                                         <Image src={item.image.src} alt={item.name} width={64} height={64} className="rounded-md bg-muted"/>
                                         <div>
@@ -101,7 +85,9 @@ export default function ProfilePage() {
                                 </div>
                                 <Separator className="mt-6"/>
                             </div>
-                        ))}
+                        )) : (
+                            <p>You have no past orders.</p>
+                        )}
                     </CardContent>
                 </Card>
             </TabsContent>
