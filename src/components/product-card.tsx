@@ -26,7 +26,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     <Card className="overflow-hidden flex flex-col">
       <CardHeader className="p-0">
         <div className="relative bg-muted aspect-square w-full flex items-center justify-center">
-          <Image src={product.image.src} alt={product.name} width={200} height={200} className="object-cover" data-ai-hint={product.image.hint} />
+          <Image src={product.image.src} alt={product.name} width={300} height={300} className="object-cover w-full h-full" data-ai-hint={product.image.hint} />
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
