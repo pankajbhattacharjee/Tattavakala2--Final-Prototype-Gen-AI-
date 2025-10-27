@@ -7,8 +7,6 @@ import Link from 'next/link';
 import { Globe, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useAuth, useUser } from '@/firebase';
 import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
 import { signOut } from 'firebase/auth';
@@ -33,8 +31,10 @@ export default function LandingPage() {
     };
 
     const handleLogin = () => {
-        initiateGoogleSignIn(auth);
-        setIsLoginModalOpen(false);
+        if (auth) {
+            initiateGoogleSignIn(auth);
+            setIsLoginModalOpen(false);
+        }
     };
 
     const handleLogout = () => {
@@ -43,9 +43,11 @@ export default function LandingPage() {
         }
     };
 
-
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[#f5efe6]">
+        <div 
+            className="relative min-h-screen w-full flex items-center justify-center font-sans bg-cover bg-center"
+            style={{ backgroundImage: "url('/background.jpg')" }}
+        >
             {/* Top Navigation */}
             <header className="absolute top-6 right-8 md:top-8 md:right-10 z-20">
                 <div className="flex items-center gap-4 md:gap-8">
@@ -123,3 +125,5 @@ export default function LandingPage() {
         </div>
     );
 }
+
+    
