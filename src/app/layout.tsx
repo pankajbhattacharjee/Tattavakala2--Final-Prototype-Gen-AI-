@@ -2,10 +2,23 @@ import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
+import { Taviraj, Sorts_Mill_Goudy } from 'next/font/google';
+
+const headingFont = Sorts_Mill_Goudy({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-heading',
+});
+
+const bodyFont = Taviraj({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700'],
+  variable: '--font-body',
+});
 
 export const metadata: Metadata = {
-  title: 'Crafting Tale',
-  description: 'Generate compelling stories for your artisanal products.',
+  title: 'Vishwa Tatva',
+  description: "Join India's Handcrafted Revolution",
 };
 
 export default function RootLayout({
@@ -15,12 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Alegreya&family=Belleza&display=swap" rel="stylesheet" />
-      </head>
-      <body className={cn('font-body antialiased min-h-screen')}>
+      <body className={cn('font-body antialiased min-h-screen', headingFont.variable, bodyFont.variable)}>
         {children}
         <Toaster />
       </body>
