@@ -493,10 +493,6 @@ export default function SellPage() {
                     <LinkIcon className="h-8 w-8"/>
                     <span className="text-sm">Copy Link</span>
                 </div>
-                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md">
-                    <Store className="h-8 w-8 text-primary"/>
-                    <span className="text-sm">Share Marketplace</span>
-                </div>
             </div>
              <Button onClick={() => setIsShareModalOpen(false)} className="w-full">Close</Button>
         </DialogContent>
