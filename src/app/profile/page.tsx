@@ -1,6 +1,6 @@
 
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -22,24 +22,27 @@ export default function ProfilePage() {
     const router = useRouter();
 
     const handleLogout = () => {
-        signOut(auth).then(() => {
-            router.push('/');
-        });
+        if (auth) {
+            signOut(auth).then(() => {
+                router.push('/');
+            });
+        }
     };
 
-    if (isUserLoading) {
+    useEffect(() => {
+        // If loading is finished and there's no user, redirect to home.
+        if (!isUserLoading && !user) {
+            router.push('/');
+        }
+    }, [isUserLoading, user, router]);
+
+    if (isUserLoading || !user) {
+        // Show a loader while checking for user auth or during the redirect.
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <Loader className="animate-spin h-8 w-8 text-primary" />
             </div>
         );
-    }
-    
-    if (!user) {
-        // Optionally, redirect to login page if user is not authenticated
-        // For now, just showing a message.
-         router.push('/');
-         return null;
     }
 
 
