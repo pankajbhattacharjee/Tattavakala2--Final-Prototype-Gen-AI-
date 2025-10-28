@@ -142,18 +142,35 @@ function ArtisansContent() {
                         Tutorials & Resources
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground mb-4">Watch our tutorials to learn how to best showcase your products and reach a wider audience.</p>
-                    <div className="aspect-video rounded-lg overflow-hidden">
-                        <iframe 
-                            width="100%" 
-                            height="100%" 
-                            src="https://www.youtube.com/embed/CvHUHgDe8oE" 
-                            title="YouTube video player" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowFullScreen>
-                        </iframe>
+                <CardContent className="space-y-4">
+                    <p className="text-muted-foreground">Watch our tutorials to learn how to best showcase your products and reach a wider audience.</p>
+                    <div>
+                        <h4 className="font-semibold mb-2">How to Create a Facebook Account</h4>
+                        <div className="aspect-video rounded-lg overflow-hidden">
+                            <iframe 
+                                width="100%" 
+                                height="100%" 
+                                src="https://www.youtube.com/embed/RU50X3y1SJ4" 
+                                title="YouTube video player" 
+                                frameBorder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowFullScreen>
+                            </iframe>
+                        </div>
+                    </div>
+                     <div>
+                        <h4 className="font-semibold mb-2">How to Create an Instagram Account</h4>
+                        <div className="aspect-video rounded-lg overflow-hidden">
+                            <iframe 
+                                width="100%" 
+                                height="100%" 
+                                src="https://www.youtube.com/embed/XlLmBUdzFks" 
+                                title="YouTube video player" 
+                                frameBorder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowFullScreen>
+                            </iframe>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -225,12 +242,14 @@ function ArtisansContent() {
   )
 }
 
-function PageWithHeader() {
+function PageWithHeaderAndSuspense() {
   return (
     <>
       <MarketplaceHeader />
       <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
-        <ArtisansContent />
+        <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader className="animate-spin h-8 w-8" /></div>}>
+          <ArtisansContent />
+        </Suspense>
       </div>
     </>
   );
@@ -239,9 +258,7 @@ function PageWithHeader() {
 export default function ArtisansPage() {
   return (
     <div className="bg-background min-h-screen">
-      <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader className="animate-spin h-8 w-8" /></div>}>
-        <PageWithHeader />
-      </Suspense>
+      <PageWithHeaderAndSuspense />
     </div>
   );
 }
