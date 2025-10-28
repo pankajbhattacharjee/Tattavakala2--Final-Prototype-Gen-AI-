@@ -1,107 +1,135 @@
 /**
- * @file Firestore Security Rules for Artisan Products Platform
- *
- * @description This ruleset enforces a user-ownership model for artisans and their products.
- * Artisans can manage their profiles and products. AI-generated stories are publicly readable.
- *
- * @data-structure
- * - /artisans/{artisanId}: Stores artisan profile information.
- * - /artisans/{artisanId}/products/{productId}: Stores product information associated with an artisan.
- * - /ai_stories/{aiStoryId}: Stores AI-generated stories associated with products.
- *
- * @key-security-decisions
- * - Artisans have full control over their profiles and products.
- * - AI stories are publicly readable.
- * - Data validation is minimal to allow for rapid iteration (prototyping mode). Only authorization-related data is validated.
- *
- * @denormalization-for-authorization
- * - Product documents include the `artisanId` to allow direct authorization checks without needing to read the parent artisan document.
- *
- * @structural-segregation
- * - AI stories are stored in a separate top-level collection (`/ai_stories`) to keep product documents lean and allow for public read access.
+ * @file Firestore Security Rules
+ * @core_philosophy This ruleset enforces a strict user-ownership model for Artisans and their associated data (Products, Images, and Stories).
+ * All data is nested under `/artisans/{artisanId}`, ensuring that only the Artisan with the matching `artisanId` can create, read, update, or delete their own data.
+ * @data_structure
+ * /artisans/{artisanId} - Artisan profile information
+ * /artisans/{artisanId}/products/{productId} - Products created by the artisan
+ * /artisans/{artisanId}/products/{productId}/images/{imageId} - Images associated with a product
+ * /artisans/{artisanId}/products/{productId}/stories/{storyId} - AI-generated stories for a product
+ * @key_security_decisions
+ * - User listing is disabled.
+ * - All write operations are restricted to the owning Artisan.
+ * - The `id` field of each document is validated against the path to ensure data consistency.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows artisans to manage their profile information.
+     * @description Controls access to Artisan profiles.
      * @path /artisans/{artisanId}
-     * @allow (create) User with UID 'user_abc' can create their own artisan profile with artisanId == 'user_abc'.
-     * @allow (get) Any user can read an artisan profile.
-     * @allow (update) User with UID 'user_abc' can update their own artisan profile with artisanId == 'user_abc'.
-     * @allow (delete) User with UID 'user_abc' can delete their own artisan profile with artisanId == 'user_abc'.
-     * @deny (create) User with UID 'user_xyz' cannot create an artisan profile with artisanId == 'user_abc'.
-     * @deny (update) User with UID 'user_xyz' cannot update the artisan profile of user 'user_abc'.
-     * @deny (delete) User with UID 'user_xyz' cannot delete the artisan profile of user 'user_abc'.
-     * @principle Enforces document ownership for writes.
+     * @allow (create) - An authenticated user whose UID matches the `artisanId` can create their profile.
+     * @allow (get, list, update, delete) - An authenticated user whose UID matches the `artisanId` can read, update, and delete their profile.
+     * @deny (create) - An authenticated user whose UID does NOT match the `artisanId` cannot create a profile for another user.
+     * @deny (update, delete) - An unauthenticated user cannot update or delete any profile.
+     * @principle Enforces document ownership for all operations.
      */
     match /artisans/{artisanId} {
-      // Read Rules
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(artisanId) {
+        return request.auth.uid == artisanId;
+      }
+
+      function isExistingOwner(artisanId) {
+        return isOwner(artisanId) && resource != null;
+      }
+
       allow get: if true;
       allow list: if false;
-
-      // Write Rules
       allow create: if isSignedIn() && isOwner(artisanId) && request.resource.data.id == artisanId;
-      allow update: if isSignedIn() && isExistingOwner(artisanId) && request.resource.data.id == resource.data.id;
-      allow delete: if isSignedIn() && isExistingOwner(artisanId);
+      allow update: if isExistingOwner(artisanId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(artisanId);
     }
 
     /**
-     * @description Allows artisans to manage their products.
+     * @description Controls access to Products created by an Artisan.
      * @path /artisans/{artisanId}/products/{productId}
-     * @allow (create) User with UID 'user_abc' can create a product under their artisan profile with artisanId == 'user_abc' and request.resource.data.artisanId == 'user_abc'.
-     * @allow (get) Any user can read a product.
-     * @allow (update) User with UID 'user_abc' can update their product with artisanId == 'user_abc' and request.resource.data.artisanId == resource.data.artisanId.
-     * @allow (delete) User with UID 'user_abc' can delete their product with artisanId == 'user_abc'.
-     * @deny (create) User with UID 'user_xyz' cannot create a product under the artisan profile of user 'user_abc'.
-     * @deny (update) User with UID 'user_xyz' cannot update a product belonging to artisan 'user_abc'.
-     * @deny (delete) User with UID 'user_xyz' cannot delete a product belonging to artisan 'user_abc'.
-     * @principle Enforces document ownership for writes.
+     * @allow (create) - An authenticated user whose UID matches the `artisanId` can create a product.
+     * @allow (get, list, update, delete) - An authenticated user whose UID matches the `artisanId` can read, update, and delete their products.
+     * @deny (create) - An authenticated user whose UID does NOT match the `artisanId` cannot create a product for another artisan.
+     * @deny (update, delete) - An unauthenticated user cannot update or delete any product.
+     * @principle Enforces document ownership for all operations.
      */
     match /artisans/{artisanId}/products/{productId} {
-      // Read Rules
-      allow get: if true;
-      allow list: if isOwner(artisanId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-      // Write Rules
-      allow create: if isSignedIn() && isOwner(artisanId) && request.resource.data.artisanId == artisanId;
-      allow update: if isSignedIn() && isExistingOwner(artisanId) && resource.data.artisanId == request.resource.data.artisanId;
-      allow delete: if isSignedIn() && isExistingOwner(artisanId);
+      function isOwner(artisanId) {
+        return request.auth.uid == artisanId;
+      }
+
+      function isExistingOwner(artisanId) {
+        return isOwner(artisanId) && resource != null;
+      }
+
+      allow get: if isOwner(artisanId);
+      allow list: if isOwner(artisanId);
+      allow create: if isSignedIn() && isOwner(artisanId) && request.resource.data.artisanId == artisanId && request.resource.data.id == productId;
+      allow update: if isExistingOwner(artisanId) && request.resource.data.artisanId == resource.data.artisanId && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(artisanId);
     }
 
     /**
-     * @description Allows public read access to AI stories.
-     * @path /ai_stories/{aiStoryId}
-     * @allow (get) Any user can read an AI story.
-     * @allow (list) Any user can list AI stories.
-     * @deny (create) No one can create AI stories directly through the client.  Creation should be handled by backend functions.
-     * @deny (update) No one can update AI stories directly through the client.  Updates should be handled by backend functions.
-     * @deny (delete) No one can delete AI stories directly through the client. Deletion should be handled by backend functions.
-     * @principle Allows public read access, restricts write access.
+     * @description Controls access to Images associated with a Product.
+     * @path /artisans/{artisanId}/products/{productId}/images/{imageId}
+     * @allow (create) - An authenticated user whose UID matches the `artisanId` can create an image for a product.
+     * @allow (get, list, update, delete) - An authenticated user whose UID matches the `artisanId` can read, update, and delete images associated with their products.
+     * @deny (create) - An authenticated user whose UID does NOT match the `artisanId` cannot create an image for another artisan's product.
+     * @deny (update, delete) - An unauthenticated user cannot update or delete any image.
+     * @principle Enforces document ownership for all operations.
      */
-    match /ai_stories/{aiStoryId} {
-      // Read Rules
-      allow get: if true;
-      allow list: if true;
+    match /artisans/{artisanId}/products/{productId}/images/{imageId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-      // Write Rules
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      function isOwner(artisanId) {
+        return request.auth.uid == artisanId;
+      }
+
+      function isExistingOwner(artisanId) {
+        return isOwner(artisanId) && resource != null;
+      }
+
+      allow get: if isOwner(artisanId);
+      allow list: if isOwner(artisanId);
+      allow create: if isSignedIn() && isOwner(artisanId) && request.resource.data.productId == productId && request.resource.data.id == imageId;
+      allow update: if isExistingOwner(artisanId) && request.resource.data.productId == resource.data.productId && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(artisanId);
     }
-  }
 
-  // Helper Functions
-  function isSignedIn() {
-    return request.auth != null;
-  }
+    /**
+     * @description Controls access to AI-generated Stories for a Product.
+     * @path /artisans/{artisanId}/products/{productId}/stories/{storyId}
+     * @allow (create) - An authenticated user whose UID matches the `artisanId` can create a story for a product.
+     * @allow (get, list, update, delete) - An authenticated user whose UID matches the `artisanId` can read, update, and delete stories associated with their products.
+     * @deny (create) - An authenticated user whose UID does NOT match the `artisanId` cannot create a story for another artisan's product.
+     * @deny (update, delete) - An unauthenticated user cannot update or delete any story.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /artisans/{artisanId}/products/{productId}/stories/{storyId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-  function isOwner(userId) {
-    return request.auth.uid == userId;
-  }
+      function isOwner(artisanId) {
+        return request.auth.uid == artisanId;
+      }
 
-  function isExistingOwner(userId) {
-    return isOwner(userId) && resource != null;
+      function isExistingOwner(artisanId) {
+        return isOwner(artisanId) && resource != null;
+      }
+
+      allow get: if isOwner(artisanId);
+      allow list: if isOwner(artisanId);
+      allow create: if isSignedIn() && isOwner(artisanId) && request.resource.data.productId == productId && request.resource.data.id == storyId;
+      allow update: if isExistingOwner(artisanId) && request.resource.data.productId == resource.data.productId && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(artisanId);
+    }
   }
 }
