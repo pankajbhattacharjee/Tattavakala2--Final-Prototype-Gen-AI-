@@ -30,6 +30,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
+  const [toastInfo, setToastInfo] = useState<{ title: string; description: string } | null>(null);
 
   // Load cart from localStorage on initial load
   useEffect(() => {
@@ -53,6 +54,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [cartItems]);
 
+  useEffect(() => {
+    if (toastInfo) {
+      toast(toastInfo);
+      setToastInfo(null);
+    }
+  }, [toastInfo, toast]);
+
   const addToCart = (product: Omit<CartItem, 'quantity'>, quantityToAdd: number = 1) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
@@ -63,14 +71,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             ? { ...item, quantity: item.quantity + quantityToAdd }
             : item
         );
-        toast({
+         setToastInfo({
           title: "Cart Updated!",
           description: `${product.name} quantity updated to ${existingItem.quantity + quantityToAdd}.`,
         });
         return updatedItems;
       } else {
         const newItem = { ...product, quantity: quantityToAdd };
-        toast({
+        setToastInfo({
           title: "Added to Cart!",
           description: `${product.name} has been added to your cart.`,
         });
@@ -84,7 +92,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const itemToRemove = prevItems.find(item => item.id === productId);
       if (itemToRemove) {
         const updatedItems = prevItems.filter(item => item.id !== productId);
-        toast({
+        setToastInfo({
           title: "Item Removed!",
           description: `${itemToRemove.name} has been removed from your cart.`,
         });
@@ -97,6 +105,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateQuantity = (productId: string, newQuantity: number) => {
     setCartItems(prevItems => {
       if (newQuantity <= 0) {
+        const itemToRemove = prevItems.find(item => item.id === productId);
+        if (itemToRemove) {
+          setToastInfo({
+            title: "Item Removed!",
+            description: `${itemToRemove.name} has been removed from your cart.`,
+          });
+        }
         return prevItems.filter(item => item.id !== productId); // Remove if quantity is 0 or less
       }
       return prevItems.map(item =>
@@ -107,7 +122,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearCart = () => {
     setCartItems([]);
-    toast({
+    setToastInfo({
       title: "Cart Cleared!",
       description: "Your shopping cart is now empty.",
     });

@@ -82,7 +82,9 @@ export default function SellPage() {
             };
 
             recognition.onerror = (event: any) => {
-                console.error('Speech recognition error:', event.error);
+                if (event.error !== 'not-allowed') {
+                    console.error('Speech recognition error:', event.error);
+                }
                 toast({
                     variant: 'destructive',
                     title: 'Voice Recognition Error',
