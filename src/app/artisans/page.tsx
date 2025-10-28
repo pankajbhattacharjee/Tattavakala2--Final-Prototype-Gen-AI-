@@ -90,7 +90,7 @@ function ArtisansContent() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Discussion Forum: Connect &amp; Share</CardTitle>
+                <CardTitle>Discussion Forum: Connect & Share</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {forumTopics.map((topic, index) => (
@@ -123,7 +123,7 @@ function ArtisansContent() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Workshops &amp; Events</CardTitle>
+                    <CardTitle>Workshops & Events</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">Upcaicmde 26 25203</p>
@@ -139,7 +139,7 @@ function ArtisansContent() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Youtube className="text-red-500"/>
-                        Tutorials &amp; Resources
+                        Tutorials & Resources
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -225,16 +225,23 @@ function ArtisansContent() {
   )
 }
 
+function PageWithHeader() {
+  return (
+    <>
+      <MarketplaceHeader />
+      <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
+        <ArtisansContent />
+      </div>
+    </>
+  );
+}
 
 export default function ArtisansPage() {
   return (
     <div className="bg-background min-h-screen">
-      <MarketplaceHeader />
-      <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
-        <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
-            <ArtisansContent />
-        </Suspense>
-      </div>
+      <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader className="animate-spin h-8 w-8" /></div>}>
+        <PageWithHeader />
+      </Suspense>
     </div>
   );
 }
