@@ -48,7 +48,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     router.push('/checkout');
   };
 
-  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest' | 'instagram') => {
+  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest') => {
       const shareUrl = window.location.origin + '/marketplace'; // A generic link to the marketplace
       const shareText = encodeURIComponent(`${product.name} - ${product.description}`);
       const shareImage = encodeURIComponent(product.image.src);
@@ -64,9 +64,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           case 'pinterest':
               url = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&media=${shareImage}&description=${shareText}`;
               break;
-          case 'instagram':
-              toast({title: 'Share on Instagram', description: 'Direct web sharing to Instagram is not supported. Please share from your mobile device.'});
-              return;
       }
       window.open(url, '_blank', 'noopener,noreferrer');
   }
@@ -131,18 +128,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <DialogDescription>Choose a platform to share this product.</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4">
-                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('instagram')}>
-                    <Instagram className="h-8 w-8 text-pink-600"/>
-                    <span className="text-sm">Instagram</span>
-                </div>
-                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('facebook')}>
-                    <Facebook className="h-8 w-8 text-blue-600"/>
-                    <span className="text-sm">Facebook</span>
-                </div>
-                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('twitter')}>
-                   <svg role="img" viewBox="0 0 24 24" className="h-8 w-8 text-sky-500 fill-current" xmlns="http://www.w3.org/2000/svg"><title>X</title><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 7.184L18.901 1.153Zm-1.65 19.545h2.63l-14.28-20.56h-2.75l14.4 20.56Z"/></svg>
-                    <span className="text-sm">Twitter/X</span>
-                </div>
                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('pinterest')}>
                     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 fill-current">
                         <title>Pinterest</title>
@@ -161,3 +146,5 @@ export default function ProductCard({ product }: ProductCardProps) {
     </>
   );
 }
+
+    
