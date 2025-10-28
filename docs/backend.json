@@ -1,56 +1,14 @@
-
 {
   "entities": {
-    "Product": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Product",
-      "type": "object",
-      "description": "Represents a product created by an artisan.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the product."
-        },
-        "name": {
-          "type": "string",
-          "description": "Name of the product."
-        },
-        "location": {
-          "type": "string",
-          "description": "The location (state/region) where the product is made."
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "URL of the product image.",
-          "format": "uri"
-        },
-        "artisanId": {
-          "type": "string",
-          "description": "Reference to the Artisan who created the product. (Relationship: Artisan 1:N Product)"
-        },
-        "storyId": {
-          "type": "string",
-          "description": "Reference to the AI-generated Story for this product. (Relationship: Story 1:1 Product)"
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "location",
-        "imageUrl",
-        "artisanId",
-        "storyId"
-      ]
-    },
     "Artisan": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Artisan",
       "type": "object",
-      "description": "Represents an artisan who creates products.",
+      "description": "Represents an artisan who creates and sells products.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the artisan."
+          "description": "Unique identifier for the Artisan entity."
         },
         "name": {
           "type": "string",
@@ -60,50 +18,92 @@
           "type": "string",
           "description": "Email address of the artisan.",
           "format": "email"
+        },
+        "location": {
+          "type": "string",
+          "description": "General location of the artisan (e.g., city, region)."
         }
       },
       "required": [
         "id",
-        "name",
-        "email"
+        "name"
       ]
     },
-    "Story": {
+    "Product": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Story",
+      "title": "Product",
       "type": "object",
-      "description": "Represents the AI-generated story for a product.",
+      "description": "Represents a product offered by an artisan.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the story."
+          "description": "Unique identifier for the Product entity."
+        },
+        "artisanId": {
+          "type": "string",
+          "description": "Reference to Artisan. (Relationship: Artisan 1:N Product)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the product."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the product, potentially AI-generated."
+        },
+        "locationContext": {
+          "type": "string",
+          "description": "Location context (state/region) of the product."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the product image."
+        }
+      },
+      "required": [
+        "id",
+        "artisanId",
+        "name",
+        "description",
+        "locationContext",
+        "imageUrl"
+      ]
+    },
+    "AiStory": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AiStory",
+      "type": "object",
+      "description": "Represents an AI-generated story associated with a product, potentially in multiple languages.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AI Story."
         },
         "productId": {
           "type": "string",
-          "description": "Reference to the Product that this story describes. (Relationship: Product 1:1 Story)"
-        },
-        "text": {
-          "type": "string",
-          "description": "The AI-generated story text."
+          "description": "Reference to Product. (Relationship: Product 1:N AiStory)"
         },
         "language": {
           "type": "string",
-          "description": "Language of the generated story (e.g., 'en', 'es', 'fr')."
+          "description": "Language of the AI-generated story (e.g., 'en', 'es', 'fr')."
+        },
+        "storyText": {
+          "type": "string",
+          "description": "The AI-generated story text."
         }
       },
       "required": [
         "id",
         "productId",
-        "text",
-        "language"
+        "language",
+        "storyText"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
@@ -115,11 +115,11 @@
           "schema": {
             "$ref": "#/backend/entities/Artisan"
           },
-          "description": "Stores artisan profiles.  The 'artisanId' is the Firebase Auth UID.",
+          "description": "Stores artisan profiles.",
           "params": [
             {
               "name": "artisanId",
-              "description": "The unique identifier for the artisan, which matches the Firebase Auth UID."
+              "description": "Unique identifier for the artisan."
             }
           ]
         }
@@ -131,36 +131,44 @@
           "schema": {
             "$ref": "#/backend/entities/Product"
           },
-          "description": "Stores products created by each artisan. 'artisanId' and 'productId' define the product's owner.",
+          "description": "Stores products created by each artisan. Includes denormalized 'artisanId' for authorization independence.",
           "params": [
             {
               "name": "artisanId",
-              "description": "The unique identifier for the artisan."
+              "description": "Unique identifier for the artisan."
             },
             {
               "name": "productId",
-              "description": "The unique identifier for the product."
+              "description": "Unique identifier for the product."
             }
           ]
         }
       },
       {
-        "path": "/stories/{storyId}",
+        "path": "/artisans/{artisanId}/products/{productId}/ai_stories/{aiStoryId}",
         "definition": {
-          "entityName": "Story",
+          "entityName": "AiStory",
           "schema": {
-            "$ref": "#/backend/entities/Story"
+            "$ref": "#/backend/entities/AiStory"
           },
-          "description": "Stores the AI-generated stories associated with the products.  This is a top-level collection to avoid authorization dependencies and allow listing all stories.",
+          "description": "Stores AI-generated stories associated with each product. Includes denormalized 'artisanId' and 'productId' for authorization independence.",
           "params": [
             {
-              "name": "storyId",
-              "description": "The unique identifier for the story."
+              "name": "artisanId",
+              "description": "Unique identifier for the artisan."
+            },
+            {
+              "name": "productId",
+              "description": "Unique identifier for the product."
+            },
+            {
+              "name": "aiStoryId",
+              "description": "Unique identifier for the AI story."
             }
           ]
         }
       }
     ],
-    "reasoning": "The Firestore data structure is designed to support the Crafting Tale application, focusing on products created by artisans and associated AI-generated stories. It ensures authorization independence and supports secure list operations. The key entities are `Artisan`, `Product`, and `Story`. We use path-based ownership for data associated with artisans. The structure denormalizes data where needed to avoid `get()` calls in security rules, improving security and scalability.\n\nThe `/artisans/{artisanId}` collection stores artisan profiles. The `/artisans/{artisanId}/products/{productId}` subcollection stores products created by each artisan. The `/stories/{storyId}` collection stores the AI-generated stories associated with the products.\n\nThis structure enables secure `list` operations because the security rules can be applied directly to each collection without needing to traverse parent documents or apply filtering based on data within the documents (QAPs). Access control is simplified because ownership is explicit in the path for artisan-related data."
+    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability. It leverages path-based ownership for artisans and their products, along with denormalization to avoid complex security rules.\n\n*   `/artisans/{artisanId}`: Stores artisan profiles. This collection allows artisans to manage their profile information.\n*   `/artisans/{artisanId}/products/{productId}`: Stores products created by each artisan.  The `artisanId` is denormalized into each `Product` document. This denormalization is **critical** for authorization independence.  It avoids the need for `get()` calls in security rules to verify product ownership. This enables atomic creation and updating of products within an artisan's profile. It also allows for efficient querying of all products belonging to a specific artisan.\n*   `/artisans/{artisanId}/products/{productId}/ai_stories/{aiStoryId}`: Stores AI-generated stories associated with each product. The `artisanId` and `productId` are denormalized into each `AiStory` document. This avoids `get()` calls in security rules and enables atomic creation and updating of AI stories for a specific product.\n\nThis structure facilitates secure `list` operations (QAPs) because each collection has a clear and consistent security posture. Products can only be listed within the scope of an Artisan and AiStories can only be listed within the scope of a Product, making it straight forward to write security rules for these lists.  The rules don't need to filter based on data within the documents themselves.  This also minimizes the risk of exposing data to unauthorized users."
   }
 }
