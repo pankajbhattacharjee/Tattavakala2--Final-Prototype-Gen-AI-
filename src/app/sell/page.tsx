@@ -62,6 +62,7 @@ export default function SellPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
+      if (typeof window !== 'undefined') {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             recognitionRef.current = new SpeechRecognition();
@@ -97,6 +98,7 @@ export default function SellPage() {
             };
 
         }
+      }
     }, [toast]);
     
     const handleListen = () => {
@@ -480,6 +482,5 @@ export default function SellPage() {
     </div>
   );
 }
-
 
     
