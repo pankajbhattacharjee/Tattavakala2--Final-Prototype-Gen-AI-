@@ -1,8 +1,8 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Video, Mic, Sun, User, Camera,Youtube } from 'lucide-react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
+import { Video, Mic, Sun, User, Camera,Youtube, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -28,7 +28,7 @@ const workshops = [
     'Revrenne Chnvrd Bow'
 ];
 
-export default function ArtisansPage() {
+function ArtisansContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -80,9 +80,7 @@ export default function ArtisansPage() {
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      <MarketplaceHeader />
-      <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
+    <>
         <div className="flex items-center gap-4 mb-8">
             <Sun className="h-12 w-12 text-primary" />
             <h1 className="text-4xl font-serif font-bold text-gray-800">Artisan Community Hub</h1>
@@ -161,7 +159,6 @@ export default function ArtisansPage() {
             </Card>
           </div>
         </div>
-      </div>
 
       {/* Live Stream Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -224,7 +221,20 @@ export default function ArtisansPage() {
           </form>
         </DialogContent>
       </Dialog>
+    </>
+  )
+}
 
+
+export default function ArtisansPage() {
+  return (
+    <div className="bg-background min-h-screen">
+      <MarketplaceHeader />
+      <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
+        <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
+            <ArtisansContent />
+        </Suspense>
+      </div>
     </div>
   );
 }
