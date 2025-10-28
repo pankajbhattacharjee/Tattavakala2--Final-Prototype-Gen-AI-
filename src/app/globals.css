@@ -57,7 +57,7 @@
     @apply bg-background text-foreground;
   }
   .bg-landing {
-    background-image: url('https://i.pinimg.com/originals/a0/a9/3d/a0a93da36a3fe7803f724395d9a91557.jpg');
+    background-image: url('https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761621812/bacground_urphgu.jpg');
     background-size: cover;
     background-position: center;
   }
