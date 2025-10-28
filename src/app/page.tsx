@@ -110,7 +110,7 @@ export default function LandingPage() {
                 <div className="relative -mt-24 -ml-4 md:-ml-20 shrink-0">
                     <div className="bg-card p-2 rounded-2xl shadow-lg">
                         <Image
-                            src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F71e36058-5d4a-42c2-a63e-d964f51e5927%2Flogo.png?alt=media&token=c4a170e7-3f98-4c07-b089-6330456100f7"
+                            src="https://i.pinimg.com/originals/a0/a9/3d/a0a93da36a3fe7803f724395d9a91557.jpg"
                             alt="Tattvakala Logo"
                             width={120}
                             height={120}
