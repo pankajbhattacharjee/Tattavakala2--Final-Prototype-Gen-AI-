@@ -105,34 +105,39 @@ export default function LandingPage() {
       </header>
       
       <main className="relative z-0 flex items-center justify-center min-h-screen p-4">
-        <Card className="relative w-full max-w-2xl bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl pt-16 p-8 md:p-12 text-center">
-            <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-card p-2 rounded-2xl shadow-lg">
-                <Image
-                    src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F71e36058-5d4a-42c2-a63e-d964f51e5927%2Flogo.png?alt=media&token=c4a170e7-3f98-4c07-b089-6330456100f7"
-                    alt="Tattvakala Logo"
-                    width={100}
-                    height={100}
-                    className="rounded-xl"
-                  />
-            </div>
-            <CardContent className="p-0">
-                <h1 className="text-4xl md:text-5xl font-bold font-serif text-primary !leading-tight drop-shadow-sm">
-                  Join India's Handcrafted Revolution
-                </h1>
-                
-                <div className="flex justify-center my-6">
-                    <div className="flex items-start gap-3 max-w-sm">
-                         <div className="w-px h-12 bg-destructive/50 mt-1"></div>
-                         <p className="text-left text-muted-foreground text-base">
-                           A place where artisans share their craft and buyers discover culture in every piece.
-                         </p>
+        <Card className="relative w-full max-w-3xl bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 md:p-12">
+            <CardContent className="p-0 flex flex-col md:flex-row items-start gap-8">
+                <div className="relative -mt-24 -ml-4 md:-ml-20 shrink-0">
+                    <div className="bg-card p-2 rounded-2xl shadow-lg">
+                        <Image
+                            src="https://firebasestorage.googleapis.com/v0/b/ai-app-creator-5a195.appspot.com/o/templates%2F71e36058-5d4a-42c2-a63e-d964f51e5927%2Flogo.png?alt=media&token=c4a170e7-3f98-4c07-b089-6330456100f7"
+                            alt="Tattvakala Logo"
+                            width={120}
+                            height={120}
+                            className="rounded-xl"
+                        />
                     </div>
                 </div>
 
-                <div className="mt-8">
-                  <Button asChild size="lg" className="bg-destructive text-destructive-foreground rounded-full px-12 py-7 text-lg font-semibold hover:bg-destructive/90 shadow-lg transform hover:scale-105 transition-transform">
-                    <Link href="/marketplace">GET STARTED</Link>
-                  </Button>
+                <div className="text-left">
+                    <h1 className="text-4xl md:text-5xl font-bold font-serif text-primary !leading-tight drop-shadow-sm">
+                      Join India's Handcrafted Revolution
+                    </h1>
+                    
+                    <div className="flex my-6">
+                        <div className="flex items-start gap-3">
+                             <div className="w-px h-12 bg-destructive/50 mt-1"></div>
+                             <p className="text-left text-muted-foreground text-base">
+                               A place where artisans share their craft and buyers discover culture in every piece.
+                             </p>
+                        </div>
+                    </div>
+
+                    <div className="mt-8">
+                      <Button asChild size="lg" className="bg-destructive text-destructive-foreground rounded-full px-12 py-7 text-lg font-semibold hover:bg-destructive/90 shadow-lg transform hover:scale-105 transition-transform">
+                        <Link href="/marketplace">GET STARTED</Link>
+                      </Button>
+                    </div>
                 </div>
             </CardContent>
         </Card>
