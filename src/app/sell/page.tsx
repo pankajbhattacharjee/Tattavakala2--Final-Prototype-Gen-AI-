@@ -31,6 +31,8 @@ const languages = [
     { value: 'te', label: 'Telugu' },
 ];
 
+const categories = ["Textiles", "Pottery", "Paintings", "Jewelry", "Leather Goods"];
+
 type SocialCaption = {
     platform: 'instagram' | 'facebook';
     caption: string;
@@ -43,6 +45,7 @@ export default function SellPage() {
   const [artisanName, setArtisanName] = useState('');
   const [price, setPrice] = useState<number | ''>('');
   const [locationContext, setLocationContext] = useState('');
+  const [category, setCategory] = useState('');
   const [userDescription, setUserDescription] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -217,11 +220,11 @@ export default function SellPage() {
   }
 
   const handlePublish = () => {
-    if (!photoPreview || !productName || !generatedStory || !artisanName || !price) {
+    if (!photoPreview || !productName || !generatedStory || !artisanName || !price || !category) {
         toast({
             variant: 'destructive',
             title: 'Cannot Publish',
-            description: 'Please ensure you have a product name, artisan name, price, photo, and generated story before publishing.',
+            description: 'Please ensure you have a product name, artisan name, price, category, photo, and generated story before publishing.',
         });
         return;
     }
@@ -232,10 +235,10 @@ export default function SellPage() {
             name: productName,
             artisanName: artisanName,
             description: generatedStory,
-            category: 'Miscellaneous', // Or derive from context
+            category: category,
             region: locationContext,
             price: price,
-            type: 'Textiles', // Defaulting to a category for tab placement
+            type: category, // Using category for the 'type' field to align with filtering
             image: {
                 src: photoPreview,
                 hint: productName.toLowerCase(),
@@ -350,6 +353,17 @@ export default function SellPage() {
                             <div className="space-y-2">
                                 <Label htmlFor="price" className="text-base">Price (₹)</Label>
                                 <Input id="price" type="number" placeholder="e.g., 2499" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="category" className="text-base">Category/Material</Label>
+                                <Select onValueChange={setCategory} value={category}>
+                                    <SelectTrigger id="category">
+                                        <SelectValue placeholder="Select Category/Material" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="location" className="text-base">Location Context (State/Region)</Label>
@@ -482,5 +496,3 @@ export default function SellPage() {
     </div>
   );
 }
-
-    

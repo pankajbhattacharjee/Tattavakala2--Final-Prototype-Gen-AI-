@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -10,10 +12,26 @@ const regions = [
   "Andhra Pradesh", "Assam", "Bihar", "Gujarat", "Karnataka", "Kerala", "Maharashtra", "Odisha",
   "Punjab", "Rajasthan", "Tamil Nadu", "Telangana", "Uttar Pradesh", "West Bengal", "Other Regions of India"
 ];
-const materials = ["Wood Carvings", "Ceramic / Terracotta", "Brass & Metal", "Leather / Paper", "Pure Silk", "Wool / Cotton"];
+const materials = ["Textiles", "Pottery", "Paintings", "Jewelry", "Leather Goods"];
 const priceRanges = ["Under ₹500", "₹500 - ₹1500", "₹1500 - ₹3000", "Above ₹3000"];
 
-export default function FiltersSidebar() {
+type Filters = {
+  region: string[];
+  material: string[];
+  price: string[];
+};
+
+type FiltersSidebarProps = {
+  selectedFilters: Filters;
+  onFilterChange: (filterType: keyof Filters, value: string) => void;
+};
+
+export default function FiltersSidebar({ selectedFilters, onFilterChange }: FiltersSidebarProps) {
+
+  const handleCheckboxChange = (filterType: keyof Filters, value: string) => {
+    onFilterChange(filterType, value);
+  };
+
   return (
     <div className="space-y-8">
       <Card className="w-full shadow-md">
@@ -21,14 +39,18 @@ export default function FiltersSidebar() {
           <CardTitle className="text-xl font-serif text-primary">Smart Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <Accordion type="multiple" defaultValue={['region']} className="w-full">
+          <Accordion type="multiple" defaultValue={['region', 'material', 'price']} className="w-full">
             <AccordionItem value="region">
               <AccordionTrigger className="font-semibold text-foreground">Region</AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-2 pt-2">
                   {regions.map((region) => (
                     <div key={region} className="flex items-center space-x-2">
-                      <Checkbox id={region} />
+                      <Checkbox 
+                        id={region} 
+                        checked={selectedFilters.region.includes(region)}
+                        onCheckedChange={() => handleCheckboxChange('region', region)}
+                      />
                       <Label htmlFor={region} className="font-normal text-sm">{region}</Label>
                     </div>
                   ))}
@@ -41,7 +63,11 @@ export default function FiltersSidebar() {
                 <div className="space-y-2 pt-2">
                   {materials.map((material) => (
                     <div key={material} className="flex items-center space-x-2">
-                      <Checkbox id={material} />
+                      <Checkbox 
+                        id={material} 
+                        checked={selectedFilters.material.includes(material)}
+                        onCheckedChange={() => handleCheckboxChange('material', material)}
+                      />
                       <Label htmlFor={material} className="font-normal text-sm">{material}</Label>
                     </div>
                   ))}
@@ -54,7 +80,11 @@ export default function FiltersSidebar() {
                 <div className="space-y-2 pt-2">
                   {priceRanges.map((range) => (
                     <div key={range} className="flex items-center space-x-2">
-                      <Checkbox id={range} />
+                      <Checkbox 
+                        id={range} 
+                        checked={selectedFilters.price.includes(range)}
+                        onCheckedChange={() => handleCheckboxChange('price', range)}
+                      />
                       <Label htmlFor={range} className="font-normal text-sm">{range}</Label>
                     </div>
                   ))}

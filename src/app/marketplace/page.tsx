@@ -1,22 +1,46 @@
+
 'use client';
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MarketplaceHeader from '@/components/marketplace-header';
 import FiltersSidebar from '@/components/filters-sidebar';
 import ProductGrid from '@/components/product-grid';
 import { Loader } from 'lucide-react';
 
+type Filters = {
+  region: string[];
+  material: string[];
+  price: string[];
+};
+
 function MarketplaceContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
+  const [selectedFilters, setSelectedFilters] = useState<Filters>({
+    region: [],
+    material: [],
+    price: [],
+  });
+
+  const handleFilterChange = (filterType: keyof Filters, value: string) => {
+    setSelectedFilters(prev => {
+      const newValues = prev[filterType].includes(value)
+        ? prev[filterType].filter(item => item !== value)
+        : [...prev[filterType], value];
+      return { ...prev, [filterType]: newValues };
+    });
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <aside className="hidden lg:block">
-        <FiltersSidebar />
+        <FiltersSidebar 
+          selectedFilters={selectedFilters}
+          onFilterChange={handleFilterChange}
+        />
       </aside>
       <main className="lg:col-span-3">
-        <ProductGrid searchQuery={searchQuery} />
+        <ProductGrid searchQuery={searchQuery} filters={selectedFilters} />
       </main>
     </div>
   );

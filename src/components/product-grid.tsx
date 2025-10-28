@@ -7,11 +7,28 @@ import ProductCard from './product-card';
 import { products as initialProducts } from '@/lib/products';
 import type { Product } from './product-card';
 
-type ProductGridProps = {
-    searchQuery?: string;
+type Filters = {
+  region: string[];
+  material: string[];
+  price: string[];
 };
 
-export default function ProductGrid({ searchQuery = '' }: ProductGridProps) {
+type ProductGridProps = {
+    searchQuery?: string;
+    filters: Filters;
+};
+
+const priceRangeToValue = (range: string) => {
+    switch (range) {
+        case "Under ₹500": return { min: 0, max: 499.99 };
+        case "₹500 - ₹1500": return { min: 500, max: 1500 };
+        case "₹1500 - ₹3000": return { min: 1500.01, max: 3000 };
+        case "Above ₹3000": return { min: 3000.01, max: Infinity };
+        default: return null;
+    }
+}
+
+export default function ProductGrid({ searchQuery = '', filters }: ProductGridProps) {
   const [allProducts, setAllProducts] = useState(initialProducts as Product[]);
 
   useEffect(() => {
@@ -24,21 +41,34 @@ export default function ProductGrid({ searchQuery = '' }: ProductGridProps) {
           combinedProducts.push(sp);
         }
       });
-      setAllProducts(combinedProducts);
+      setAllProducts(combinedProducts.reverse());
     } catch (error) {
         console.error("Could not parse products from localStorage", error);
         setAllProducts(initialProducts as Product[]);
     }
   }, []);
 
-  const filteredProducts = allProducts.filter(product => 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.region.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = allProducts.filter(product => {
+      const searchMatch =
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.region.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const regionMatch = filters.region.length === 0 || filters.region.includes(product.region);
+      
+      const materialMatch = filters.material.length === 0 || filters.material.includes(product.category) || filters.material.includes(product.type);
 
-  const categories = ['Textiles', 'Pottery', 'Paintings', 'Jewelry'];
+      const priceMatch = filters.price.length === 0 || filters.price.some(range => {
+          const priceLimits = priceRangeToValue(range);
+          if (!priceLimits) return false;
+          return product.price >= priceLimits.min && product.price <= priceLimits.max;
+      });
+
+      return searchMatch && regionMatch && materialMatch && priceMatch;
+  });
+
+  const categories = ['Textiles', 'Pottery', 'Paintings', 'Jewelry', 'Leather Goods'];
 
   return (
     <div>
