@@ -9,9 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-
-type Product = (typeof initialProducts)[0];
+import { useCart } from '@/context/CartContext';
+import { Product } from '@/components/product-card';
 
 type StoryProduct = Product & {
   storyTitle: string;
@@ -21,7 +20,7 @@ type StoryProduct = Product & {
 export default function StoriesPage() {
   const [stories, setStories] = useState<StoryProduct[]>([]);
   const [selectedStory, setSelectedStory] = useState<StoryProduct | null>(null);
-  const { toast } = useToast();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     // Combine initial products with products from local storage
@@ -45,12 +44,8 @@ export default function StoriesPage() {
   }, []);
   
   const handleAddToCart = (product: StoryProduct) => {
-    // In a real app, this would update a global cart state.
-    // For now, we'll just show a notification.
-    toast({
-        title: "Added to Cart!",
-        description: `${product.name} has been added to your cart.`,
-    });
+    const { id, name, price, image, region } = product;
+    addToCart({ id, name, price, image, region });
   }
 
   return (
@@ -69,7 +64,7 @@ export default function StoriesPage() {
             <Card key={story.id} className="overflow-hidden cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedStory(story)}>
               <CardHeader className="p-0">
                 <div className="relative aspect-video w-full">
-                  <Image src={story.image.src} alt={story.name} fill={true} objectFit="cover" data-ai-hint={story.image.hint} />
+                  <Image src={story.image.src} alt={story.name} fill={true} style={{objectFit:"cover"}} data-ai-hint={story.image.hint} />
                 </div>
               </CardHeader>
               <CardContent className="p-6">
@@ -91,7 +86,7 @@ export default function StoriesPage() {
               </DialogHeader>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
                 <div className="relative aspect-square">
-                  <Image src={selectedStory.image.src} alt={selectedStory.name} fill={true} objectFit="cover" className="rounded-lg" />
+                  <Image src={selectedStory.image.src} alt={selectedStory.name} fill={true} style={{objectFit:"cover"}} className="rounded-lg" />
                 </div>
                 <div>
                   <p className="text-muted-foreground mb-4">{selectedStory.storyContent}</p>

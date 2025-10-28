@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import React, { useState } from 'react';
+import { useCart } from '@/context/CartContext';
 
 
 export type Product = {
@@ -34,19 +35,16 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const { addToCart } = useCart();
 
   const handleAddToCart = () => {
-    // In a real app, you'd add to a global cart state.
-    // For now, we just show a toast.
-    toast({
-      title: 'Added to Cart!',
-      description: `${product.name} has been added to your cart.`,
-    });
+    const { id, name, price, image, region } = product;
+    addToCart({ id, name, price, image, region });
   };
 
   const handleBuyNow = () => {
-    // For simulation, we'll add to cart and redirect to checkout
-    handleAddToCart();
+    const { id, name, price, image, region } = product;
+    addToCart({ id, name, price, image, region });
     router.push('/checkout');
   };
 

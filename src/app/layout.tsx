@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Inter, DM_Serif_Display } from 'next/font/google';
 import { FirebaseClientProvider } from '@/firebase';
 import Footer from '@/components/footer';
+import { CartProvider } from '@/context/CartContext';
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -35,13 +36,15 @@ export default function RootLayout({
       </head>
       <body className={cn('font-sans antialiased', fontSans.variable, fontSerif.variable)}>
         <FirebaseClientProvider>
-          <div className="flex flex-col min-h-screen">
-            <main className="flex-grow">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
+          <CartProvider>
+            <div className="flex flex-col min-h-screen">
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+          </CartProvider>
         </FirebaseClientProvider>
       </body>
     </html>
