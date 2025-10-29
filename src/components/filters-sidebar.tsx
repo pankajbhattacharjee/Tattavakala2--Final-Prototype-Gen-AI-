@@ -7,12 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { categories } from '@/lib/categories';
 
 const regions = [
   "Andhra Pradesh", "Assam", "Bihar", "Gujarat", "Karnataka", "Kerala", "Maharashtra", "Odisha",
   "Punjab", "Rajasthan", "Tamil Nadu", "Telangana", "Uttar Pradesh", "West Bengal", "Other Regions of India"
 ];
-const materials = ["Textiles", "Pottery", "Paintings", "Jewelry", "Leather Goods"];
+const materials = categories;
 const priceRanges = ["Under ₹500", "₹500 - ₹1500", "₹1500 - ₹3000", "Above ₹3000"];
 
 type Filters = {

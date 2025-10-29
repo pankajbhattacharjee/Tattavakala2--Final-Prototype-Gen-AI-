@@ -14,6 +14,7 @@ import MarketplaceHeader from '@/components/marketplace-header';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
+import { categories } from '@/lib/categories';
 
 const regions = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
@@ -30,8 +31,6 @@ const languages = [
     { value: 'bn', label: 'Bengali' },
     { value: 'te', label: 'Telugu' },
 ];
-
-const categories = ["Textiles", "Pottery", "Paintings", "Jewelry", "Leather Goods"];
 
 type SocialCaption = {
     platform: 'instagram' | 'facebook';

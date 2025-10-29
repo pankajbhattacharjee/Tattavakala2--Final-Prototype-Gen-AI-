@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProductCard from './product-card';
 import { products as initialProducts } from '@/lib/products';
 import type { Product } from './product-card';
+import { categories } from '@/lib/categories';
 
 type Filters = {
   region: string[];
@@ -29,23 +30,23 @@ const priceRangeToValue = (range: string) => {
 }
 
 export default function ProductGrid({ searchQuery = '', filters }: ProductGridProps) {
-  const [allProducts, setAllProducts] = useState(initialProducts as Product[]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    try {
-      const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
-      const combinedProducts = [...initialProducts];
-      const initialIds = new Set(initialProducts.map(p => p.id));
-      storedProducts.forEach((sp: Product) => {
-        if (!initialIds.has(sp.id)) {
-          combinedProducts.push(sp);
+    const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
+    const combinedProducts: Product[] = [...initialProducts];
+    
+    const initialIds = new Set(initialProducts.map(p => p.id));
+    storedProducts.forEach((sp: Product) => {
+      if (!initialIds.has(sp.id)) {
+        combinedProducts.push(sp);
+        if (!categories.includes(sp.type)) {
+            categories.push(sp.type);
         }
-      });
-      setAllProducts(combinedProducts.reverse());
-    } catch (error) {
-        console.error("Could not parse products from localStorage", error);
-        setAllProducts(initialProducts as Product[]);
-    }
+      }
+    });
+
+    setAllProducts(combinedProducts.reverse());
   }, []);
 
   const filteredProducts = allProducts.filter(product => {
@@ -68,12 +69,10 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
       return searchMatch && regionMatch && materialMatch && priceMatch;
   });
 
-  const categories = ['Textiles', 'Pottery', 'Paintings', 'Jewelry', 'Leather Goods'];
-
   return (
     <div>
       <Tabs defaultValue="Textiles" className="w-full">
-        <TabsList className="border-b border-border rounded-none bg-transparent p-0 h-auto mb-6 justify-start">
+        <TabsList className="border-b border-border rounded-none bg-transparent p-0 h-auto mb-6 justify-start overflow-x-auto">
           {categories.map((category) => (
             <TabsTrigger 
               key={category} 
