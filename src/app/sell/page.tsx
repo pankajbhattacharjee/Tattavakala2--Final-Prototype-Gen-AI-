@@ -1,6 +1,6 @@
 
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -38,8 +38,7 @@ type SocialCaption = {
     hashtags: string;
 };
 
-
-export default function SellPage() {
+function SellContent() {
   const [productName, setProductName] = useState('');
   const [artisanName, setArtisanName] = useState('');
   const [price, setPrice] = useState<number | ''>('');
@@ -305,8 +304,7 @@ export default function SellPage() {
 
 
   return (
-     <div className="bg-background min-h-screen">
-      <MarketplaceHeader />
+    <>
        <div className="bg-secondary/50 border-b">
          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-4">
              <div className="p-3 bg-primary/10 rounded-full text-primary">
@@ -492,6 +490,18 @@ export default function SellPage() {
              <Button onClick={() => setIsShareModalOpen(false)} className="w-full">Close</Button>
         </DialogContent>
       </Dialog>
+    </>
+  );
+}
+
+
+export default function SellPage() {
+  return (
+    <div className="bg-background min-h-screen">
+      <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+        <MarketplaceHeader />
+        <SellContent />
+      </Suspense>
     </div>
   );
 }

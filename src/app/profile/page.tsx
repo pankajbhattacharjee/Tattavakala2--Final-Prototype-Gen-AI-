@@ -1,6 +1,6 @@
 
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -16,7 +16,7 @@ import { Loader } from 'lucide-react';
 
 const pastOrders: any[] = [];
 
-export default function ProfilePage() {
+function ProfileContent() {
     const { user, isUserLoading } = useUser();
     const auth = useAuth();
     const router = useRouter();
@@ -47,9 +47,7 @@ export default function ProfilePage() {
 
 
   return (
-    <div className="bg-background min-h-screen">
-      <MarketplaceHeader />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-6">My Profile</h1>
         <Tabs defaultValue="orders" className="w-full">
             <TabsList>
@@ -119,6 +117,16 @@ export default function ProfilePage() {
             </TabsContent>
         </Tabs>
       </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <div className="bg-background min-h-screen">
+      <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+        <MarketplaceHeader />
+        <ProfileContent />
+      </Suspense>
     </div>
   );
 }

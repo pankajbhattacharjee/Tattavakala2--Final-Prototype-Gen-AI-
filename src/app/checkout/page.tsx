@@ -1,16 +1,16 @@
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import MarketplaceHeader from '@/components/marketplace-header';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CreditCard, Home, CheckCircle } from 'lucide-react';
+import { CreditCard, Home, CheckCircle, Loader } from 'lucide-react';
 import Link from 'next/link';
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const [currentStep, setCurrentStep] = useState('address');
   const [isOrderComplete, setIsOrderComplete] = useState(false);
 
@@ -25,9 +25,7 @@ export default function CheckoutPage() {
 
  if (isOrderComplete) {
       return (
-        <div className="bg-background min-h-screen">
-          <MarketplaceHeader />
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-center" style={{minHeight: 'calc(100vh - 80px)'}}>
+        <div className="flex items-center justify-center" style={{minHeight: 'calc(100vh - 80px)'}}>
             <Card className="max-w-md text-center p-8">
               <CardHeader>
                 <div className="mx-auto bg-green-100 rounded-full h-16 w-16 flex items-center justify-center">
@@ -44,13 +42,10 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
           </div>
-        </div>
       );
   }
 
   return (
-    <div className="bg-background min-h-screen">
-      <MarketplaceHeader />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-6 text-center">Checkout</h1>
         <div className="max-w-2xl mx-auto">
@@ -128,6 +123,16 @@ export default function CheckoutPage() {
           </Tabs>
         </div>
       </div>
+  );
+}
+
+export default function CheckoutPage() {
+    return (
+    <div className="bg-background min-h-screen">
+       <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+        <MarketplaceHeader />
+        <CheckoutContent/>
+      </Suspense>
     </div>
   );
 }

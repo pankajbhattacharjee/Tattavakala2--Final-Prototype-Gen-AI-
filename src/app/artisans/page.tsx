@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Video, Mic, Sun, User, Camera,Youtube, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -152,7 +153,6 @@ function ArtisansContent() {
                                 height="100%" 
                                 src="https://www.youtube.com/embed/RU50X3y1SJ4" 
                                 title="YouTube video player" 
-                                frameBorder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                 allowFullScreen>
                             </iframe>
@@ -244,14 +244,12 @@ function ArtisansContent() {
 
 function PageWithHeaderAndSuspense() {
   return (
-    <>
+     <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader className="animate-spin h-8 w-8" /></div>}>
       <MarketplaceHeader />
       <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
-        <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader className="animate-spin h-8 w-8" /></div>}>
           <ArtisansContent />
-        </Suspense>
       </div>
-    </>
+    </Suspense>
   );
 }
 
