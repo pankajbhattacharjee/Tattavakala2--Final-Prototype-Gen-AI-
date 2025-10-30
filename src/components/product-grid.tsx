@@ -31,6 +31,8 @@ const priceRangeToValue = (range: string) => {
 
 export default function ProductGrid({ searchQuery = '', filters }: ProductGridProps) {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [activeTab, setActiveTab] = useState(categories[0]);
+
 
   useEffect(() => {
     const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
@@ -49,29 +51,33 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
     setAllProducts(combinedProducts.reverse());
   }, []);
 
-  const filteredProducts = allProducts.filter(product => {
-      const searchMatch =
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.region.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const regionMatch = filters.region.length === 0 || filters.region.includes(product.region);
-      
-      const materialMatch = filters.material.length === 0 || filters.material.includes(product.category) || filters.material.includes(product.type);
+  const getFilteredProducts = (category?: string) => {
+      return allProducts.filter(product => {
+          const searchMatch =
+              product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              product.region.toLowerCase().includes(searchQuery.toLowerCase());
+          
+          const regionMatch = filters.region.length === 0 || filters.region.includes(product.region);
+          
+          const materialMatch = filters.material.length === 0 || filters.material.includes(product.category) || filters.material.includes(product.type);
 
-      const priceMatch = filters.price.length === 0 || filters.price.some(range => {
-          const priceLimits = priceRangeToValue(range);
-          if (!priceLimits) return false;
-          return product.price >= priceLimits.min && product.price <= priceLimits.max;
+          const priceMatch = filters.price.length === 0 || filters.price.some(range => {
+              const priceLimits = priceRangeToValue(range);
+              if (!priceLimits) return false;
+              return product.price >= priceLimits.min && product.price <= priceLimits.max;
+          });
+
+          const categoryMatch = category ? product.type === category : true;
+
+          return searchMatch && regionMatch && materialMatch && priceMatch && categoryMatch;
       });
-
-      return searchMatch && regionMatch && materialMatch && priceMatch;
-  });
+  }
 
   return (
     <div>
-      <Tabs defaultValue="Textiles" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="border-b border-border rounded-none bg-transparent p-0 h-auto mb-6 justify-start overflow-x-auto">
           {categories.map((category) => (
             <TabsTrigger 
@@ -86,7 +92,7 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
         {categories.map((category) => (
           <TabsContent key={category} value={category}>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredProducts.filter(p => p.type === category).map((product) => (
+              {getFilteredProducts(category).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

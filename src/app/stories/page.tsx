@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, Loader } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/components/product-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type StoryProduct = Product & {
   storyTitle: string;
@@ -40,7 +41,7 @@ function StoriesContent() {
       storyContent: `Discover the rich heritage and meticulous craftsmanship behind the ${p.name}. Each piece is a testament to the generations of artisans from ${p.region} who have perfected this beautiful ${p.category} technique. ${p.description}`
     }));
 
-    setStories(generatedStories);
+    setStories(generatedStories.reverse());
   }, []);
   
   const handleAddToCart = (product: StoryProduct) => {
@@ -74,31 +75,33 @@ function StoriesContent() {
       </div>
 
       <Dialog open={!!selectedStory} onOpenChange={(isOpen) => !isOpen && setSelectedStory(null)}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
           {selectedStory && (
             <>
               <DialogHeader>
                 <DialogTitle className="text-3xl font-bold">{selectedStory.storyTitle}</DialogTitle>
                 <DialogDescription className="text-md pt-2">{selectedStory.region} | {selectedStory.category}</DialogDescription>
               </DialogHeader>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 overflow-hidden flex-grow">
                 <div className="relative aspect-square">
                   <Image src={selectedStory.image.src} alt={selectedStory.name} fill={true} style={{objectFit:"cover"}} className="rounded-lg" />
                 </div>
-                <div>
-                  <p className="text-muted-foreground mb-4">{selectedStory.storyContent}</p>
-                  <h3 className="font-bold text-lg mb-2">Product Details</h3>
-                  <p className="text-sm mb-4">{selectedStory.description}</p>
-                  <div className="flex items-center justify-between">
-                     <Badge variant="secondary" className="text-xl font-bold text-primary bg-primary/10 border-primary/20">
-                        ₹{selectedStory.price.toLocaleString('en-IN')}
-                    </Badge>
-                     <Button onClick={() => handleAddToCart(selectedStory)}>
-                        <ShoppingCart className="mr-2" />
-                        Add to Cart
-                     </Button>
+                <ScrollArea className="h-full">
+                  <div className="pr-4">
+                    <p className="text-muted-foreground mb-4">{selectedStory.storyContent}</p>
+                    <h3 className="font-bold text-lg mb-2">Product Details</h3>
+                    <p className="text-sm mb-4">{selectedStory.description}</p>
+                    <div className="flex items-center justify-between mt-auto">
+                       <Badge variant="secondary" className="text-xl font-bold text-primary bg-primary/10 border-primary/20">
+                          ₹{selectedStory.price.toLocaleString('en-IN')}
+                      </Badge>
+                       <Button onClick={() => handleAddToCart(selectedStory)}>
+                          <ShoppingCart className="mr-2" />
+                          Add to Cart
+                       </Button>
+                    </div>
                   </div>
-                </div>
+                </ScrollArea>
               </div>
             </>
           )}
