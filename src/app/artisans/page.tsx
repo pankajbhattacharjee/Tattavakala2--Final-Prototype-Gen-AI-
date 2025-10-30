@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Video, Mic, Sun, User, Camera,Youtube, Loader } from 'lucide-react';
+import { Video, Mic, Sun, User, Camera,Youtube, Loader, Calendar, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -34,6 +34,14 @@ const tutorials = [
         title: "How to Create a Google Business Profile",
         embedUrl: "https://www.youtube.com/embed/BElTnAVTYq4"
     }
+];
+
+const workshops = [
+    { title: 'The Weaving Circle', description: 'Sit beside our artisans as they guide you how they work with the core of their heart.' },
+    { title: 'Pottery & Peace', description: 'Get your hands messy with clay, shape your thoughts into art, explore a new version of yourself.' },
+    { title: 'Colors of Nature', description: 'Discover how simple plants and roots transform plain fabric into something truly a magical one.' },
+    { title: 'A Day with the Artisans', description: 'Listen to heartfelt stories from the makers themselves, how they started their journey.' },
+    { title: 'Explore Future of Handcrafts', description: 'A heart-to-heart conversation with Artisans on keeping traditional art alive in this modern, tech based world.' },
 ];
 
 function ArtisansContent() {
@@ -116,6 +124,31 @@ function ArtisansContent() {
                      <Button asChild className="mt-4">
                       <a href="https://chat.google.com/room/AAQAnyA7u6g?cls=5" target="_blank" rel="noopener noreferrer">Join the Google Chat</a>
                      </Button>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Calendar className="text-primary"/>
+                        Workshops & Events
+                    </CardTitle>
+                    <CardDescription>Upcoming: December 26, 2025</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    {workshops.map((workshop, index) => (
+                        <div key={index} className="flex items-start gap-4">
+                           <Avatar>
+                                <AvatarFallback><Users/></AvatarFallback>
+                            </Avatar>
+                           <div>
+                             <h4 className="font-semibold">{workshop.title}</h4>
+                             <p className="text-sm text-muted-foreground">{workshop.description}</p>
+                           </div>
+                        </div>
+                    ))}
+                    <Button className="mt-4" onClick={() => setIsRegisterModalOpen(true)}>
+                        Register Now
+                    </Button>
                 </CardContent>
             </Card>
             <Card>
