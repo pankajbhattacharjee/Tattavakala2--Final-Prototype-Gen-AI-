@@ -105,7 +105,7 @@ function ArtisansContent() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-8">
             <Card>
               <CardHeader>
                 <CardTitle>Discussion Forum: Connect & Share</CardTitle>
@@ -123,6 +123,34 @@ function ArtisansContent() {
                   </div>
                 ))}
               </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Youtube className="text-red-500"/>
+                        Tutorials & Resources
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <p className="text-muted-foreground">Watch our tutorials to learn how to best showcase your products and reach a wider audience.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {tutorials.map((tutorial) => (
+                            <div key={tutorial.title}>
+                                <h4 className="font-semibold mb-2 text-sm">{tutorial.title}</h4>
+                                <div className="aspect-video rounded-lg overflow-hidden">
+                                    <iframe 
+                                        width="100%" 
+                                        height="100%" 
+                                        src={tutorial.embedUrl}
+                                        title={tutorial.title}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowFullScreen>
+                                    </iframe>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
             </Card>
           </div>
 
@@ -151,34 +179,6 @@ function ArtisansContent() {
                         ))}
                     </ul>
                     <Button className="w-full" onClick={() => setIsRegisterModalOpen(true)}>Register Now</Button>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Youtube className="text-red-500"/>
-                        Tutorials & Resources
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <p className="text-muted-foreground">Watch our tutorials to learn how to best showcase your products and reach a wider audience.</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {tutorials.map((tutorial) => (
-                            <div key={tutorial.title}>
-                                <h4 className="font-semibold mb-2 text-sm">{tutorial.title}</h4>
-                                <div className="aspect-video rounded-lg overflow-hidden">
-                                    <iframe 
-                                        width="100%" 
-                                        height="100%" 
-                                        src={tutorial.embedUrl}
-                                        title={tutorial.title}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                        allowFullScreen>
-                                    </iframe>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
                 </CardContent>
             </Card>
           </div>
