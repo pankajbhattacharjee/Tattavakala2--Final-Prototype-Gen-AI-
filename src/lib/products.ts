@@ -23,7 +23,7 @@ export const products = [
     region: "Uttar Pradesh",
     price: 12500,
     image: {
-      src: "https://picsum.photos/seed/saree2/600/600",
+      src: "https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761864901/Screenshot_2025-10-31_042451_evdeku.png",
       hint: "silk saree",
     },
     type: "Textiles",
