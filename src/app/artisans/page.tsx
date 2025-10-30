@@ -261,24 +261,23 @@ function ArtisansContent() {
   )
 }
 
-function PageWithHeaderAndSuspense() {
-  return (
-     <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader className="animate-spin h-8 w-8" /></div>}>
-      <MarketplaceHeader />
-      <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
-          <ArtisansContent />
-      </div>
-    </Suspense>
-  );
+// This is the component that uses useSearchParams
+function ArtisansPageContent() {
+  // useSearchParams needs to be in a client component, which this is.
+  const searchParams = useSearchParams(); 
+  return <ArtisansContent />;
 }
 
+// The page itself now just provides the Suspense boundary.
 export default function ArtisansPage() {
-  const searchParams = useSearchParams();
   return (
     <div className="bg-background min-h-screen">
-      <Suspense>
-        <PageWithHeaderAndSuspense />
-      </Suspense>
+      <MarketplaceHeader />
+      <div className="container mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-8">
+        <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
+          <ArtisansPageContent />
+        </Suspense>
+      </div>
     </div>
   );
 }
