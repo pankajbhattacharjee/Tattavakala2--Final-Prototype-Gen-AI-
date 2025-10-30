@@ -79,7 +79,7 @@ export const products = [
     region: "Karnataka",
     price: 3500,
     image: {
-      src: "https://picsum.photos/seed/sandalwood6/600/600",
+      src: "https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761865369/Screenshot_2025-10-31_043238_hjku6p.png",
       hint: "carved elephant",
     },
     type: "Woodwork",
