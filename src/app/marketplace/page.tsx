@@ -46,17 +46,26 @@ function MarketplaceContent() {
   );
 }
 
-export default function MarketplacePage() {
+function PageWithHeaderAndSuspense() {
   return (
-    <div className="bg-background min-h-screen">
-      <Suspense>
-        <MarketplaceHeader />
-      </Suspense>
+    <>
+      <MarketplaceHeader />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
           <MarketplaceContent />
         </Suspense>
       </div>
+    </>
+  );
+}
+
+
+export default function MarketplacePage() {
+  return (
+    <div className="bg-background min-h-screen">
+      <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+        <PageWithHeaderAndSuspense />
+      </Suspense>
     </div>
   );
 }
