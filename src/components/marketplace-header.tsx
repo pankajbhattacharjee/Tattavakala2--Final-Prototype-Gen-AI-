@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Search, ShoppingCart, User, Users, Menu, Handshake, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -20,7 +20,7 @@ import {
 } from './ui/dropdown-menu';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '@/firebase';
-import { useState } from 'react';
+import React from 'react';
 
 export default function MarketplaceHeader() {
   const pathname = usePathname();
@@ -28,7 +28,7 @@ export default function MarketplaceHeader() {
   const auth = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const defaultSearchQuery = searchParams.get('q') || '';
 
   const navLinks = [
     { href: '/marketplace', label: 'Marketplace' },
@@ -36,8 +36,10 @@ export default function MarketplaceHeader() {
     { href: '/stories', label: 'Stories & Heritage' },
   ];
   
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const searchQuery = formData.get('q') as string;
     router.push(`/marketplace?q=${searchQuery}`);
   };
 
@@ -81,10 +83,10 @@ export default function MarketplaceHeader() {
           <form onSubmit={handleSearch} className="relative hidden lg:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
+              name="q"
               placeholder="Search crafts..." 
               className="pl-10 w-48 bg-background" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              defaultValue={defaultSearchQuery}
             />
           </form>
            
@@ -137,7 +139,7 @@ export default function MarketplaceHeader() {
               </SheetTrigger>
               <SheetContent>
                 <SheetHeader>
-                    <SheetTitle className="sr-only">Navigation</SheetTitle>
+                    <SheetTitle className="text-left">Navigation</SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-6 mt-8">
                    <Link href="/marketplace" className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors">
