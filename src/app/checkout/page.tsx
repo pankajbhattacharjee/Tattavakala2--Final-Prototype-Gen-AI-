@@ -10,18 +10,51 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CreditCard, Home, CheckCircle, Loader } from 'lucide-react';
 import Link from 'next/link';
 import Footer from '@/components/footer';
+import { useUser } from '@/firebase';
+import { placeOrder } from '../actions';
+import { useToast } from '@/hooks/use-toast';
 
 function CheckoutContent() {
   const [currentStep, setCurrentStep] = useState('address');
   const [isOrderComplete, setIsOrderComplete] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { user } = useUser();
+  const { toast } = useToast();
 
   const handleNext = (step: string) => {
     setCurrentStep(step);
   };
   
-  const handlePlaceOrder = () => {
-    // Simulate order placement
-    setIsOrderComplete(true);
+  const handlePlaceOrder = async () => {
+    if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Not Logged In",
+            description: "Please log in to place an order.",
+        });
+        return;
+    }
+    setIsProcessing(true);
+    try {
+        const result = await placeOrder(user.email);
+        if (result.success) {
+            setIsOrderComplete(true);
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Order Failed",
+                description: result.message || "Could not place your order. Please try again.",
+            });
+        }
+    } catch (error) {
+         toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem with your request.",
+        });
+    } finally {
+        setIsProcessing(false);
+    }
   }
 
  if (isOrderComplete) {
@@ -33,7 +66,7 @@ function CheckoutContent() {
                     <CheckCircle className="h-10 w-10 text-green-600"/>
                 </div>
                 <CardTitle className="text-2xl mt-4">Order Placed Successfully!</CardTitle>
-                <CardDescription>Thank you for your purchase. Your order #123456 is being processed.</CardDescription>
+                <CardDescription>Thank you for your purchase. A confirmation email has been sent to {user?.email}.</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-6">You will receive an email confirmation shortly.</p>
@@ -117,7 +150,9 @@ function CheckoutContent() {
                       <Input id="cvc" placeholder="123" />
                     </div>
                   </div>
-                  <Button onClick={handlePlaceOrder} className="w-full">Place Order</Button>
+                  <Button onClick={handlePlaceOrder} className="w-full" disabled={isProcessing}>
+                    {isProcessing ? <Loader className="animate-spin" /> : 'Place Order'}
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
