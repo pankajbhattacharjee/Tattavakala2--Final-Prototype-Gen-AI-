@@ -1,3 +1,4 @@
+
 export const products = [
   {
     id: "prod_1",
@@ -8,7 +9,7 @@ export const products = [
     region: "Bihar",
     price: 2800,
     image: {
-      src: "https://picsum.photos/seed/madhubani1/600/600",
+      src: "https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761864747/Screenshot_2025-10-31_041631_el9o3e.png",
       hint: "madhubani painting",
     },
     type: "Paintings",
