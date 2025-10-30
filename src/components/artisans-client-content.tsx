@@ -1,9 +1,9 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Video, Mic, Sun, User, Camera, Youtube, Calendar, Users } from 'lucide-react';
+import { Video, Mic, Sun, User, Camera, Youtube, Calendar, Users, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -43,13 +43,17 @@ const workshops = [
     { title: 'Explore Future of Handcrafts', description: 'A heart-to-heart conversation with Artisans on keeping traditional art alive in this modern, tech based world.' },
 ];
 
-export default function ArtisansClientContent() {
+
+// This sub-component now contains the hook and logic that depends on it.
+function ArtisanContentWithSearchParams() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
+  // The hook is used here, within the Suspense boundary provided by the parent.
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -95,9 +99,6 @@ export default function ArtisansClientContent() {
     })
   }
   
-  // This component uses useSearchParams, so it must be wrapped in Suspense
-  const searchParams = useSearchParams();
-
   return (
     <>
         <div className="flex items-center gap-4 mb-8">
@@ -260,5 +261,15 @@ export default function ArtisansClientContent() {
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
+}
+
+
+// The default export now just wraps the sub-component in Suspense.
+export default function ArtisansClientContent() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
+      <ArtisanContentWithSearchParams />
+    </Suspense>
+  );
 }
