@@ -1,14 +1,16 @@
 
-import React, { useState, useRef, useEffect, Suspense } from 'react';
+import React, { Suspense } from 'react';
+import MarketplaceHeader from '@/components/marketplace-header';
+import { Loader } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { Video, Mic, Sun, User, Camera,Youtube, Loader, Calendar, Users } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Video, Mic, Sun, User, Camera, Youtube, Calendar, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import MarketplaceHeader from '@/components/marketplace-header';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 
