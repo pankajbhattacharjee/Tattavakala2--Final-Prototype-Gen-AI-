@@ -47,25 +47,16 @@ function MarketplaceContent() {
   );
 }
 
-// A new wrapper component to contain the Suspense boundary and the content
-function PageWithHeaderAndSuspense() {
-  return (
-    <>
-      <MarketplaceHeader />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
-            <MarketplaceContent />
-          </Suspense>
-      </div>
-    </>
-  );
-}
-
 // The main export for the page
 export default function MarketplacePage() {
   return (
     <div className="bg-background min-h-screen">
-      <PageWithHeaderAndSuspense />
+      <MarketplaceHeader />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
+          <MarketplaceContent />
+        </Suspense>
+      </div>
     </div>
   );
 }
