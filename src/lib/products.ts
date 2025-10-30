@@ -37,7 +37,7 @@ export const products = [
     region: "Rajasthan",
     price: 1500,
     image: {
-      src: "https://picsum.photos/seed/pottery3/600/600",
+      src: "https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761865018/Screenshot_2025-10-31_042638_xgw0ua.png",
       hint: "blue pottery",
     },
     type: "Pottery",
