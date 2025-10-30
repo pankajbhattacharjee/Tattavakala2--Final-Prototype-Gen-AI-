@@ -187,7 +187,7 @@ function ArtisansContent() {
                 <CardTitle className="text-red-600">Go Live to Your Audience</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-4">Connect with your followers, showcase your process, and sell your products in real-time.</p>
+                <p className="text-muted-foreground mb-4">Connect with your audience or consumer, showcase your process , and sell your product in real-time.</p>
                 <Button className="w-full bg-red-600 hover:bg-red-700" onClick={() => setIsModalOpen(true)}>
                   <Video className="mr-2 h-4 w-4" /> Start Live Stream
                 </Button>
