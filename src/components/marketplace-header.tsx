@@ -2,11 +2,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Search, ShoppingCart, User, Users, Menu, Handshake, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -27,8 +27,6 @@ export default function MarketplaceHeader() {
   const { user } = useUser();
   const auth = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const defaultSearchQuery = searchParams.get('q') || '';
 
   const navLinks = [
     { href: '/marketplace', label: 'Marketplace' },
@@ -86,7 +84,6 @@ export default function MarketplaceHeader() {
               name="q"
               placeholder="Search crafts..." 
               className="pl-10 w-48 bg-background" 
-              defaultValue={defaultSearchQuery}
             />
           </form>
            
