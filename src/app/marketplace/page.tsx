@@ -48,7 +48,7 @@ function MarketplaceContent() {
 }
 
 // A new wrapper component to contain the Suspense boundary and the content
-function MarketplacePageWithSuspense() {
+function PageWithHeaderAndSuspense() {
   return (
     <>
       <MarketplaceHeader />
@@ -65,7 +65,7 @@ function MarketplacePageWithSuspense() {
 export default function MarketplacePage() {
   return (
     <div className="bg-background min-h-screen">
-      <MarketplacePageWithSuspense />
+      <PageWithHeaderAndSuspense />
     </div>
   );
 }
