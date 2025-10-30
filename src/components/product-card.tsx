@@ -1,7 +1,7 @@
 
 'use client';
 import Image from 'next/image';
-import { ShoppingCart, Zap, Share2, User, Facebook, Instagram, Link as LinkIcon, Store } from 'lucide-react';
+import { ShoppingCart, Zap, Share2, User } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,20 +29,23 @@ export type Product = {
 
 type ProductCardProps = {
   product: Product;
+  onCardClick?: () => void;
 };
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, onCardClick }: ProductCardProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const { addToCart } = useCart();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const { id, name, price, image, region } = product;
     addToCart({ id, name, price, image, region });
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const { id, name, price, image, region } = product;
     addToCart({ id, name, price, image, region });
     router.push('/checkout');
@@ -75,9 +78,17 @@ export default function ProductCard({ product }: ProductCardProps) {
       });
   }
 
+  const openShareModal = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsShareModalOpen(true);
+  }
+
   return (
     <>
-      <Card className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <Card 
+        className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+        onClick={onCardClick}
+      >
         <CardHeader className="p-0">
           <div className="relative bg-muted aspect-square w-full overflow-hidden">
             <Image 
@@ -115,14 +126,14 @@ export default function ProductCard({ product }: ProductCardProps) {
               <Zap className="mr-2"/>
               Buy Now
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => setIsShareModalOpen(true)}>
+            <Button variant="ghost" size="icon" onClick={openShareModal}>
               <Share2 />
             </Button>
           </div>
         </CardFooter>
       </Card>
       <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" onClick={(e) => e.stopPropagation()}>
             <DialogHeader>
                 <DialogTitle>Share "{product.name}"</DialogTitle>
                 <DialogDescription>Choose a platform to share this product.</DialogDescription>
@@ -136,7 +147,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <span className="text-sm">Pinterest</span>
                 </div>
                  <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={handleCopyLink}>
-                    <LinkIcon className="h-8 w-8"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
                     <span className="text-sm">Copy Link</span>
                 </div>
             </div>
@@ -146,5 +157,3 @@ export default function ProductCard({ product }: ProductCardProps) {
     </>
   );
 }
-
-    
