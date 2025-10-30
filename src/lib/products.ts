@@ -51,7 +51,7 @@ export const products = [
     region: "West Bengal",
     price: 950,
     image: {
-      src: "https://picsum.photos/seed/terracotta4/600/600",
+      src: "https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761865180/Screenshot_2025-10-31_042924_ljedjx.png",
       hint: "terracotta horse",
     },
     type: "Pottery",
