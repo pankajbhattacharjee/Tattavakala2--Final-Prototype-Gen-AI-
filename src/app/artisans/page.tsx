@@ -1,3 +1,4 @@
+'use client';
 
 import React, { Suspense } from 'react';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -45,7 +46,6 @@ const workshops = [
 ];
 
 function ArtisansContent() {
-  'use client';
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
