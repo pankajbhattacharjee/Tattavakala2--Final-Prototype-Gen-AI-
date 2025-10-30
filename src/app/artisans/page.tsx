@@ -113,7 +113,9 @@ function ArtisansContent() {
                            </div>
                         </div>
                     ))}
-                     <Button className="mt-4">Join the Google Chat</Button>
+                     <Button asChild className="mt-4">
+                      <a href="https://chat.google.com/room/AAQAnyA7u6g?cls=5" target="_blank" rel="noopener noreferrer">Join the Google Chat</a>
+                     </Button>
                 </CardContent>
             </Card>
             <Card>
