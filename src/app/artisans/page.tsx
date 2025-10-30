@@ -1,6 +1,4 @@
 
-'use client';
-
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Video, Mic, Sun, User, Camera,Youtube, Loader, Calendar, Users } from 'lucide-react';
@@ -45,6 +43,7 @@ const workshops = [
 ];
 
 function ArtisansContent() {
+  'use client';
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
