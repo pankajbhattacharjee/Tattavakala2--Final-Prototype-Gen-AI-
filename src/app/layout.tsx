@@ -3,9 +3,8 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Inter, DM_Serif_Display } from 'next/font/google';
-import { FirebaseClientProvider } from '@/firebase';
-import Footer from '@/components/footer';
-import { CartProvider } from '@/context/CartContext';
+import { Providers } from './providers';
+
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -35,17 +34,10 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
       <body className={cn('font-sans antialiased', fontSans.variable, fontSerif.variable)}>
-        <FirebaseClientProvider>
-          <CartProvider>
-            <div className="flex flex-col min-h-screen">
-              <main className="flex-grow">
-                {children}
-              </main>
-              <Footer />
-            </div>
+        <Providers>
+            {children}
             <Toaster />
-          </CartProvider>
-        </FirebaseClientProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
+import Footer from '@/components/footer';
 
 const regions = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
@@ -497,11 +498,16 @@ function SellContent() {
 
 export default function SellPage() {
   return (
-    <div className="bg-background min-h-screen">
-      <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
-        <MarketplaceHeader />
-        <SellContent />
-      </Suspense>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        <div className="bg-background min-h-screen">
+          <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+            <MarketplaceHeader />
+            <SellContent />
+          </Suspense>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }

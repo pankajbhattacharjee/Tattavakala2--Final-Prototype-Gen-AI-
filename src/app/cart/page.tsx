@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Trash2, ShoppingCart, Loader } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import Footer from '@/components/footer';
 
 function CartContent() {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
@@ -120,13 +121,18 @@ function CartContent() {
 
 export default function CartPage() {
   return (
-    <div className="bg-background min-h-screen">
-      <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
-        <MarketplaceHeader />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <CartContent />
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        <div className="bg-background min-h-screen">
+          <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+            <MarketplaceHeader />
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <CartContent />
+            </div>
+          </Suspense>
         </div>
-      </Suspense>
+      </main>
+      <Footer />
     </div>
   );
 }

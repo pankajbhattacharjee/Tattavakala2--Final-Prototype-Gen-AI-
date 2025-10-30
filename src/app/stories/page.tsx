@@ -12,6 +12,7 @@ import { ShoppingCart, Loader } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/components/product-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Footer from '@/components/footer';
 
 type StoryProduct = Product & {
   storyTitle: string;
@@ -113,13 +114,18 @@ function StoriesContent() {
 
 export default function StoriesPage() {
   return (
-    <div className="bg-background min-h-screen">
-      <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
-        <MarketplaceHeader />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <StoriesContent />
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        <div className="bg-background min-h-screen">
+          <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+            <MarketplaceHeader />
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <StoriesContent />
+            </div>
+          </Suspense>
         </div>
-      </Suspense>
+      </main>
+      <Footer />
     </div>
   );
 }

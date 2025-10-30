@@ -13,6 +13,7 @@ import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Loader } from 'lucide-react';
+import Footer from '@/components/footer';
 
 const pastOrders: any[] = [];
 
@@ -122,11 +123,16 @@ function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <div className="bg-background min-h-screen">
-      <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
-        <MarketplaceHeader />
-        <ProfileContent />
-      </Suspense>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        <div className="bg-background min-h-screen">
+          <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
+            <MarketplaceHeader />
+            <ProfileContent />
+          </Suspense>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
