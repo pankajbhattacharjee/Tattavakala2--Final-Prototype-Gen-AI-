@@ -14,19 +14,12 @@ import MarketplaceHeader from '@/components/marketplace-header';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 
-const forumTopics = [
-    { title: 'Best Pricing Strategy for Handloom Textiles', meta: 'tcssassn tasscnsc tawsown' },
-    { title: 'Men tassescn te Hewo keyscnscald', meta: 'tcssassn tasscnsc tawsown' },
-    { title: 'AI Tool Test for Product Photography', meta: 'tcssassn tasscnsc tawsown' },
-    { title: 'Al tst tcsassn trtkcst hcwssol tktn', meta: 'tcssassn tasscnsc tawsown' }
-];
-
 const workshops = [
-    'Aovernien ptwsnst tltttct',
-    'Aiouw ptwosp bo 3p0a',
-    'Use tkersd is rme Jiitze',
-    'Was rod the citoi tcont olvbiattns',
-    'Revrenne Chnvrd Bow'
+    { title: 'The Weaving Circle', description: 'Sit beside our artisans as they guide you how they work with the core of their heart.' },
+    { title: 'Pottery & Peace', description: 'Get your hands messy with clay, shape your thoughts into art, explore a new version of yourself.' },
+    { title: 'Colors of Nature', description: 'Discover how simple plants and roots transform plain fabric into something truly a magical one.' },
+    { title: 'A Day with the Artisans', description: 'Listen to heartfelt stories from the makers themselves, how they started their journey.' },
+    { title: 'Explore Future of Handcrafts', description: 'A heart-to-heart conversation with Artisans on keeping traditional art alive in this modern, tech based world.' }
 ];
 
 const tutorials = [
@@ -50,7 +43,6 @@ function ArtisansContent() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
-  const searchParams = useSearchParams();
 
 
   useEffect(() => {
@@ -106,23 +98,25 @@ function ArtisansContent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Discussion Forum: Connect & Share</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {forumTopics.map((topic, index) => (
-                  <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent">
-                    <Avatar>
-                        <AvatarFallback><User/></AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">{topic.title}</p>
-                      <p className="text-sm text-muted-foreground">{topic.meta}</p>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
+             <Card>
+                <CardHeader>
+                    <CardTitle>Workshops & Events</CardTitle>
+                    <CardDescription>Upcoming: December 26, 2025</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    {workshops.map((event, index) => (
+                        <div key={index} className="flex items-start gap-4">
+                           <Avatar>
+                                <AvatarFallback><User/></AvatarFallback>
+                            </Avatar>
+                           <div>
+                             <h4 className="font-semibold">{event.title}</h4>
+                             <p className="text-sm text-muted-foreground">{event.description}</p>
+                           </div>
+                        </div>
+                    ))}
+                     <Button className="mt-4" onClick={() => setIsRegisterModalOpen(true)}>Register Now</Button>
+                </CardContent>
             </Card>
             <Card>
                 <CardHeader>
@@ -166,20 +160,15 @@ function ArtisansContent() {
                 </Button>
               </CardContent>
             </Card>
-
             <Card>
-                <CardHeader>
-                    <CardTitle>Workshops & Events</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">Upcaicmde 26 25203</p>
-                    <ul className="space-y-2 list-disc list-inside mb-6">
-                        {workshops.map((event, index) => (
-                            <li key={index} className="text-sm">{event}</li>
-                        ))}
-                    </ul>
-                    <Button className="w-full" onClick={() => setIsRegisterModalOpen(true)}>Register Now</Button>
-                </CardContent>
+              <CardHeader>
+                <CardTitle>Discussion Forum</CardTitle>
+                 <CardDescription>Connect & Share with fellow artisans.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">This is a space for artisans to ask questions, share techniques, and discuss the business of craft. Join the conversation!</p>
+                <Button className="w-full mt-4" variant="outline">Join Discussion</Button>
+              </CardContent>
             </Card>
           </div>
         </div>
@@ -261,6 +250,7 @@ function PageWithHeaderAndSuspense() {
 }
 
 export default function ArtisansPage() {
+  const searchParams = useSearchParams();
   return (
     <div className="bg-background min-h-screen">
       <Suspense>
