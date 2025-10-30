@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Search, ShoppingCart, User, Users, Menu, Handshake, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -42,7 +42,9 @@ export default function MarketplaceHeader() {
   };
 
   const handleLogout = () => {
-    signOut(auth);
+    if (auth) {
+        signOut(auth);
+    }
   };
 
   return (
@@ -134,6 +136,9 @@ export default function MarketplaceHeader() {
                 </Button>
               </SheetTrigger>
               <SheetContent>
+                <SheetHeader>
+                    <SheetTitle className="sr-only">Navigation</SheetTitle>
+                </SheetHeader>
                 <nav className="flex flex-col gap-6 mt-8">
                    <Link href="/marketplace" className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors">
                       <ShoppingCart className="h-5 w-5" /> Marketplace
