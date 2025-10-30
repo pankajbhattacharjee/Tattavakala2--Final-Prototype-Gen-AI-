@@ -29,12 +29,29 @@ const workshops = [
     'Revrenne Chnvrd Bow'
 ];
 
+const tutorials = [
+    {
+        title: "How to Create a Facebook Account",
+        embedUrl: "https://www.youtube.com/embed/RU50X3y1SJ4"
+    },
+    {
+        title: "How to Create an Instagram Account",
+        embedUrl: "https://www.youtube.com/embed/XlLmBUdzFks"
+    },
+    {
+        title: "How to Create a Google Business Profile",
+        embedUrl: "https://www.youtube.com/embed/BElTnAVTYq4"
+    }
+];
+
 function ArtisansContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -145,46 +162,22 @@ function ArtisansContent() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <p className="text-muted-foreground">Watch our tutorials to learn how to best showcase your products and reach a wider audience.</p>
-                    <div>
-                        <h4 className="font-semibold mb-2">How to Create a Facebook Account</h4>
-                        <div className="aspect-video rounded-lg overflow-hidden">
-                            <iframe 
-                                width="100%" 
-                                height="100%" 
-                                src="https://www.youtube.com/embed/RU50X3y1SJ4" 
-                                title="YouTube video player" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowFullScreen>
-                            </iframe>
-                        </div>
-                    </div>
-                     <div>
-                        <h4 className="font-semibold mb-2">How to Create an Instagram Account</h4>
-                        <div className="aspect-video rounded-lg overflow-hidden">
-                            <iframe 
-                                width="100%" 
-                                height="100%" 
-                                src="https://www.youtube.com/embed/XlLmBUdzFks" 
-                                title="YouTube video player" 
-                                frameBorder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowFullScreen>
-                            </iframe>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold mb-2">How to Create a Google Business Profile</h4>
-                        <div className="aspect-video rounded-lg overflow-hidden">
-                            <iframe 
-                                width="100%" 
-                                height="100%" 
-                                src="https://www.youtube.com/embed/BElTnAVTYq4" 
-                                title="YouTube video player" 
-                                frameBorder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowFullScreen>
-                            </iframe>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {tutorials.map((tutorial) => (
+                            <div key={tutorial.title}>
+                                <h4 className="font-semibold mb-2 text-sm">{tutorial.title}</h4>
+                                <div className="aspect-video rounded-lg overflow-hidden">
+                                    <iframe 
+                                        width="100%" 
+                                        height="100%" 
+                                        src={tutorial.embedUrl}
+                                        title={tutorial.title}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowFullScreen>
+                                    </iframe>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </CardContent>
             </Card>
