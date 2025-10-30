@@ -13,6 +13,7 @@ type Filters = {
   price: string[];
 };
 
+// This component uses useSearchParams and must be wrapped in Suspense
 function MarketplaceContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
@@ -46,23 +47,25 @@ function MarketplaceContent() {
   );
 }
 
+// A new wrapper component to contain the Suspense boundary
 function PageWithHeader() {
   return (
     <>
       <MarketplaceHeader />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <MarketplaceContent />
+          <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div>}>
+            <MarketplaceContent />
+          </Suspense>
       </div>
     </>
   );
 }
 
+// The main export for the page
 export default function MarketplacePage() {
   return (
     <div className="bg-background min-h-screen">
-      <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><Loader className="animate-spin h-8 w-8" /></div>}>
-        <PageWithHeader />
-      </Suspense>
+      <PageWithHeader />
     </div>
   );
 }
