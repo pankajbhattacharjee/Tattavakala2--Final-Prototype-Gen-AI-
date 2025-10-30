@@ -65,7 +65,7 @@ export const products = [
     region: "Odisha",
     price: 4200,
     image: {
-      src: "https://picsum.photos/seed/pattachitra5/600/600",
+      src: "https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761865281/Screenshot_2025-10-31_043107_mztcfe.png",
       hint: "scroll painting",
     },
     type: "Paintings",
