@@ -1,12 +1,10 @@
 
-'use client';
 import React, { Suspense } from 'react';
 import MarketplaceHeader from '@/components/marketplace-header';
 import { Loader } from 'lucide-react';
 import ArtisansClientContent from '@/components/artisans-client-content';
 import Footer from '@/components/footer';
 
-// The page itself now just provides the Suspense boundary.
 export default function ArtisansPage() {
   return (
     <div className="flex flex-col min-h-screen">
