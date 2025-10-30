@@ -14,12 +14,11 @@ import MarketplaceHeader from '@/components/marketplace-header';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 
-const workshops = [
-    { title: 'The Weaving Circle', description: 'Sit beside our artisans as they guide you how they work with the core of their heart.' },
-    { title: 'Pottery & Peace', description: 'Get your hands messy with clay, shape your thoughts into art, explore a new version of yourself.' },
-    { title: 'Colors of Nature', description: 'Discover how simple plants and roots transform plain fabric into something truly a magical one.' },
-    { title: 'A Day with the Artisans', description: 'Listen to heartfelt stories from the makers themselves, how they started their journey.' },
-    { title: 'Explore Future of Handcrafts', description: 'A heart-to-heart conversation with Artisans on keeping traditional art alive in this modern, tech based world.' }
+const discussions = [
+    { title: 'Find the Right Price for Your Handmade Creations', description: 'Discuss how artisans can price their handcrafted products fairly staying in this competitive world.' },
+    { title: 'Build an Digital Presence as an Artisan', description: 'Share tips, stories, and strategies on how you showcase your craft beautifully in the digital world.' },
+    { title: 'Use AI Tools for Product Photography', description: 'Learn how modern tools can help capture your handmade pieces in the best light to enhance their authenticity.' },
+    { title: 'Challenges in Traditional Craft Preservation', description: 'An open talk on how to keep cultural art forms alive in today’s fast-changing world.' },
 ];
 
 const tutorials = [
@@ -100,11 +99,10 @@ function ArtisansContent() {
           <div className="lg:col-span-2 space-y-8">
              <Card>
                 <CardHeader>
-                    <CardTitle>Workshops & Events</CardTitle>
-                    <CardDescription>Upcoming: December 26, 2025</CardDescription>
+                    <CardTitle>Join the Tattvakala community in Google Chat!</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {workshops.map((event, index) => (
+                    {discussions.map((event, index) => (
                         <div key={index} className="flex items-start gap-4">
                            <Avatar>
                                 <AvatarFallback><User/></AvatarFallback>
@@ -115,7 +113,7 @@ function ArtisansContent() {
                            </div>
                         </div>
                     ))}
-                     <Button className="mt-4" onClick={() => setIsRegisterModalOpen(true)}>Register Now</Button>
+                     <Button className="mt-4">Join the Google Chat</Button>
                 </CardContent>
             </Card>
             <Card>
@@ -158,16 +156,6 @@ function ArtisansContent() {
                 <Button className="w-full bg-red-600 hover:bg-red-700" onClick={() => setIsModalOpen(true)}>
                   <Video className="mr-2 h-4 w-4" /> Start Live Stream
                 </Button>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Discussion Forum</CardTitle>
-                 <CardDescription>Connect & Share with fellow artisans.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">This is a space for artisans to ask questions, share techniques, and discuss the business of craft. Join the conversation!</p>
-                <Button className="w-full mt-4" variant="outline">Join Discussion</Button>
               </CardContent>
             </Card>
           </div>
