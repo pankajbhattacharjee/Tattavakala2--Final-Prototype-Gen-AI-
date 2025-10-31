@@ -66,12 +66,21 @@ function SellContent() {
   const router = useRouter();
   const firestore = useFirestore();
   const { user } = useUser();
+  const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
 
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
+        // Check for microphone permission on component mount
+        navigator.permissions.query({ name: 'microphone' as PermissionName }).then(permissionStatus => {
+            setHasMicPermission(permissionStatus.state === 'granted');
+            permissionStatus.onchange = () => {
+                setHasMicPermission(permissionStatus.state === 'granted');
+            };
+        });
+
       if (typeof window !== 'undefined') {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
@@ -93,7 +102,13 @@ function SellContent() {
             };
 
             recognition.onerror = (event: any) => {
-                if (event.error !== 'not-allowed') {
+                if (event.error === 'not-allowed') {
+                     toast({
+                        variant: 'destructive',
+                        title: 'Microphone Access Denied',
+                        description: 'Please enable microphone permissions in your browser settings.',
+                    });
+                } else {
                     toast({
                         variant: 'destructive',
                         title: 'Voice Recognition Error',
@@ -111,7 +126,23 @@ function SellContent() {
       }
     }, [toast]);
     
-    const handleListen = () => {
+    const requestMicPermission = async () => {
+        try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            setHasMicPermission(true);
+            return true;
+        } catch (error) {
+            setHasMicPermission(false);
+            toast({
+                variant: 'destructive',
+                title: 'Microphone Access Denied',
+                description: 'Please enable microphone permissions in your browser settings.',
+            });
+            return false;
+        }
+    };
+    
+    const handleListen = async () => {
         if (!recognitionRef.current) {
              toast({
                 variant: 'destructive',
@@ -125,20 +156,20 @@ function SellContent() {
             recognitionRef.current.stop();
             setIsListening(false);
         } else {
-            try {
-                recognitionRef.current.start();
-                setIsListening(true);
-                toast({ title: 'Listening...', description: 'Start speaking to add context.' });
-            } catch (e) {
-                 toast({
-                    variant: 'destructive',
-                    title: 'Could not start listening',
-                    description: 'Please ensure microphone permissions are enabled.',
-                });
-                setIsListening(false);
+            const permissionGranted = hasMicPermission || (await requestMicPermission());
+            if (permissionGranted) {
+                try {
+                    recognitionRef.current.start();
+                    setIsListening(true);
+                    toast({ title: 'Listening...', description: 'Start speaking to add context.' });
+                } catch (e) {
+                    // This might catch errors if speech recognition is already active
+                    setIsListening(false);
+                }
             }
         }
     };
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
