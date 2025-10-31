@@ -295,7 +295,7 @@ function SellContent() {
             },
         };
 
-        const productDocRef = doc(firestore, 'products', productId);
+        const productDocRef = doc(firestore, 'artisans', user.uid, 'products', productId);
         await setDoc(productDocRef, newProduct);
 
         toast({
