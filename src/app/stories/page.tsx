@@ -1,6 +1,6 @@
 
 'use client';
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -14,6 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Footer from '@/components/footer';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
+import { products as initialProducts } from '@/lib/products';
 
 
 type StoryProduct = Product & {
@@ -30,7 +31,20 @@ function StoriesContent() {
     if (!firestore) return null;
     return collection(firestore, 'products');
   }, [firestore]);
-  const { data: allProducts, isLoading } = useCollection<Product>(productsCollectionRef);
+  const { data: firestoreProducts, isLoading } = useCollection<Product>(productsCollectionRef);
+
+  const allProducts = useMemo(() => {
+    const combinedProducts = [...initialProducts];
+    if (firestoreProducts) {
+        const initialProductIds = new Set(initialProducts.map(p => p.id));
+        firestoreProducts.forEach(fp => {
+            if (!initialProductIds.has(fp.id)) {
+                combinedProducts.push(fp);
+            }
+        });
+    }
+    return combinedProducts;
+  }, [firestoreProducts]);
 
 
   useEffect(() => {
@@ -49,7 +63,7 @@ function StoriesContent() {
     addToCart({ id, name, price, image, region });
   }
 
-  if (isLoading) {
+  if (isLoading && stories.length === 0) {
     return (
         <div className="flex justify-center items-center h-64">
             <Loader className="animate-spin h-8 w-8" />
