@@ -53,7 +53,6 @@ function ArtisanContentWithSearchParams() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
-  // The hook is used here, within the Suspense boundary provided by the parent.
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -238,7 +237,7 @@ function ArtisanContentWithSearchParams() {
             </DialogDescription>
           </DialogHeader>
           <div className="relative mt-4">
-            <video ref={videoRef} className="w-full aspect-video rounded-md bg-black" autoPlay muted playsInline />
+             <video ref={videoRef} className="w-full aspect-video rounded-md bg-black" autoPlay muted playsInline />
             {hasCameraPermission === false && (
                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
                 <Alert variant="destructive" className="m-4">
@@ -264,7 +263,7 @@ function ArtisanContentWithSearchParams() {
                 <Button variant="outline"><Mic className="mr-2"/> Mute</Button>
                 <Button variant="outline"><Video className="mr-2"/> Stop Video</Button>
              </div>
-             <Button size="lg" disabled={!hasCameraPermission} className="bg-red-600 hover:bg-red-700" onClick={handleGoLive}>
+             <Button size="lg" disabled={hasCameraPermission !== true} className="bg-red-600 hover:bg-red-700" onClick={handleGoLive}>
                {isLive ? 'Stop Live' : 'Go Live Now'}
              </Button>
           </div>
