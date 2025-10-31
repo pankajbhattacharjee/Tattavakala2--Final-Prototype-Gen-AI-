@@ -108,39 +108,19 @@ export default function LandingPage() {
           </header>
           
           <main className="relative z-0 flex items-center justify-center min-h-screen p-4">
-            <Card className="relative w-full max-w-4xl bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
-                <CardContent className="p-0 flex flex-col md:flex-row items-center gap-8">
-                    <div className="md:w-1/2 relative aspect-square">
-                        <Image
-                            src="https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761864901/Screenshot_2025-10-31_042451_evdeku.png"
-                            alt="Hand-Woven Banarasi Silk Saree"
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-
-                    <div className="md:w-1/2 p-8 md:p-12 text-left">
-                        <h1 className="text-4xl md:text-5xl font-bold font-serif text-primary !leading-tight drop-shadow-sm">
-                          Join India's Handcrafted Revolution
-                        </h1>
-                        
-                        <div className="flex my-6">
-                            <div className="flex items-start gap-3">
-                                 <div className="w-px h-12 bg-destructive/50 mt-1"></div>
-                                 <p className="text-left text-muted-foreground text-base">
-                                   A place where artisans share their craft and buyers discover culture in every piece.
-                                 </p>
-                            </div>
-                        </div>
-
-                        <div className="mt-8">
-                          <Button asChild size="lg" className="bg-destructive text-destructive-foreground rounded-full px-12 py-7 text-lg font-semibold hover:bg-destructive/90 shadow-lg transform hover:scale-105 transition-transform">
-                            <Link href="/marketplace">GET STARTED</Link>
-                          </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="text-center animate-slide-up">
+              <h1 className="text-5xl md:text-7xl font-bold font-serif text-primary !leading-tight drop-shadow-lg">
+                Tattvakala
+              </h1>
+              <p className="mt-4 text-lg md:text-xl text-foreground/90 max-w-2xl mx-auto">
+                A place where artisans share their craft and buyers discover culture in every piece.
+              </p>
+              <div className="mt-8">
+                <Button asChild size="lg" className="bg-destructive text-destructive-foreground rounded-full px-12 py-7 text-lg font-semibold hover:bg-destructive/90 shadow-lg transform hover:scale-105 transition-transform">
+                  <Link href="/marketplace">GET STARTED</Link>
+                </Button>
+              </div>
+            </div>
           </main>
 
           <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
