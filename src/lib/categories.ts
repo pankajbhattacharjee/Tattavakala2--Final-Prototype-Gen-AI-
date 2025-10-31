@@ -2,7 +2,7 @@ export const categories = [
   "Textiles",
   "Pottery",
   "Paintings",
-  "Jewelry",
+  "Jewellery",
   "Leather Goods",
   "Woodwork",
   "Metalwork",

@@ -49,6 +49,7 @@ function ArtisanContentWithSearchParams() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [isLive, setIsLive] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
@@ -99,6 +100,23 @@ function ArtisanContentWithSearchParams() {
     })
   }
   
+  const handleGoLive = () => {
+    if(isLive){
+      setIsLive(false);
+      setIsModalOpen(false);
+      toast({
+          title: 'Live Stream Ended',
+          description: 'You are no longer live.',
+      });
+    } else {
+      setIsLive(true);
+      toast({
+          title: 'You are now LIVE!',
+          description: 'Your audience can now see you.',
+      });
+    }
+  }
+
   return (
     <>
         <div className="flex items-center gap-4 mb-8">
@@ -221,14 +239,22 @@ function ArtisanContentWithSearchParams() {
                 </Alert>
               </div>
             )}
+             {isLive && (
+              <div className="absolute top-4 left-4">
+                <div className="flex items-center gap-2 bg-red-600 text-white font-bold py-1 px-3 rounded-md">
+                  <div className="h-2 w-2 rounded-full bg-white animate-pulse"></div>
+                  LIVE
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex justify-between items-center mt-4">
              <div className="flex items-center gap-4">
                 <Button variant="outline"><Mic className="mr-2"/> Mute</Button>
                 <Button variant="outline"><Video className="mr-2"/> Stop Video</Button>
              </div>
-             <Button size="lg" disabled={!hasCameraPermission} className="bg-red-600 hover:bg-red-700">
-               Go Live Now
+             <Button size="lg" disabled={!hasCameraPermission} className="bg-red-600 hover:bg-red-700" onClick={handleGoLive}>
+               {isLive ? 'Stop Live' : 'Go Live Now'}
              </Button>
           </div>
         </DialogContent>

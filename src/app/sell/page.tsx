@@ -271,7 +271,7 @@ function SellContent() {
     return `${caption} ${socialCaptions.find(c => c.platform === 'facebook')?.hashtags || ''}`;
   }
 
-  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest') => {
+  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest' | 'whatsapp' | 'instagram') => {
       const shareUrl = window.location.origin + '/marketplace'; // A generic link to the marketplace
       const shareText = encodeURIComponent(getShareableContent());
       const shareImage = encodeURIComponent(photoPreview || '');
@@ -292,6 +292,14 @@ function SellContent() {
                  return;
               }
               break;
+          case 'whatsapp':
+              url = `https://api.whatsapp.com/send?text=${shareText}%20${encodeURIComponent(shareUrl)}`;
+              break;
+          case 'instagram':
+              // Instagram sharing is more complex and usually requires using their API or sharing from a mobile device.
+              // This is a placeholder to inform the user.
+              toast({title: 'Share on Instagram', description: 'To share on Instagram, please save the image and post it from your mobile device.'});
+              return;
       }
       window.open(url, '_blank', 'noopener,noreferrer');
   }
@@ -476,6 +484,18 @@ function SellContent() {
                 <DialogDescription>Choose a platform to share this generated content.</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4">
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('whatsapp')}>
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-500 fill-current"><title>WhatsApp</title><path d="M12.04 2.16C6.58 2.16 2.16 6.58 2.16 12.04c0 1.8.48 3.49 1.34 4.95L2.03 22l5.3-1.48c1.39.79 3.01 1.25 4.71 1.25h.01c5.46 0 9.88-4.42 9.88-9.88 0-5.46-4.42-9.88-9.88-9.88zM17.48 15.9c-.15.24-.55.39-.98.5-1.03.26-2.48-.4-3.55-1.48-1.55-1.55-2.58-3.48-2.65-3.63-.07-.15-.55-.71-.55-1.33 0-.61.31-.92.43-1.04.13-.12.29-.15.42-.15h.21c.12 0 .29-.02.44.23.15.26.51.86.55.92.05.06.07.15.02.26-.05.12-.12.18-.24.3l-.15.18c-.09.11-.2.2-.05.39.42.54.85.98 1.33 1.39.59.53 1.17.89 1.81.95.12.01.19.01.26-.04.09-.06.38-.44.51-.59.13-.15.26-.12.42-.07.16.05 1.01.48 1.18.56.17.08.29.12.33.18.04.06.04.35-.11.59z"/></svg>
+                    <span className="text-sm">WhatsApp</span>
+                </div>
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('facebook')}>
+                    <Facebook className="h-8 w-8 text-blue-600"/>
+                    <span className="text-sm">Facebook</span>
+                </div>
+                <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('instagram')}>
+                    <Instagram className="h-8 w-8 text-pink-700"/>
+                    <span className="text-sm">Instagram</span>
+                </div>
                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('pinterest')}>
                     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 fill-current">
                         <title>Pinterest</title>
