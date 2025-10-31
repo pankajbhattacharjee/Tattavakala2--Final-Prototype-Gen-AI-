@@ -26,7 +26,10 @@ function StoriesContent() {
   const [selectedStory, setSelectedStory] = useState<StoryProduct | null>(null);
   const { addToCart } = useCart();
   const firestore = useFirestore();
-  const productsCollectionRef = useMemoFirebase(() => collection(firestore, 'products'), [firestore]);
+  const productsCollectionRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'products');
+  }, [firestore]);
   const { data: allProducts, isLoading } = useCollection<Product>(productsCollectionRef);
 
 
@@ -51,7 +54,7 @@ function StoriesContent() {
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold tracking-tight">Stories & Heritage</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Har sringar prachin hai, naye pehchan banate hai. (Every adornment is ancient, creating new identities.)
+          Discover the stories behind authentic handcrafted treasures.
         </p>
       </div>
 
