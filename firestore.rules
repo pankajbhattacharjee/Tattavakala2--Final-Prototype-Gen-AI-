@@ -7,6 +7,7 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == artisanId;
 
+      // This rule allows anyone to read products, but only the artisan to write them.
       match /products/{productId} {
         allow read: if true;
         allow write: if request.auth != null && request.auth.uid == artisanId;

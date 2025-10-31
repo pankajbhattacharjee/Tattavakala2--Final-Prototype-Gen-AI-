@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useAuth, useFirestore, useUser } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
@@ -258,7 +258,7 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
-    if (!user) {
+    if (!user || !firestore) {
         toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
         return;
     }
@@ -275,7 +275,9 @@ function SellContent() {
     try {
         const productId = `prod_${Date.now()}`;
         const storage = getStorage();
-        const imageRef = ref(storage, `products/${user.uid}/${productId}/${photo.name}`);
+        // The path in Storage can be simpler, as access is controlled by security rules on the metadata (like artisanId)
+        const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
+        const imageRef = ref(storage, imagePath);
         
         const uploadResult = await uploadBytes(imageRef, photo);
         const imageUrl = await getDownloadURL(uploadResult.ref);
@@ -291,10 +293,11 @@ function SellContent() {
             price: price,
             image: {
                 src: imageUrl,
-                hint: productName.toLowerCase(),
+                hint: productName.toLowerCase().split(' ').slice(0,2).join(' '),
             },
         };
 
+        // This is the correct path that matches the security rules
         const productDocRef = doc(firestore, 'artisans', user.uid, 'products', productId);
         await setDoc(productDocRef, newProduct);
 
@@ -310,7 +313,7 @@ function SellContent() {
         toast({
             variant: 'destructive',
             title: 'Publishing Failed',
-            description: 'There was an error saving your product to the database.',
+            description: 'There was an error saving your product. Please check your connection and security rules.',
         });
     } finally {
         setIsPublishing(false);
