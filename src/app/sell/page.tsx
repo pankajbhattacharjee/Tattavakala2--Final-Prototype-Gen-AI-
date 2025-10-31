@@ -253,7 +253,7 @@ function SellContent() {
             artisanId: user.uid,
             name: productName,
             artisanName: artisanName,
-            description: generatedStory,
+            description: userDescription || generatedStory,
             category: category,
             region: locationContext,
             price: price,
@@ -551,4 +551,3 @@ export default function SellPage() {
     </div>
   );
 }
-
