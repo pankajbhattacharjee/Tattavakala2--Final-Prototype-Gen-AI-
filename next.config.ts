@@ -1,0 +1,54 @@
+
+import type {NextConfig} from 'next';
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  output: 'standalone',
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  experimental: {
+  },
+  allowedDevOrigins: [
+    'https://6000-firebase-studio-1761537026032.cluster-iktsryn7xnhpexlu6255bftka4.cloudworkstations.dev',
+  ],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+  turbopack: {
+    root: process.cwd(),
+  },
+};
+
+export default nextConfig;

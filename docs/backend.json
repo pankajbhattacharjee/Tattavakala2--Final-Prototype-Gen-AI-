@@ -1,0 +1,221 @@
+{
+  "entities": {
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a product created by an artisan, including its details, associated images, and AI-generated stories.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the product entity."
+        },
+        "artisanId": {
+          "type": "string",
+          "description": "Reference to the Artisan who created the product. (Relationship: Artisan 1:N Product)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the product."
+        },
+        "location": {
+          "type": "string",
+          "description": "The state/region where the product is from."
+        },
+        "imageIds": {
+          "type": "array",
+          "description": "References to Image entities associated with the product. (Relationship: Product 1:N Image)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "storyId": {
+          "type": "string",
+          "description": "Reference to the Story entity generated for the product. (Relationship: Product 1:1 Story)"
+        }
+      },
+      "required": [
+        "id",
+        "artisanId",
+        "name",
+        "location"
+      ]
+    },
+    "Artisan": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Artisan",
+      "type": "object",
+      "description": "Represents an artisan who creates and sells products.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the artisan entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the artisan."
+        },
+        "contactEmail": {
+          "type": "string",
+          "description": "The email address of the artisan.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "contactEmail"
+      ]
+    },
+    "Image": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Image",
+      "type": "object",
+      "description": "Represents an image uploaded by an artisan for a product.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the image entity."
+        },
+        "url": {
+          "type": "string",
+          "description": "The URL of the uploaded image.",
+          "format": "uri"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to the Product to which the image belongs. (Relationship: Product 1:N Image)"
+        }
+      },
+      "required": [
+        "id",
+        "url"
+      ]
+    },
+    "Story": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Story",
+      "type": "object",
+      "description": "Represents the AI-generated story for a product, potentially in multiple languages.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the story entity."
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to the Product to which the story belongs. (Relationship: Product 1:1 Story)"
+        },
+        "language": {
+          "type": "string",
+          "description": "The language of the story (e.g., 'en', 'es', 'fr')."
+        },
+        "content": {
+          "type": "string",
+          "description": "The text content of the AI-generated story."
+        }
+      },
+      "required": [
+        "id",
+        "productId",
+        "language",
+        "content"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/artisans/{artisanId}",
+        "definition": {
+          "entityName": "Artisan",
+          "schema": {
+            "$ref": "#/backend/entities/Artisan"
+          },
+          "description": "Stores artisan profiles. Artisan ID is used as the document ID.",
+          "params": [
+            {
+              "name": "artisanId",
+              "description": "The unique identifier for the artisan."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/artisans/{artisanId}/products/{productId}",
+        "definition": {
+          "entityName": "Product",
+          "schema": {
+            "$ref": "#/backend/entities/Product"
+          },
+          "description": "Stores products created by the artisan. Product ID is used as the document ID.",
+          "params": [
+            {
+              "name": "artisanId",
+              "description": "The unique identifier for the artisan."
+            },
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/artisans/{artisanId}/products/{productId}/images/{imageId}",
+        "definition": {
+          "entityName": "Image",
+          "schema": {
+            "$ref": "#/backend/entities/Image"
+          },
+          "description": "Stores images associated with a product. Image ID is used as the document ID.",
+          "params": [
+            {
+              "name": "artisanId",
+              "description": "The unique identifier for the artisan."
+            },
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            },
+            {
+              "name": "imageId",
+              "description": "The unique identifier for the image."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/artisans/{artisanId}/products/{productId}/stories/{storyId}",
+        "definition": {
+          "entityName": "Story",
+          "schema": {
+            "$ref": "#/backend/entities/Story"
+          },
+          "description": "Stores AI-generated stories for a product in different languages. Story ID is used as the document ID.",
+          "params": [
+            {
+              "name": "artisanId",
+              "description": "The unique identifier for the artisan."
+            },
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            },
+            {
+              "name": "storyId",
+              "description": "The unique identifier for the story."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability, aligning with the specified principles. It leverages path-based ownership for artisans and their associated data (products, images, and stories). Each artisan has a dedicated collection, simplifying security rules and maintaining data integrity. Denormalization isn't explicitly required here, as the relationships are primarily 1:N with path-based ownership, naturally scoping access within the artisan's context. This supports the QAPs (Rules Are Not Filters) by allowing secure list operations within each artisan's subcollections. The structure promotes easy debugging due to its explicit and predictable nature."
+  }
+}
