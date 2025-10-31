@@ -20,7 +20,7 @@ import {
 import { useAuth, useUser } from '@/firebase';
 import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
 import { signOut } from 'firebase/auth';
-import Footer from '@/components/footer';
+import Image from 'next/image';
 
 const languages = [
   { code: 'en', name: 'English' },
@@ -106,15 +106,26 @@ export default function LandingPage() {
           </header>
           
           <main className="relative z-0 flex items-center justify-center min-h-screen p-4">
-            <div className="text-center animate-slide-up">
-              <h1 className="text-5xl md:text-7xl font-bold font-serif text-primary !leading-tight drop-shadow-lg">
-                Tattvakala
+            <div className="relative bg-card p-8 sm:p-12 rounded-2xl shadow-2xl max-w-lg w-full text-center animate-slide-up">
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+                <div className="bg-card p-2 rounded-xl shadow-lg">
+                   <Image
+                    src="https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761962386/logo_lqvxfl.png"
+                    alt="Tattvakala Logo"
+                    width={96}
+                    height={96}
+                    className="rounded-lg"
+                  />
+                </div>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold font-serif text-primary !leading-tight drop-shadow-sm mt-8">
+                Join India's Handcrafted Revolution
               </h1>
-              <p className="mt-4 text-lg md:text-xl text-foreground/90 max-w-2xl mx-auto">
+              <p className="mt-4 text-md text-foreground/80 max-w-md mx-auto">
                 A place where artisans share their craft and buyers discover culture in every piece.
               </p>
               <div className="mt-8">
-                <Button asChild size="lg" className="bg-destructive text-destructive-foreground rounded-full px-12 py-7 text-lg font-semibold hover:bg-destructive/90 shadow-lg transform hover:scale-105 transition-transform">
+                <Button asChild size="lg" className="bg-destructive text-destructive-foreground rounded-full px-10 py-6 text-base font-semibold hover:bg-destructive/90 shadow-lg transform hover:scale-105 transition-transform">
                   <Link href="/marketplace">GET STARTED</Link>
                 </Button>
               </div>
@@ -137,7 +148,6 @@ export default function LandingPage() {
           </Dialog>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
