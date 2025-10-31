@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -13,8 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collectionGroup, getDocs, query } from 'firebase/firestore';
 
 
 type Filters = {
@@ -43,11 +44,29 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
   const firestore = useFirestore();
-    const productsCollectionRef = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'products');
+  const [firestoreProducts, setFirestoreProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      if (!firestore) return;
+      setIsLoading(true);
+      try {
+        const productsQuery = query(collectionGroup(firestore, 'products'));
+        const querySnapshot = await getDocs(productsQuery);
+        const products: Product[] = [];
+        querySnapshot.forEach((doc) => {
+          products.push(doc.data() as Product);
+        });
+        setFirestoreProducts(products);
+      } catch (error) {
+        console.error("Error fetching firestore products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProducts();
   }, [firestore]);
-  const { data: firestoreProducts, isLoading } = useCollection<Product>(productsCollectionRef);
 
   const allProducts = useMemo(() => {
     const combinedProducts = [...initialProducts];

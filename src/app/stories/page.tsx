@@ -13,7 +13,7 @@ import { Product } from '@/components/product-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Footer from '@/components/footer';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, collectionGroup, getDocs, query } from 'firebase/firestore';
 import { products as initialProducts } from '@/lib/products';
 
 
@@ -27,11 +27,8 @@ function StoriesContent() {
   const [selectedStory, setSelectedStory] = useState<StoryProduct | null>(null);
   const { addToCart } = useCart();
   const firestore = useFirestore();
-  const productsCollectionRef = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'products');
-  }, [firestore]);
-  const { data: firestoreProducts, isLoading } = useCollection<Product>(productsCollectionRef);
+  const [firestoreProducts, setFirestoreProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const allProducts = useMemo(() => {
     const combinedProducts = [...initialProducts];
@@ -45,6 +42,28 @@ function StoriesContent() {
     }
     return combinedProducts;
   }, [firestoreProducts]);
+
+
+  useEffect(() => {
+    async function fetchProducts() {
+      if (!firestore) return;
+      setIsLoading(true);
+      try {
+        const productsQuery = query(collectionGroup(firestore, 'products'));
+        const querySnapshot = await getDocs(productsQuery);
+        const products: Product[] = [];
+        querySnapshot.forEach((doc) => {
+          products.push(doc.data() as Product);
+        });
+        setFirestoreProducts(products);
+      } catch (error) {
+        console.error("Error fetching firestore products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, [firestore]);
 
 
   useEffect(() => {

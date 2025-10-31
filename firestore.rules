@@ -6,11 +6,11 @@ service cloud.firestore {
     match /artisans/{artisanId} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == artisanId;
-    }
 
-    match /products/{productId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.resource.data.artisanId == request.auth.uid;
+      match /products/{productId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == artisanId;
+      }
     }
   }
 }

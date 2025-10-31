@@ -156,7 +156,7 @@ function SellContent() {
             recognitionRef.current.stop();
             setIsListening(false);
         } else {
-            const permissionGranted = hasMicPermission || (await requestMicPermission());
+            const permissionGranted = hasMicPermission === true || (await requestMicPermission());
             if (permissionGranted) {
                 try {
                     recognitionRef.current.start();
