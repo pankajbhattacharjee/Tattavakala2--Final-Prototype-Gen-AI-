@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 
 
@@ -44,7 +44,10 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
   const firestore = useFirestore();
-  const productsCollectionRef = collection(firestore, 'products');
+    const productsCollectionRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'products');
+  }, [firestore]);
   const { data: allProducts, isLoading } = useCollection<Product>(productsCollectionRef);
 
 
