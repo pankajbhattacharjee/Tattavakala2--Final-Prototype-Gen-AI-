@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProductCard from './product-card';
@@ -47,7 +47,20 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
     if (!firestore) return null;
     return collection(firestore, 'products');
   }, [firestore]);
-  const { data: allProducts, isLoading } = useCollection<Product>(productsCollectionRef);
+  const { data: firestoreProducts, isLoading } = useCollection<Product>(productsCollectionRef);
+
+  const allProducts = useMemo(() => {
+    const combinedProducts = [...initialProducts];
+    if (firestoreProducts) {
+        const initialProductIds = new Set(initialProducts.map(p => p.id));
+        firestoreProducts.forEach(fp => {
+            if (!initialProductIds.has(fp.id)) {
+                combinedProducts.push(fp);
+            }
+        });
+    }
+    return combinedProducts;
+  }, [firestoreProducts]);
 
 
   const getFilteredProducts = (category?: string) => {
