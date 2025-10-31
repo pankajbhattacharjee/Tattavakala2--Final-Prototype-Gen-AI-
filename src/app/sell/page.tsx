@@ -16,6 +16,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
+import { useAuth, useFirestore, useUser } from '@/firebase';
+import { setDoc, doc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 
 const regions = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
@@ -56,8 +60,11 @@ function SellContent() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const recognitionRef = useRef<any>(null);
   const router = useRouter();
+  const firestore = useFirestore();
+  const { user } = useUser();
 
 
   const { toast } = useToast();
@@ -218,51 +225,64 @@ function SellContent() {
     }
   }
 
-  const handlePublish = () => {
-    if (!photoPreview || !productName || !generatedStory || !artisanName || !price || !category) {
+  const handlePublish = async () => {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
+        return;
+    }
+    if (!photo || !productName || !generatedStory || !artisanName || !price || !category || !locationContext) {
         toast({
             variant: 'destructive',
             title: 'Cannot Publish',
-            description: 'Please ensure you have a product name, artisan name, price, category, photo, and generated story before publishing.',
+            description: 'Please ensure all fields are filled, a photo is uploaded, and a story is generated.',
         });
         return;
     }
 
+    setIsPublishing(true);
     try {
+        const productId = `prod_${Date.now()}`;
+        const storage = getStorage();
+        const imageRef = ref(storage, `products/${user.uid}/${productId}/${photo.name}`);
+        
+        const uploadResult = await uploadBytes(imageRef, photo);
+        const imageUrl = await getDownloadURL(uploadResult.ref);
+
         const newProduct = {
-            id: `prod_${Date.now()}`,
+            id: productId,
+            artisanId: user.uid,
             name: productName,
             artisanName: artisanName,
             description: generatedStory,
             category: category,
             region: locationContext,
             price: price,
-            type: category, // Using category for the 'type' field to align with filtering
             image: {
-                src: photoPreview,
+                src: imageUrl,
                 hint: productName.toLowerCase(),
             },
+            type: category, 
         };
 
-        const existingProducts = JSON.parse(localStorage.getItem('products') || '[]');
-        const updatedProducts = [...existingProducts, newProduct];
-        localStorage.setItem('products', JSON.stringify(updatedProducts));
+        const productDocRef = doc(firestore, 'products', productId);
+        await setDoc(productDocRef, newProduct);
 
         toast({
             title: 'Product Published!',
             description: `${productName} is now live on the marketplace.`,
         });
 
-        // Redirect to marketplace to see the new product
         router.push('/marketplace');
 
     } catch (error) {
-        console.error('Failed to save product to localStorage', error);
+        console.error('Failed to publish product:', error);
         toast({
             variant: 'destructive',
             title: 'Publishing Failed',
-            description: 'There was an error saving your product.',
+            description: 'There was an error saving your product to the database.',
         });
+    } finally {
+        setIsPublishing(false);
     }
   };
   
@@ -466,9 +486,9 @@ function SellContent() {
                                         <Share2 className="mr-2 h-4 w-4"/>
                                         Share
                                     </Button>
-                                    <Button onClick={handlePublish} disabled={!generatedStory}>
-                                        <Send className="mr-2 h-4 w-4" />
-                                        Publish to Marketplace
+                                    <Button onClick={handlePublish} disabled={isPublishing || !generatedStory}>
+                                        {isPublishing ? <Loader className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                        {isPublishing ? 'Publishing...' : 'Publish to Marketplace'}
                                     </Button>
                                 </div>
                             </CardContent>
@@ -531,3 +551,4 @@ export default function SellPage() {
     </div>
   );
 }
+

@@ -14,6 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useCollection, useFirestore } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 
 type Filters = {
@@ -38,29 +40,16 @@ const priceRangeToValue = (range: string) => {
 }
 
 export default function ProductGrid({ searchQuery = '', filters }: ProductGridProps) {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState(categories[0]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
+  const firestore = useFirestore();
+  const productsCollectionRef = collection(firestore, 'products');
+  const { data: allProducts, isLoading } = useCollection<Product>(productsCollectionRef);
 
-  useEffect(() => {
-    const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
-    const combinedProducts: Product[] = [...initialProducts];
-    
-    const initialIds = new Set(initialProducts.map(p => p.id));
-    storedProducts.forEach((sp: Product) => {
-      if (!initialIds.has(sp.id)) {
-        combinedProducts.push(sp);
-        if (!categories.includes(sp.type)) {
-            categories.push(sp.type);
-        }
-      }
-    });
-
-    setAllProducts(combinedProducts.reverse());
-  }, []);
 
   const getFilteredProducts = (category?: string) => {
+      if (!allProducts) return [];
       const activeCategory = category || activeTab;
       return allProducts.filter(product => {
           const searchMatch =

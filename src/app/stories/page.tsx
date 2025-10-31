@@ -13,6 +13,9 @@ import { useCart } from '@/context/CartContext';
 import { Product } from '@/components/product-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Footer from '@/components/footer';
+import { useCollection, useFirestore } from '@/firebase';
+import { collection } from 'firebase/firestore';
+
 
 type StoryProduct = Product & {
   storyTitle: string;
@@ -23,27 +26,21 @@ function StoriesContent() {
   const [stories, setStories] = useState<StoryProduct[]>([]);
   const [selectedStory, setSelectedStory] = useState<StoryProduct | null>(null);
   const { addToCart } = useCart();
+  const firestore = useFirestore();
+  const productsCollectionRef = collection(firestore, 'products');
+  const { data: allProducts, isLoading } = useCollection<Product>(productsCollectionRef);
+
 
   useEffect(() => {
-    // Combine initial products with products from local storage
-    const storedProducts: Product[] = JSON.parse(localStorage.getItem('products') || '[]');
-    const combinedProducts: Product[] = [...initialProducts];
-    const initialIds = new Set(initialProducts.map(p => p.id));
-    
-    storedProducts.forEach(sp => {
-      if (!initialIds.has(sp.id)) {
-        combinedProducts.push(sp);
-      }
-    });
-
-    const generatedStories = combinedProducts.map(p => ({
-      ...p,
-      storyTitle: `The Art of ${p.name}`,
-      storyContent: `Discover the rich heritage and meticulous craftsmanship behind the ${p.name}. Each piece is a testament to the generations of artisans from ${p.region} who have perfected this beautiful ${p.category} technique. ${p.description}`
-    }));
-
-    setStories(generatedStories.reverse());
-  }, []);
+    if (allProducts) {
+        const generatedStories = allProducts.map(p => ({
+        ...p,
+        storyTitle: `The Art of ${p.name}`,
+        storyContent: `Discover the rich heritage and meticulous craftsmanship behind the ${p.name}. Each piece is a testament to the generations of artisans from ${p.region} who have perfected this beautiful ${p.category} technique. ${p.description}`
+        }));
+        setStories(generatedStories.reverse());
+    }
+  }, [allProducts]);
   
   const handleAddToCart = (product: StoryProduct) => {
     const { id, name, price, image, region } = product;
