@@ -63,7 +63,7 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
           
           const regionMatch = filters.region.length === 0 || filters.region.includes(product.region);
           
-          const materialMatch = filters.material.length === 0 || filters.material.includes(product.category) || filters.material.includes(product.type);
+          const materialMatch = filters.material.length === 0 || filters.material.includes(product.category);
 
           const priceMatch = filters.price.length === 0 || filters.price.some(range => {
               const priceLimits = priceRangeToValue(range);
@@ -71,7 +71,7 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
               return product.price >= priceLimits.min && product.price <= priceLimits.max;
           });
 
-          const categoryMatch = product.type === activeCategory;
+          const categoryMatch = product.category === activeCategory;
 
           return searchMatch && regionMatch && materialMatch && priceMatch && categoryMatch;
       });

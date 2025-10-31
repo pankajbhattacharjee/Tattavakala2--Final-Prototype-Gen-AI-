@@ -24,7 +24,6 @@ export type Product = {
     src: string;
     hint: string;
   };
-  type: string;
 };
 
 type ProductCardProps = {

@@ -262,7 +262,6 @@ function SellContent() {
                 src: imageUrl,
                 hint: productName.toLowerCase(),
             },
-            type: category, 
         };
 
         const productDocRef = doc(firestore, 'products', productId);
