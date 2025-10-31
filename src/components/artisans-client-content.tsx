@@ -48,7 +48,7 @@ const workshops = [
 function ArtisanContentWithSearchParams() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [isLive, setIsLive] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
@@ -58,8 +58,9 @@ function ArtisanContentWithSearchParams() {
 
   useEffect(() => {
     let stream: MediaStream | null = null;
-    if (isModalOpen) {
-      const getCameraPermission = async () => {
+    
+    const getCameraPermission = async () => {
+      if (isModalOpen) {
         try {
           stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           setHasCameraPermission(true);
@@ -70,16 +71,18 @@ function ArtisanContentWithSearchParams() {
         } catch (error) {
           console.error('Error accessing camera:', error);
           setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Camera Access Denied',
-            description: 'Please enable camera and microphone permissions in your browser settings.',
-          });
+          if ((error as Error).name === 'NotAllowedError') {
+             toast({
+              variant: 'destructive',
+              title: 'Camera Access Denied',
+              description: 'Please enable camera and microphone permissions in your browser settings.',
+            });
+          }
         }
-      };
+      }
+    };
 
-      getCameraPermission();
-    }
+    getCameraPermission();
     
     return () => {
       if (stream) {
@@ -103,17 +106,25 @@ function ArtisanContentWithSearchParams() {
   const handleGoLive = () => {
     if(isLive){
       setIsLive(false);
-      setIsModalOpen(false);
+      setIsModalOpen(false); // Close modal when stopping the stream
       toast({
           title: 'Live Stream Ended',
           description: 'You are no longer live.',
       });
     } else {
-      setIsLive(true);
-      toast({
-          title: 'You are now LIVE!',
-          description: 'Your audience can now see you.',
-      });
+      if (hasCameraPermission) {
+        setIsLive(true);
+        toast({
+            title: 'You are now LIVE!',
+            description: 'Your audience can now see you.',
+        });
+      } else {
+         toast({
+            variant: 'destructive',
+            title: 'Cannot Go Live',
+            description: 'Camera and microphone permissions are required.',
+        });
+      }
     }
   }
 
@@ -227,8 +238,8 @@ function ArtisanContentWithSearchParams() {
             </DialogDescription>
           </DialogHeader>
           <div className="relative mt-4">
-            <video ref={videoRef} className="w-full aspect-video rounded-md bg-black" autoPlay muted />
-            {!hasCameraPermission && (
+            <video ref={videoRef} className="w-full aspect-video rounded-md bg-black" autoPlay muted playsInline />
+            {hasCameraPermission === false && (
                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
                 <Alert variant="destructive" className="m-4">
                     <Camera className="h-4 w-4"/>
