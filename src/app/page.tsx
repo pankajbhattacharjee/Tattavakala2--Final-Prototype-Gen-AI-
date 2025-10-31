@@ -108,21 +108,18 @@ export default function LandingPage() {
           </header>
           
           <main className="relative z-0 flex items-center justify-center min-h-screen p-4">
-            <Card className="relative w-full max-w-3xl bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 md:p-12">
-                <CardContent className="p-0 flex flex-col md:flex-row items-start gap-8">
-                    <div className="relative -mt-24 -ml-4 md:-ml-20 shrink-0">
-                        <div className="bg-card p-2 rounded-2xl shadow-lg">
-                            <Image
-                                src="https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761622049/logo.svg_bccelj.png"
-                                alt="Tattvakala Logo"
-                                width={120}
-                                height={120}
-                                className="rounded-xl"
-                            />
-                        </div>
+            <Card className="relative w-full max-w-4xl bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
+                <CardContent className="p-0 flex flex-col md:flex-row items-center gap-8">
+                    <div className="md:w-1/2 relative aspect-square">
+                        <Image
+                            src="https://res.cloudinary.com/dpkhf4cf5/image/upload/v1761864901/Screenshot_2025-10-31_042451_evdeku.png"
+                            alt="Hand-Woven Banarasi Silk Saree"
+                            fill
+                            className="object-cover"
+                        />
                     </div>
 
-                    <div className="text-left">
+                    <div className="md:w-1/2 p-8 md:p-12 text-left">
                         <h1 className="text-4xl md:text-5xl font-bold font-serif text-primary !leading-tight drop-shadow-sm">
                           Join India's Handcrafted Revolution
                         </h1>
@@ -166,5 +163,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
