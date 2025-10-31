@@ -19,6 +19,7 @@ import Footer from '@/components/footer';
 import { useAuth, useFirestore, useUser } from '@/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Link from 'next/link';
 
 
 const regions = [
