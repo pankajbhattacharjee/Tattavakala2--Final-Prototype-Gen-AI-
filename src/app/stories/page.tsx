@@ -49,6 +49,14 @@ function StoriesContent() {
     addToCart({ id, name, price, image, region });
   }
 
+  if (isLoading) {
+    return (
+        <div className="flex justify-center items-center h-64">
+            <Loader className="animate-spin h-8 w-8" />
+        </div>
+    );
+  }
+
   return (
     <>
       <div className="text-center mb-12">
@@ -60,23 +68,25 @@ function StoriesContent() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {stories.map((story) => (
-          <Card key={story.id} className="overflow-hidden cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedStory(story)}>
-            <CardHeader className="p-0">
-              <div className="relative aspect-video w-full">
-                <Image src={story.image.src} alt={story.name} fill={true} style={{objectFit:"cover"}} data-ai-hint={story.image.hint} />
-              </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <CardTitle className="text-xl font-semibold mb-2">{story.storyTitle}</CardTitle>
-              <CardDescription className="line-clamp-3">{story.storyContent}</CardDescription>
-            </CardContent>
-          </Card>
+          story.image && (
+            <Card key={story.id} className="overflow-hidden cursor-pointer hover:shadow-xl transition-shadow" onClick={() => setSelectedStory(story)}>
+                <CardHeader className="p-0">
+                <div className="relative aspect-video w-full">
+                    <Image src={story.image.src} alt={story.name} fill={true} style={{objectFit:"cover"}} data-ai-hint={story.image.hint} />
+                </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                <CardTitle className="text-xl font-semibold mb-2">{story.storyTitle}</CardTitle>
+                <CardDescription className="line-clamp-3">{story.storyContent}</CardDescription>
+                </CardContent>
+            </Card>
+          )
         ))}
       </div>
 
       <Dialog open={!!selectedStory} onOpenChange={(isOpen) => !isOpen && setSelectedStory(null)}>
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
-          {selectedStory && (
+          {selectedStory && selectedStory.image && (
             <>
               <DialogHeader>
                 <DialogTitle className="text-3xl font-bold">{selectedStory.storyTitle}</DialogTitle>
