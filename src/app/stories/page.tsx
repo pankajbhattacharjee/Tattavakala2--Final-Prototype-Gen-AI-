@@ -4,7 +4,6 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import MarketplaceHeader from '@/components/marketplace-header';
-import { products as initialProducts } from '@/lib/products';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import { useCart } from '@/context/CartContext';
 import { Product } from '@/components/product-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Footer from '@/components/footer';
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 
 
@@ -27,7 +26,7 @@ function StoriesContent() {
   const [selectedStory, setSelectedStory] = useState<StoryProduct | null>(null);
   const { addToCart } = useCart();
   const firestore = useFirestore();
-  const productsCollectionRef = collection(firestore, 'products');
+  const productsCollectionRef = useMemoFirebase(() => collection(firestore, 'products'), [firestore]);
   const { data: allProducts, isLoading } = useCollection<Product>(productsCollectionRef);
 
 
