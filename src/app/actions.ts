@@ -10,9 +10,9 @@ import type {
 } from '@/ai/flows';
 
 // This is the base URL for the Genkit flows API.
-// In development, it points to the local Genkit server proxied by Next.js.
+// In development, it points directly to the local Genkit server.
 // In production, it would point to the deployed Cloud Run service URL.
-const GENKIT_API_BASE = process.env.GENKIT_API_BASE || 'http://127.0.0.1:3000/api/flows';
+const GENKIT_API_BASE = process.env.GENKIT_API_BASE || 'http://127.0.0.1:3400/flows';
 
 async function callGenkitFlow<T_IN, T_OUT>(flowId: string, input: T_IN): Promise<T_OUT> {
   const url = `${GENKIT_API_BASE}/${flowId}`;
