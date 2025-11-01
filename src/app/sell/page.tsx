@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser, firebaseApp, FirestorePermissionError, errorEmitter } from '@/firebase';
+import { useFirestore, useUser, firebaseApp } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
@@ -279,20 +279,22 @@ function SellContent() {
       }
 
       setIsPublishing(true);
-      const productId = `prod_${Date.now()}`;
-      const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
 
       try {
+          const productId = `prod_${Date.now()}`;
+          const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
+          
+          // 1. Upload Image to Firebase Storage
           const storage = getStorage(firebaseApp);
           const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
           const imageRef = ref(storage, imagePath);
-
           const uploadResult = await uploadBytes(imageRef, photo);
           const imageUrl = await getDownloadURL(uploadResult.ref);
 
+          // 2. Prepare Product Data
           const newProduct = {
               id: productId,
-              artisanId: user.uid,
+              artisanId: user.uid, // Security rule requirement
               name: productName,
               artisanName: artisanName,
               description: userDescription || generatedStory,
@@ -305,6 +307,7 @@ function SellContent() {
               },
           };
 
+          // 3. Save Product to Firestore
           await setDoc(productDocRef, newProduct);
 
           toast({
@@ -313,20 +316,12 @@ function SellContent() {
           });
           router.push('/marketplace');
 
-      } catch (error) {
+      } catch (error: any) {
           console.error('Failed to publish product:', error);
-          
-          const permissionError = new FirestorePermissionError({
-              path: productDocRef.path,
-              operation: 'create',
-          });
-
-          errorEmitter.emit('permission-error', permissionError);
-
           toast({
               variant: 'destructive',
               title: 'Publishing Failed',
-              description: 'There was an error saving your product. Please check permissions and try again.',
+              description: error.message || 'There was an error saving your product. Please check permissions and try again.',
           });
       } finally {
           setIsPublishing(false);
@@ -598,3 +593,5 @@ export default function SellPage() {
     </div>
   );
 }
+
+    
