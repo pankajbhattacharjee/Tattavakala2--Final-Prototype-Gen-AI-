@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser, firebaseApp } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
@@ -257,16 +257,15 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
-    // 1. Validation
     if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
       return;
     }
-    if (!photo || !productName || !artisanName || !price || !category || !locationContext) {
+    if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
-        description: 'Please ensure all required fields are filled and a photo is uploaded.',
+        description: 'Please ensure all required fields are filled, a photo is uploaded, and the price is valid.',
       });
       return;
     }
@@ -280,20 +279,18 @@ function SellContent() {
     }
 
     setIsPublishing(true);
-
     try {
-      // 2. Upload image to Storage
-      const storage = getStorage(firebaseApp);
+      const storage = getStorage();
       const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
       const imageRef = ref(storage, imagePath);
+      
       const uploadResult = await uploadBytes(imageRef, photo);
       const imageUrl = await getDownloadURL(uploadResult.ref);
 
-      // 3. Prepare product data
       const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
       const newProduct = {
         id: productId,
-        artisanId: user.uid, // Required for security rules
+        artisanId: user.uid,
         name: productName,
         artisanName: artisanName,
         description: userDescription || generatedStory,
@@ -306,11 +303,9 @@ function SellContent() {
         },
       };
 
-      // 4. Write document to the correct Firestore path
       const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
       await setDoc(productDocRef, newProduct);
 
-      // 5. Success feedback and navigation
       toast({
         title: 'Product Published!',
         description: `${productName} is now live on the marketplace.`,
@@ -325,7 +320,6 @@ function SellContent() {
         description: error.message || 'An unexpected error occurred. Please try again.',
       });
     } finally {
-      // GUARANTEED to run, resetting the UI state
       setIsPublishing(false);
     }
   };
@@ -422,7 +416,7 @@ function SellContent() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="price" className="text-base">Price (₹)</Label>
-                                <Input id="price" type="number" placeholder="e.g., 2499" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
+                                <Input id="price" type="number" placeholder="e.g., 2499" value={price} onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="category" className="text-base">Category/Material</Label>
