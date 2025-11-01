@@ -304,8 +304,8 @@ function SellContent() {
             },
         };
 
-        const productDocRef = doc(firestore, `artisans/${user.uid}/products`, productId);
-        await setDoc(productDocRef, newProduct, { merge: false });
+        const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
+        await setDoc(productDocRef, newProduct);
 
         toast({
             title: 'Product Published!',
