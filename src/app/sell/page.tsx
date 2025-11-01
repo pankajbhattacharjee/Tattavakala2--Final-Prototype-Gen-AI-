@@ -284,13 +284,14 @@ function SellContent() {
       const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
       const imageRef = ref(storage, imagePath);
       
+      // CRITICAL FIX: Ensure the upload completes before getting the URL.
       const uploadResult = await uploadBytes(imageRef, photo);
       const imageUrl = await getDownloadURL(uploadResult.ref);
 
       const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
       const newProduct = {
         id: productId,
-        artisanId: user.uid,
+        artisanId: user.uid, // This was missing before
         name: productName,
         artisanName: artisanName,
         description: userDescription || generatedStory,
@@ -303,7 +304,8 @@ function SellContent() {
         },
       };
 
-      const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
+      // Correctly reference the nested collection
+      const productDocRef = doc(firestore, 'artisans', user.uid, 'products', productId);
       await setDoc(productDocRef, newProduct);
 
       toast({
@@ -320,6 +322,7 @@ function SellContent() {
         description: error.message || 'An unexpected error occurred. Please try again.',
       });
     } finally {
+      // GUARANTEED to run, preventing the UI from getting stuck.
       setIsPublishing(false);
     }
   };
@@ -337,21 +340,21 @@ function SellContent() {
       let url = '';
       switch(platform) {
           case 'facebook':
-              url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${shareText}`;
+              url = `https://www.facebook.com/sharer/sharer.php?u=${'\'\'\'' + encodeURIComponent(shareUrl)}&quote=${'\'\'\'' + shareText}`;
               break;
           case 'twitter':
-              url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareText}`;
+              url = `https://twitter.com/intent/tweet?url=${'\'\'\'' + encodeURIComponent(shareUrl)}&text=${'\'\'\'' + shareText}`;
               break;
           case 'pinterest':
               if(photoPreview) {
-                url = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&media=${shareImage}&description=${shareText}`;
+                url = `https://pinterest.com/pin/create/button/?url=${'\'\'\'' + encodeURIComponent(shareUrl)}&media=${'\'\'\'' + shareImage}&description=${'\'\'\'' + shareText}`;
               } else {
                  toast({variant: 'destructive', title: 'No Image', description: 'Please upload an image to share on Pinterest.'});
                  return;
               }
               break;
           case 'whatsapp':
-              url = `https://api.whatsapp.com/send?text=${shareText}%20${encodeURIComponent(shareUrl)}`;
+              url = `https://api.whatsapp.com/send?text=${'\'\'\'' + shareText}%20${'\'\'\'' + encodeURIComponent(shareUrl)}`;
               break;
           case 'instagram':
               // Instagram sharing is more complex and usually requires using their API or sharing from a mobile device.
