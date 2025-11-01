@@ -306,14 +306,6 @@ function SellContent() {
 
         const productDocRef = doc(firestore, `artisans/${user.uid}/products`, productId);
         setDocumentNonBlocking(productDocRef, newProduct, { merge: false });
-        
-        const artisanDocRef = doc(firestore, `artisans/${user.uid}`);
-        setDocumentNonBlocking(artisanDocRef, { 
-            id: user.uid,
-            name: artisanName,
-            contactEmail: user.email 
-        }, { merge: true });
-
 
         toast({
             title: 'Product Published!',
@@ -603,6 +595,7 @@ export default function SellPage() {
     
 
     
+
 
 
 
