@@ -44,20 +44,22 @@ export default function LandingPage() {
         setCurrentLanguage(langName);
     };
     
-    const handleAuthAction = () => {
-        if (auth) {
+    const handleAuthAction = async () => {
+        if (auth && !isAuthLoading) {
             setIsAuthLoading(true);
-            initiateGoogleSignIn(auth).finally(() => {
-              setIsAuthLoading(false);
-              // The modal will close automatically on successful auth state change,
-              // but we can close it here on failure/cancellation.
-              // We'll add a small delay to prevent UI flicker.
-              setTimeout(() => {
-                if (!auth.currentUser) {
-                  setIsLoginModalOpen(false);
-                }
-              }, 500);
-            });
+            try {
+                await initiateGoogleSignIn(auth);
+                // On success, the onAuthStateChanged listener will eventually close the modal
+                // by updating the `user` state. We can also close it here.
+                setIsLoginModalOpen(false);
+            } catch (error) {
+                // This catch block will run if the user closes the popup or if another error occurs.
+                // We don't need to show an error toast for user-cancelled actions.
+                console.log('Authentication cancelled or failed.');
+            } finally {
+                // This ensures the loading state is always reset.
+                setIsAuthLoading(false);
+            }
         }
     };
     
