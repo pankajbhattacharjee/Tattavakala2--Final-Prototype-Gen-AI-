@@ -11,9 +11,9 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-  },
-  serverActions: {
-    bodySizeLimit: '4mb',
+    serverActions: {
+      bodySizeLimit: '4mb',
+    },
   },
   async rewrites() {
     return {
