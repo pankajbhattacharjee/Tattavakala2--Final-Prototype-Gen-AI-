@@ -4,14 +4,11 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Rules for individual artisan documents and their subcollections
     match /artisans/{artisanId} {
-      // Allow profile creation for any authenticated user, but only for their own ID
-      allow create: if request.auth != null && request.auth.uid == artisanId;
+      // Allow profile creation and updates for any authenticated user, but only for their own ID
+      allow create, update: if request.auth != null && request.auth.uid == artisanId;
       
       // Allow profile reads for anyone
       allow read: if true;
-      
-      // Allow profile updates only by the owner
-      allow update: if request.auth != null && request.auth.uid == artisanId;
       
       // Prevent profile deletion
       allow delete: if false;
@@ -34,4 +31,3 @@ service cloud.firestore {
     }
   }
 }
-
