@@ -15,8 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser } from '@/firebase';
-import { setDoc, doc } from 'firebase/firestore';
+import { useFirestore, useUser, setDocumentNonBlocking } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
 
@@ -281,9 +281,8 @@ function SellContent() {
 
     setIsPublishing(true);
     try {
-        // First, ensure the artisan document exists.
         const artisanDocRef = doc(firestore, `artisans/${user.uid}`);
-        await setDoc(artisanDocRef, { 
+        setDocumentNonBlocking(artisanDocRef, { 
             id: user.uid,
             name: artisanName,
             contactEmail: user.email 
@@ -313,7 +312,7 @@ function SellContent() {
         };
 
         const productDocRef = doc(firestore, `artisans/${user.uid}/products`, productId);
-        await setDoc(productDocRef, newProduct);
+        setDocumentNonBlocking(productDocRef, newProduct, { merge: false });
 
         toast({
             title: 'Product Published!',
@@ -327,7 +326,7 @@ function SellContent() {
         toast({
             variant: 'destructive',
             title: 'Publishing Failed',
-            description: 'There was an error saving your product. Please check your connection and security rules.',
+            description: 'There was an error saving your product. Please check your connection and try again.',
         });
     } finally {
         setIsPublishing(false);
@@ -599,3 +598,5 @@ export default function SellPage() {
     </div>
   );
 }
+
+    
