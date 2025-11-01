@@ -292,7 +292,7 @@ function SellContent() {
 
         const newProduct = {
             id: productId,
-            artisanId: user.uid,
+            artisanId: user.uid, // This is the critical field for security rules
             name: productName,
             artisanName: artisanName,
             description: userDescription || generatedStory,

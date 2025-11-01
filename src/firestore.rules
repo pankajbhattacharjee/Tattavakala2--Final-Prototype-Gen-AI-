@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Rule for collection group queries on 'products'
+    match /{path=**}/products/{productId} {
+      // Allows anyone to read any document in any 'products' subcollection.
+      // This is required for the marketplace to function with collectionGroup queries.
+      allow read: if true;
+    }
+
+    match /artisans/{artisanId} {
+      // Artisans can read and update their own profile. Deletion is blocked.
+      allow read, update: if request.auth != null && request.auth.uid == artisanId;
+      allow create: if request.auth != null && request.auth.uid == artisanId;
+      allow delete: if false;
+      
+      // Rule for the nested 'products' subcollection.
+      match /products/{productId} {
+        // The read rule is handled by the collectionGroup query rule above.
+        // These rules handle direct writes to a specific product document.
+        allow create: if request.auth != null && request.resource.data.artisanId == request.auth.uid;
+        allow update, delete: if request.auth != null && resource.data.artisanId == request.auth.uid;
+      }
+    }
+  }
+}
