@@ -526,7 +526,7 @@ function SellContent() {
                                         <Share2 className="mr-2 h-4 w-4"/>
                                         Share
                                     </Button>
-                                    <Button onClick={handlePublish} disabled={isPublishing || (!user && (!userDescription && !generatedStory))}>
+                                    <Button onClick={handlePublish} disabled={isPublishing || !user}>
                                         {isPublishing ? <Loader className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         {isPublishing ? 'Publishing...' : 'Publish to Marketplace'}
                                     </Button>
@@ -591,3 +591,5 @@ export default function SellPage() {
     </div>
   );
 }
+
+    
