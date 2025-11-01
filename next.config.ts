@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
   },
   experimental: {
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/api/flows/:path*',
+          destination: 'http://127.0.0.1:3400/flows/:path*',
+        },
+      ],
+    };
+  },
   images: {
     remotePatterns: [
       {
