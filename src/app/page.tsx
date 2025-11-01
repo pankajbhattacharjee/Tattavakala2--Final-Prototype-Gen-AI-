@@ -45,7 +45,6 @@ export default function LandingPage() {
     const handleAuthAction = () => {
         if (auth) {
             initiateGoogleSignIn(auth);
-            setIsLoginModalOpen(false); 
         }
     };
     
