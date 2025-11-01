@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser, setDocumentNonBlocking } from '@/firebase';
+import { useFirestore, useUser, setDocumentNonBlocking, firebaseApp } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
@@ -289,7 +289,7 @@ function SellContent() {
         }, { merge: true });
         
         const productId = `prod_${Date.now()}`;
-        const storage = getStorage();
+        const storage = getStorage(firebaseApp);
         const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
         const imageRef = ref(storage, imagePath);
         
@@ -602,3 +602,4 @@ export default function SellPage() {
     
 
     
+
