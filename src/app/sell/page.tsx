@@ -261,14 +261,23 @@ function SellContent() {
         toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
         return;
     }
-    if (!photo || !productName || !generatedStory || !artisanName || !price || !category || !locationContext) {
+    if (!photo || !productName || !artisanName || !price || !category || !locationContext) {
         toast({
             variant: 'destructive',
-            title: 'Cannot Publish',
-            description: 'Please ensure all fields are filled, a photo is uploaded, and a story is generated.',
+            title: 'Missing Information',
+            description: 'Please ensure all required fields are filled and a photo is uploaded.',
         });
         return;
     }
+    if (!userDescription && !generatedStory) {
+        toast({
+            variant: 'destructive',
+            title: 'Missing Description',
+            description: 'Please either generate an AI story or write your own description before publishing.',
+        });
+        return;
+    }
+
 
     setIsPublishing(true);
     try {
@@ -295,7 +304,7 @@ function SellContent() {
             },
         };
 
-        const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
+        const productDocRef = doc(firestore, `artisans/${user.uid}/products`, productId);
         await setDoc(productDocRef, newProduct);
 
         toast({
@@ -513,11 +522,11 @@ function SellContent() {
                                     )}
                                 </div>
                                  <div className="flex justify-end mt-4 gap-2">
-                                     <Button variant="outline" onClick={() => setIsShareModalOpen(true)} disabled={!generatedStory}>
+                                     <Button variant="outline" onClick={() => setIsShareModalOpen(true)} disabled={!generatedStory && !userDescription}>
                                         <Share2 className="mr-2 h-4 w-4"/>
                                         Share
                                     </Button>
-                                    <Button onClick={handlePublish} disabled={isPublishing || !generatedStory}>
+                                    <Button onClick={handlePublish} disabled={isPublishing || (!generatedStory && !userDescription)}>
                                         {isPublishing ? <Loader className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         {isPublishing ? 'Publishing...' : 'Publish to Marketplace'}
                                     </Button>
@@ -582,3 +591,5 @@ export default function SellPage() {
     </div>
   );
 }
+
+    
