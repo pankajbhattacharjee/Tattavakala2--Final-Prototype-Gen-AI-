@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
   },
+  serverActions: {
+    bodySizeLimit: '4mb',
+  },
   async rewrites() {
     return {
       beforeFiles: [
