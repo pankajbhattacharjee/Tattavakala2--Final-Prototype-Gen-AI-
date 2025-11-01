@@ -11,21 +11,20 @@ import {
 /** Initiate Google sign-in (non-blocking). */
 export function initiateGoogleSignIn(authInstance: Auth): void {
   const provider = new GoogleAuthProvider();
-  // CRITICAL: Call signInWithPopup directly. It returns a promise.
+  // CRITICAL: This call must be triggered by a direct user interaction (e.g., a click).
   signInWithPopup(authInstance, provider)
     .then((result) => {
       // Successful sign-in. The onAuthStateChanged listener will handle the user state update.
-      // You could close a modal here if needed.
     })
     .catch((error) => {
-      // This catches errors from the popup flow, such as user closing the popup
-      // or the popup being blocked.
-      if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/popup-blocked') {
+      // This catches errors from the popup flow, such as user closing the popup or the popup being blocked.
+      if (error.code === 'auth/popup-blocked') {
+        console.error("Google Sign-In Error: Popup was blocked by the browser. Please allow popups for this site.");
+        // Optionally, inform the user via a toast or an alert.
+      } else if (error.code !== 'auth/popup-closed-by-user') {
         console.error("Google Sign-In Error:", error);
       }
-      // If the error is popup-related, we can often just let the user try again.
     });
-  // Code continues immediately. Auth state change is handled by the global onAuthStateChanged listener.
 }
 
 
