@@ -6,16 +6,15 @@ import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProductCard from './product-card';
 import type { Product } from './product-card';
-import { products as initialProducts } from '@/lib/products';
 import { categories } from '@/lib/categories';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { Loader, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { useFirestore } from '@/firebase';
-import { collectionGroup, getDocs, query } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collectionGroup, query } from 'firebase/firestore';
 
 
 type Filters = {
@@ -44,43 +43,13 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
   const firestore = useFirestore();
-  const [firestoreProducts, setFirestoreProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      if (!firestore) return;
-      setIsLoading(true);
-      try {
-        const productsQuery = query(collectionGroup(firestore, 'products'));
-        const querySnapshot = await getDocs(productsQuery);
-        const products: Product[] = [];
-        querySnapshot.forEach((doc) => {
-          products.push(doc.data() as Product);
-        });
-        setFirestoreProducts(products);
-      } catch (error) {
-        console.error("Error fetching firestore products:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProducts();
+  
+  const productsQuery = useMemoFirebase(() => {
+      if (!firestore) return null;
+      return query(collectionGroup(firestore, 'products'));
   }, [firestore]);
 
-  const allProducts = useMemo(() => {
-    const combinedProducts = [...initialProducts];
-    if (firestoreProducts) {
-        const initialProductIds = new Set(initialProducts.map(p => p.id));
-        firestoreProducts.forEach(fp => {
-            if (!initialProductIds.has(fp.id)) {
-                combinedProducts.push(fp);
-            }
-        });
-    }
-    return combinedProducts;
-  }, [firestoreProducts]);
-
+  const { data: allProducts, isLoading } = useCollection<Product>(productsQuery);
 
   const getFilteredProducts = (category?: string) => {
       if (!allProducts) return [];
@@ -114,6 +83,14 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
     setSelectedProduct(null);
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader className="animate-spin h-8 w-8" />
+      </div>
+    );
+  }
+
   return (
     <>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -139,6 +116,11 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
                 />
               ))}
             </div>
+             {getFilteredProducts(category).length === 0 && !isLoading && (
+              <div className="text-center py-16 text-muted-foreground">
+                <p>No products found in this category matching your filters.</p>
+              </div>
+            )}
           </TabsContent>
         ))}
       </Tabs>
