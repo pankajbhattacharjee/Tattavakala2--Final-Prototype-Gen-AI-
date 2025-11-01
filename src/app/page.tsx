@@ -43,25 +43,24 @@ export default function LandingPage() {
         setCurrentLanguage(langName);
     };
     
-    const handleAuthAction = () => {
+    const handleAuthAction = async () => {
         if (!auth || isAuthLoading) return;
 
         setIsAuthLoading(true);
-        initiateGoogleSignIn(auth)
-          .then(() => {
-            // On success, onAuthStateChanged will update user state.
-            // Closing the modal here on success.
+        try {
+            // CRITICAL: Await initiateGoogleSignIn directly.
+            const userCredential = await initiateGoogleSignIn(auth);
+            console.log('Google Sign-In successful:', userCredential.user.uid);
+            // On success, the onAuthStateChanged listener will handle the global user state.
+            // We can now safely close the modal.
             setIsLoginModalOpen(false);
-          })
-          .catch((error) => {
-            // This will catch all errors, including 'popup-closed-by-user'.
-            // We just log it and let the `finally` block handle the UI.
-            console.log('Authentication process ended or failed:', error.code);
-          })
-          .finally(() => {
+        } catch (error: any) {
+            // This will catch any errors, including 'auth/popup-closed-by-user' or 'auth/popup-blocked'.
+            console.log('Authentication process ended or failed:', error.code, error.message);
+        } finally {
             // This block is GUARANTEED to run, ensuring the UI is never stuck.
             setIsAuthLoading(false);
-          });
+        }
     };
     
     const handleLogout = () => {
