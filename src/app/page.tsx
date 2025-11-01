@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -44,23 +43,25 @@ export default function LandingPage() {
         setCurrentLanguage(langName);
     };
     
-    const handleAuthAction = async () => {
+    const handleAuthAction = () => {
         if (!auth || isAuthLoading) return;
 
         setIsAuthLoading(true);
-        try {
-            await initiateGoogleSignIn(auth);
-            // On success, onAuthStateChanged will handle user state updates.
-            // We can close the modal optimistically.
+        initiateGoogleSignIn(auth)
+          .then(() => {
+            // On success, onAuthStateChanged will update user state.
+            // Closing the modal here on success.
             setIsLoginModalOpen(false);
-        } catch (error) {
+          })
+          .catch((error) => {
             // This will catch all errors, including 'popup-closed-by-user'.
-            // No need to show a toast for user-cancelled actions.
-            console.log('Authentication process ended.');
-        } finally {
+            // We just log it and let the `finally` block handle the UI.
+            console.log('Authentication process ended or failed:', error.code);
+          })
+          .finally(() => {
             // This block is GUARANTEED to run, ensuring the UI is never stuck.
             setIsAuthLoading(false);
-        }
+          });
     };
     
     const handleLogout = () => {
