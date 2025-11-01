@@ -257,76 +257,74 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
-      if (!user || !firestore) {
-          toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
-          return;
-      }
-      if (!photo || !productName || !artisanName || !price || !category || !locationContext) {
-          toast({
-              variant: 'destructive',
-              title: 'Missing Information',
-              description: 'Please ensure all required fields are filled and a photo is uploaded.',
-          });
-          return;
-      }
-      if (!userDescription && !generatedStory) {
-          toast({
-              variant: 'destructive',
-              title: 'Missing Description',
-              description: 'Please either generate an AI story or write your own description before publishing.',
-          });
-          return;
-      }
-
-      setIsPublishing(true);
-
-      try {
-          const productId = `prod_${Date.now()}`;
-          const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
-          
-          // 1. Upload Image to Firebase Storage
-          const storage = getStorage(firebaseApp);
-          const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
-          const imageRef = ref(storage, imagePath);
-          const uploadResult = await uploadBytes(imageRef, photo);
-          const imageUrl = await getDownloadURL(uploadResult.ref);
-
-          // 2. Prepare Product Data
-          const newProduct = {
-              id: productId,
-              artisanId: user.uid, // Security rule requirement
-              name: productName,
-              artisanName: artisanName,
-              description: userDescription || generatedStory,
-              category: category,
-              region: locationContext,
-              price: price,
-              image: {
-                  src: imageUrl,
-                  hint: productName.toLowerCase().split(' ').slice(0, 2).join(' '),
-              },
-          };
-
-          // 3. Save Product to Firestore
-          await setDoc(productDocRef, newProduct);
-
-          toast({
-              title: 'Product Published!',
-              description: `${productName} is now live on the marketplace.`,
-          });
-          router.push('/marketplace');
-
-      } catch (error: any) {
-          console.error('Failed to publish product:', error);
-          toast({
-              variant: 'destructive',
-              title: 'Publishing Failed',
-              description: error.message || 'There was an error saving your product. Please check permissions and try again.',
-          });
-      } finally {
-          setIsPublishing(false);
-      }
-    };
+    if (!user || !firestore) {
+      toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
+      return;
+    }
+    if (!photo || !productName || !artisanName || !price || !category || !locationContext) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Information',
+        description: 'Please ensure all required fields are filled and a photo is uploaded.',
+      });
+      return;
+    }
+    if (!userDescription && !generatedStory) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Description',
+        description: 'Please either generate an AI story or write your own description before publishing.',
+      });
+      return;
+    }
+  
+    setIsPublishing(true);
+    try {
+      // 1. Upload Image to Firebase Storage
+      const storage = getStorage(firebaseApp);
+      const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
+      const imageRef = ref(storage, imagePath);
+      const uploadResult = await uploadBytes(imageRef, photo);
+      const imageUrl = await getDownloadURL(uploadResult.ref);
+  
+      // 2. Prepare Product Data
+      const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
+      const newProduct = {
+        id: productId,
+        artisanId: user.uid, // Security rule requirement
+        name: productName,
+        artisanName: artisanName,
+        description: userDescription || generatedStory,
+        category: category,
+        region: locationContext,
+        price: price,
+        image: {
+          src: imageUrl,
+          hint: productName.toLowerCase().split(' ').slice(0, 2).join(' '),
+        },
+      };
+  
+      // 3. Save Product to Firestore
+      const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
+      await setDoc(productDocRef, newProduct);
+  
+      toast({
+        title: 'Product Published!',
+        description: `${productName} is now live on the marketplace.`,
+      });
+      router.push('/marketplace');
+  
+    } catch (error: any) {
+      console.error('Failed to publish product:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Publishing Failed',
+        description: error.message || 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setIsPublishing(false);
+    }
+  };
   
   const getShareableContent = () => {
     const caption = socialCaptions.find(c => c.platform === 'facebook')?.caption || generatedStory;
