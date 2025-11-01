@@ -13,6 +13,11 @@ import {
 /** Initiate Google sign-in (non-blocking). */
 export function initiateGoogleSignIn(authInstance: Auth): Promise<UserCredential> {
   const provider = new GoogleAuthProvider();
+  // This will force the account chooser to appear every time.
+  provider.setCustomParameters({
+    prompt: 'select_account'
+  });
+  
   // CRITICAL: This call must be triggered by a direct user interaction (e.g., a click).
   // We return the promise so the caller can know when the process is complete (e.g., to stop a loading spinner).
   return signInWithPopup(authInstance, provider);
