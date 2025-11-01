@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
@@ -16,8 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser, setDocumentNonBlocking, firebaseApp } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useFirestore, useUser, firebaseApp } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
 
@@ -292,7 +291,7 @@ function SellContent() {
 
         const newProduct = {
             id: productId,
-            artisanId: user.uid, // This is the critical field for security rules
+            artisanId: user.uid,
             name: productName,
             artisanName: artisanName,
             description: userDescription || generatedStory,
@@ -306,7 +305,7 @@ function SellContent() {
         };
 
         const productDocRef = doc(firestore, `artisans/${user.uid}/products`, productId);
-        setDocumentNonBlocking(productDocRef, newProduct, { merge: false });
+        await setDoc(productDocRef, newProduct, { merge: false });
 
         toast({
             title: 'Product Published!',
@@ -320,7 +319,7 @@ function SellContent() {
         toast({
             variant: 'destructive',
             title: 'Publishing Failed',
-            description: 'There was an error saving your product. Please check your connection and try again.',
+            description: (error as Error).message || 'There was an error saving your product. Please try again.',
         });
     } finally {
         setIsPublishing(false);
@@ -592,3 +591,5 @@ export default function SellPage() {
     </div>
   );
 }
+
+    
