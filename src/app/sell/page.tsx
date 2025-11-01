@@ -281,6 +281,14 @@ function SellContent() {
 
     setIsPublishing(true);
     try {
+        // First, ensure the artisan document exists.
+        const artisanDocRef = doc(firestore, `artisans/${user.uid}`);
+        await setDoc(artisanDocRef, { 
+            id: user.uid,
+            name: artisanName, // Assuming artisanName is the name of the user for simplicity
+            contactEmail: user.email 
+        }, { merge: true });
+        
         const productId = `prod_${Date.now()}`;
         const storage = getStorage();
         const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
