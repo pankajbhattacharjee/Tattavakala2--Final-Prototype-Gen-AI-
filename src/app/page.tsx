@@ -46,9 +46,9 @@ export default function LandingPage() {
         if (auth) {
             initiateGoogleSignIn(auth);
             // The modal can be closed here or after the auth state changes.
-            // For a better user experience, you might want to close it upon successful sign-in,
-            // which would be handled by your onAuthStateChanged listener.
-            // setIsLoginModalOpen(false); 
+            // For a better user experience, we can listen for the user state change
+            // but for now, we'll close it on click to ensure the popup isn't blocked.
+            setIsLoginModalOpen(false); 
         }
     };
     
