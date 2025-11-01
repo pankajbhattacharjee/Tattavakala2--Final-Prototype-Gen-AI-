@@ -4,16 +4,12 @@ service cloud.firestore {
     match /artisans/{artisanId} {
       allow read, write: if request.auth != null && request.auth.uid == artisanId;
       allow delete: if false;
+      
       match /products/{productId} {
         allow read: if true;
         allow create: if request.auth != null && request.resource.data.artisanId == request.auth.uid;
         allow update, delete: if request.auth != null && resource.data.artisanId == request.auth.uid;
       }
-    }
-    match /products/{productId} {
-      allow read: if true;
-      allow create: if request.auth != null && request.resource.data.artisanId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.artisanId == request.auth.uid;
     }
   }
 }

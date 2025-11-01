@@ -281,13 +281,6 @@ function SellContent() {
 
     setIsPublishing(true);
     try {
-        const artisanDocRef = doc(firestore, `artisans/${user.uid}`);
-        setDocumentNonBlocking(artisanDocRef, { 
-            id: user.uid,
-            name: artisanName,
-            contactEmail: user.email 
-        }, { merge: true });
-        
         const productId = `prod_${Date.now()}`;
         const storage = getStorage(firebaseApp);
         const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
@@ -313,6 +306,14 @@ function SellContent() {
 
         const productDocRef = doc(firestore, `artisans/${user.uid}/products`, productId);
         setDocumentNonBlocking(productDocRef, newProduct, { merge: false });
+        
+        const artisanDocRef = doc(firestore, `artisans/${user.uid}`);
+        setDocumentNonBlocking(artisanDocRef, { 
+            id: user.uid,
+            name: artisanName,
+            contactEmail: user.email 
+        }, { merge: true });
+
 
         toast({
             title: 'Product Published!',
@@ -602,5 +603,6 @@ export default function SellPage() {
     
 
     
+
 
 
