@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser, firebaseApp, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useFirestore, useUser, firebaseApp } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
@@ -291,7 +291,7 @@ function SellContent() {
 
           const newProduct = {
               id: productId,
-              artisanId: user.uid,
+              artisanId: user.uid, // This is the critical field for the security rule
               name: productName,
               artisanName: artisanName,
               description: userDescription || generatedStory,
@@ -304,25 +304,16 @@ function SellContent() {
               },
           };
 
+          // This is the correct path for the product document
           const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
           
-          setDoc(productDocRef, newProduct)
-            .then(() => {
-                toast({
-                    title: 'Product Published!',
-                    description: `${productName} is now live on the marketplace.`,
-                });
-                router.push('/marketplace');
-            })
-            .catch((serverError) => {
-                const permissionError = new FirestorePermissionError({
-                    path: productDocRef.path,
-                    operation: 'create',
-                    requestResourceData: newProduct,
-                });
-                errorEmitter.emit('permission-error', permissionError);
-                setIsPublishing(false); // Stop loading on error
-            });
+          await setDoc(productDocRef, newProduct);
+
+          toast({
+              title: 'Product Published!',
+              description: `${productName} is now live on the marketplace.`,
+          });
+          router.push('/marketplace');
 
       } catch (error) {
           console.error('Failed to publish product:', error);
@@ -331,7 +322,8 @@ function SellContent() {
               title: 'Publishing Failed',
               description: (error as Error).message || 'There was an error saving your product. Please try again.',
           });
-          setIsPublishing(false);
+      } finally {
+          setIsPublishing(false); // This will now correctly execute
       }
     };
   
@@ -600,5 +592,3 @@ export default function SellPage() {
     </div>
   );
 }
-
-    
