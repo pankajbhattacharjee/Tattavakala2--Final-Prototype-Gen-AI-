@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Globe, User as UserIcon } from 'lucide-react';
+import { Globe, User as UserIcon, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -34,6 +35,7 @@ const languages = [
 
 export default function LandingPage() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isAuthLoading, setIsAuthLoading] = useState(false);
     const [currentLanguage, setCurrentLanguage] = useState('English');
     const { user } = useUser();
     const auth = useAuth();
@@ -44,7 +46,18 @@ export default function LandingPage() {
     
     const handleAuthAction = () => {
         if (auth) {
-            initiateGoogleSignIn(auth);
+            setIsAuthLoading(true);
+            initiateGoogleSignIn(auth).finally(() => {
+              setIsAuthLoading(false);
+              // The modal will close automatically on successful auth state change,
+              // but we can close it here on failure/cancellation.
+              // We'll add a small delay to prevent UI flicker.
+              setTimeout(() => {
+                if (!auth.currentUser) {
+                  setIsLoginModalOpen(false);
+                }
+              }, 500);
+            });
         }
     };
     
@@ -153,9 +166,9 @@ export default function LandingPage() {
                   Sign in or create an account to continue.
                 </DialogDescription>
               </DialogHeader>
-              <Button onClick={handleAuthAction} className="w-full">
-                 <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,2.659,29.324,0,24,0C10.745,0,0,10.745,0,24s10.745,24,24,24s24-10.745,24-24C48,22.641,46.13,20.5,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,2.659,29.324,0,24,0C16.318,0,9.656,4.981,6.306,14.691z"></path><path fill="#4CAF50" d="M24,48c5.643,0,10.74-2.182,14.732-5.734L32.534,34.93C30.22,36.65,27.261,38,24,38c-5.223,0-9.659-3.32-11.303-7.946l-6.571,4.819C9.656,43.019,16.318,48,24,48z"></path><path fill="#1976D2" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l0.001-0.001l6.571,4.819C43.978,36.318,48,30.686,48,24C48,22.641,47.88,21.328,47.64,20H43.611z"></path></svg>
-                Continue with Google
+              <Button onClick={handleAuthAction} className="w-full" disabled={isAuthLoading}>
+                 {isAuthLoading ? <Loader className="animate-spin" /> : <svg className="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,2.659,29.324,0,24,0C10.745,0,0,10.745,0,24s10.745,24,24,24s24-10.745,24-24C48,22.641,46.13,20.5,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,2.659,29.324,0,24,0C16.318,0,9.656,4.981,6.306,14.691z"></path><path fill="#4CAF50" d="M24,48c5.643,0,10.74-2.182,14.732-5.734L32.534,34.93C30.22,36.65,27.261,38,24,38c-5.223,0-9.659-3.32-11.303-7.946l-6.571,4.819C9.656,43.019,16.318,48,24,48z"></path><path fill="#1976D2" d="M43.611,20.083L43.595,20L42,20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l0.001-0.001l6.571,4.819C43.978,36.318,48,30.686,48,24C48,22.641,47.88,21.328,47.64,20H43.611z"></path></svg>}
+                {isAuthLoading ? 'Signing in...' : 'Continue with Google'}
               </Button>
             </DialogContent>
           </Dialog>
