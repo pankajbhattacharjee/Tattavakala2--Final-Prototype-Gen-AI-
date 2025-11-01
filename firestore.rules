@@ -2,21 +2,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Rule for the artisans collection
     match /artisans/{artisanId} {
-      // Allow anyone to read artisan profiles
+      // Allow profile creation for any authenticated user, if the document does not exist
+      allow create: if request.auth != null && request.auth.uid == artisanId;
+      
+      // Allow profile reads for anyone
       allow read: if true;
-      // Allow only the authenticated owner to write to their artisan profile
-      allow write: if request.auth != null && request.auth.uid == artisanId;
-    }
-    
-    // Rule for the products subcollection group
-    match /{path=**}/products/{productId} {
-        // Allow anyone to read any product
+      
+      // Allow profile updates only by the owner
+      allow update: if request.auth != null && request.auth.uid == artisanId;
+      
+      // Prevent profile deletion
+      allow delete: if false;
+
+      // Rules for the 'products' subcollection within each artisan's document
+      match /products/{productId} {
+        // Any authenticated user can create a product under their own artisan document
+        allow create: if request.auth != null && request.auth.uid == artisanId;
+        
+        // Anyone can read any product
         allow read: if true;
-        // Allow writes only if the user is authenticated and their UID matches the artisanId in the path
-        allow write: if request.auth != null && request.auth.uid == path.split('/')[1];
+        
+        // Only the artisan who owns the product can update or delete it
+        allow update, delete: if request.auth != null && request.auth.uid == artisanId;
+      }
     }
   }
 }

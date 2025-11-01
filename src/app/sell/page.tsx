@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
@@ -275,7 +274,6 @@ function SellContent() {
     try {
         const productId = `prod_${Date.now()}`;
         const storage = getStorage();
-        // The path in Storage can be simpler, as access is controlled by security rules on the metadata (like artisanId)
         const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
         const imageRef = ref(storage, imagePath);
         
@@ -297,8 +295,7 @@ function SellContent() {
             },
         };
 
-        // This is the correct path that matches the security rules
-        const productDocRef = doc(firestore, 'artisans', user.uid, 'products', productId);
+        const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
         await setDoc(productDocRef, newProduct);
 
         toast({
