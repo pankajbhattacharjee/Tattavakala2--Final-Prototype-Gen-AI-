@@ -285,7 +285,7 @@ function SellContent() {
         const artisanDocRef = doc(firestore, `artisans/${user.uid}`);
         await setDoc(artisanDocRef, { 
             id: user.uid,
-            name: artisanName, // Assuming artisanName is the name of the user for simplicity
+            name: artisanName,
             contactEmail: user.email 
         }, { merge: true });
         
