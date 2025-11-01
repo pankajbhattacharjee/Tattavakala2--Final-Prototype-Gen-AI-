@@ -522,11 +522,11 @@ function SellContent() {
                                     )}
                                 </div>
                                  <div className="flex justify-end mt-4 gap-2">
-                                     <Button variant="outline" onClick={() => setIsShareModalOpen(true)} disabled={!generatedStory && !userDescription}>
+                                     <Button variant="outline" onClick={() => setIsShareModalOpen(true)} disabled={!userDescription && !generatedStory}>
                                         <Share2 className="mr-2 h-4 w-4"/>
                                         Share
                                     </Button>
-                                    <Button onClick={handlePublish} disabled={isPublishing || (!generatedStory && !userDescription)}>
+                                    <Button onClick={handlePublish} disabled={isPublishing || (!userDescription && !generatedStory)}>
                                         {isPublishing ? <Loader className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         {isPublishing ? 'Publishing...' : 'Publish to Marketplace'}
                                     </Button>
@@ -591,5 +591,3 @@ export default function SellPage() {
     </div>
   );
 }
-
-    
