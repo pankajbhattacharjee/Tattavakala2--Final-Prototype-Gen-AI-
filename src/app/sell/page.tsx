@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser, firebaseApp } from '@/firebase';
+import { useFirestore, useUser, firebaseApp, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
@@ -257,74 +257,83 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
-    if (!user || !firestore) {
-        toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
-        return;
-    }
-    if (!photo || !productName || !artisanName || !price || !category || !locationContext) {
-        toast({
-            variant: 'destructive',
-            title: 'Missing Information',
-            description: 'Please ensure all required fields are filled and a photo is uploaded.',
-        });
-        return;
-    }
-    if (!userDescription && !generatedStory) {
-        toast({
-            variant: 'destructive',
-            title: 'Missing Description',
-            description: 'Please either generate an AI story or write your own description before publishing.',
-        });
-        return;
-    }
+      if (!user || !firestore) {
+          toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
+          return;
+      }
+      if (!photo || !productName || !artisanName || !price || !category || !locationContext) {
+          toast({
+              variant: 'destructive',
+              title: 'Missing Information',
+              description: 'Please ensure all required fields are filled and a photo is uploaded.',
+          });
+          return;
+      }
+      if (!userDescription && !generatedStory) {
+          toast({
+              variant: 'destructive',
+              title: 'Missing Description',
+              description: 'Please either generate an AI story or write your own description before publishing.',
+          });
+          return;
+      }
 
+      setIsPublishing(true);
 
-    setIsPublishing(true);
-    try {
-        const productId = `prod_${Date.now()}`;
-        const storage = getStorage(firebaseApp);
-        const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
-        const imageRef = ref(storage, imagePath);
-        
-        const uploadResult = await uploadBytes(imageRef, photo);
-        const imageUrl = await getDownloadURL(uploadResult.ref);
+      try {
+          const productId = `prod_${Date.now()}`;
+          const storage = getStorage(firebaseApp);
+          const imagePath = `products/${user.uid}/${productId}/${photo.name}`;
+          const imageRef = ref(storage, imagePath);
 
-        const newProduct = {
-            id: productId,
-            artisanId: user.uid,
-            name: productName,
-            artisanName: artisanName,
-            description: userDescription || generatedStory,
-            category: category,
-            region: locationContext,
-            price: price,
-            image: {
-                src: imageUrl,
-                hint: productName.toLowerCase().split(' ').slice(0,2).join(' '),
-            },
-        };
+          const uploadResult = await uploadBytes(imageRef, photo);
+          const imageUrl = await getDownloadURL(uploadResult.ref);
 
-        const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
-        await setDoc(productDocRef, newProduct);
+          const newProduct = {
+              id: productId,
+              artisanId: user.uid,
+              name: productName,
+              artisanName: artisanName,
+              description: userDescription || generatedStory,
+              category: category,
+              region: locationContext,
+              price: price,
+              image: {
+                  src: imageUrl,
+                  hint: productName.toLowerCase().split(' ').slice(0, 2).join(' '),
+              },
+          };
 
-        toast({
-            title: 'Product Published!',
-            description: `${productName} is now live on the marketplace.`,
-        });
+          const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
+          
+          setDoc(productDocRef, newProduct)
+            .then(() => {
+                toast({
+                    title: 'Product Published!',
+                    description: `${productName} is now live on the marketplace.`,
+                });
+                router.push('/marketplace');
+            })
+            .catch((serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: productDocRef.path,
+                    operation: 'create',
+                    requestResourceData: newProduct,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                setIsPublishing(false); // Stop loading on error
+            });
 
-        router.push('/marketplace');
-
-    } catch (error) {
-        console.error('Failed to publish product:', error);
-        toast({
-            variant: 'destructive',
-            title: 'Publishing Failed',
-            description: (error as Error).message || 'There was an error saving your product. Please try again.',
-        });
-    } finally {
-        setIsPublishing(false);
-    }
-  };
+      } catch (error) {
+          console.error('Failed to publish product:', error);
+          toast({
+              variant: 'destructive',
+              title: 'Publishing Failed',
+              description: (error as Error).message || 'There was an error saving your product. Please try again.',
+          });
+          setIsPublishing(false);
+      }
+    };
   
   const getShareableContent = () => {
     const caption = socialCaptions.find(c => c.platform === 'facebook')?.caption || generatedStory;
