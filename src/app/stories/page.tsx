@@ -40,7 +40,8 @@ function StoriesContent() {
         const generatedStories = allProducts.map(p => ({
         ...p,
         storyTitle: `The Art of ${p.name}`,
-        storyContent: `Discover the rich heritage and meticulous craftsmanship behind the ${p.name}. Each piece is a testament to the generations of artisans from ${p.region} who have perfected this beautiful ${p.category} technique. ${p.description}`
+        // Use the actual description from the product data as the story content
+        storyContent: p.description
         }));
         setStories(generatedStories.reverse());
     }

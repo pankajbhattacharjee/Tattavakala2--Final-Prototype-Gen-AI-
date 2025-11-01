@@ -261,6 +261,7 @@ function SellContent() {
       toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
       return;
     }
+    // Updated validation
     if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
       toast({
         variant: 'destructive',
@@ -284,14 +285,26 @@ function SellContent() {
       const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
       const imageRef = ref(storage, imagePath);
       
-      // CRITICAL FIX: Ensure the upload completes before getting the URL.
+      // Step 1: Upload the image and AWAIT completion.
       const uploadResult = await uploadBytes(imageRef, photo);
+      // Step 2: Get the download URL only AFTER the upload is complete.
       const imageUrl = await getDownloadURL(uploadResult.ref);
 
       const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
+      
+      // Step 3: Create or update the artisan's main document.
+      const artisanDocRef = doc(firestore, 'artisans', user.uid);
+      await setDoc(artisanDocRef, {
+        id: user.uid,
+        name: artisanName,
+        contactEmail: user.email,
+        // any other artisan-specific info can go here
+      }, { merge: true }); // Use merge to avoid overwriting existing artisan data
+
+      // Step 4: Create the new product document in the subcollection.
       const newProduct = {
         id: productId,
-        artisanId: user.uid, // This was missing before
+        artisanId: user.uid,
         name: productName,
         artisanName: artisanName,
         description: userDescription || generatedStory,
@@ -304,8 +317,7 @@ function SellContent() {
         },
       };
 
-      // Correctly reference the nested collection
-      const productDocRef = doc(firestore, 'artisans', user.uid, 'products', productId);
+      const productDocRef = doc(artisanDocRef, 'products', productId);
       await setDoc(productDocRef, newProduct);
 
       toast({
