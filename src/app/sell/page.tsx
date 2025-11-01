@@ -15,8 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser, firebaseApp, setDocumentNonBlocking } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useFirestore, useUser, firebaseApp } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Link from 'next/link';
 
@@ -281,16 +281,18 @@ function SellContent() {
     setIsPublishing(true);
     
     try {
+      // 1. Upload image to Storage
       const storage = getStorage(firebaseApp);
       const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
       const imageRef = ref(storage, imagePath);
       const uploadResult = await uploadBytes(imageRef, photo);
       const imageUrl = await getDownloadURL(uploadResult.ref);
   
+      // 2. Prepare product data
       const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
       const newProduct = {
         id: productId,
-        artisanId: user.uid,
+        artisanId: user.uid, // Required for security rules
         name: productName,
         artisanName: artisanName,
         description: userDescription || generatedStory,
@@ -303,33 +305,28 @@ function SellContent() {
         },
       };
   
+      // 3. Write document to Firestore
       const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
-
-      // Use the non-blocking function with callbacks
-      setDocumentNonBlocking(
-        productDocRef, 
-        newProduct, 
-        {},
-        () => { // onSuccess
-          toast({
-            title: 'Product Published!',
-            description: `${productName} is now live on the marketplace.`,
-          });
-          router.push('/marketplace');
-        },
-        () => { // onFinally
-          setIsPublishing(false);
-        }
-      );
+      await setDoc(productDocRef, newProduct);
+  
+      // 4. Success feedback and navigation
+      toast({
+        title: 'Product Published!',
+        description: `${productName} is now live on the marketplace.`,
+      });
+      router.push('/marketplace');
   
     } catch (error: any) {
-      console.error('Failed to publish product during image upload:', error);
+      // Catch ANY error from the try block
+      console.error('Failed to publish product:', error);
       toast({
         variant: 'destructive',
         title: 'Publishing Failed',
-        description: error.message || 'An unexpected error occurred during image upload. Please try again.',
+        description: error.message || 'An unexpected error occurred. Please try again.',
       });
-      setIsPublishing(false); // Also reset on upload error
+    } finally {
+      // GUARANTEED to run, resetting the UI state
+      setIsPublishing(false);
     }
   };
   
