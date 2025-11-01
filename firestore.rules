@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Rules for individual artisan documents and their product subcollections
     match /artisans/{artisanId} {
-      // Allow profile creation for any authenticated user, if the document does not exist
+      // Allow profile creation for any authenticated user, but only for their own ID
       allow create: if request.auth != null && request.auth.uid == artisanId;
       
       // Allow profile reads for anyone
