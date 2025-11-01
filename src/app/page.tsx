@@ -23,6 +23,7 @@ import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
 import { signOut } from 'firebase/auth';
 import { Card, CardContent } from '@/components/ui/card';
 import Footer from '@/components/footer';
+import { useToast } from '@/hooks/use-toast';
 
 const languages = [
   { code: 'en', name: 'English' },
@@ -38,13 +39,21 @@ export default function LandingPage() {
     const [currentLanguage, setCurrentLanguage] = useState('English');
     const { user } = useUser();
     const auth = useAuth();
+    const { toast } = useToast();
 
     const handleLanguageChange = (langName: string) => {
         setCurrentLanguage(langName);
     };
     
     const handleAuthAction = async () => {
-        if (!auth || isAuthLoading) return;
+        if (!auth) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Authentication service not ready. Please try again later.',
+            });
+            return;
+        };
 
         setIsAuthLoading(true);
         try {
@@ -57,6 +66,13 @@ export default function LandingPage() {
         } catch (error: any) {
             // This will catch any errors, including 'auth/popup-closed-by-user' or 'auth/popup-blocked'.
             console.log('Authentication process ended or failed:', error.code, error.message);
+            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                toast({
+                    variant: 'destructive',
+                    title: 'Sign-in Failed',
+                    description: 'Could not sign in with Google. Please try again.',
+                });
+            }
         } finally {
             // This block is GUARANTEED to run, ensuring the UI is never stuck.
             setIsAuthLoading(false);

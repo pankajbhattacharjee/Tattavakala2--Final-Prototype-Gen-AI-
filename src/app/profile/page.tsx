@@ -1,138 +1,122 @@
-
 'use client';
-import React, { useEffect, Suspense } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import MarketplaceHeader from '@/components/marketplace-header';
-import Image from 'next/image';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React, { useState } from 'react';
+import { Auth, signOut } from 'firebase/auth';
 import { useAuth, useUser } from '@/firebase';
-import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { initiateGoogleSignIn } from '@/firebase/non-blocking-login';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 import { Loader } from 'lucide-react';
+import MarketplaceHeader from '@/components/marketplace-header';
 import Footer from '@/components/footer';
 
-const pastOrders: any[] = [];
-
-function ProfileContent() {
+const ProfilePage = () => {
+    const auth = useAuth() as Auth | null;
     const { user, isUserLoading } = useUser();
-    const auth = useAuth();
-    const router = useRouter();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isAuthLoading, setIsAuthLoading] = useState(false);
+    const { toast } = useToast();
 
-    const handleLogout = () => {
-        if (auth) {
-            signOut(auth).then(() => {
-                router.push('/');
+
+    const handleGoogleSignInButtonClick = async () => {
+        if (!auth) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Authentication service not available.',
             });
+            return;
+        }
+
+        setIsAuthLoading(true);
+        try {
+            const userCredential = await initiateGoogleSignIn(auth);
+            console.log('Google Sign-In successful for user:', userCredential.user.uid);
+            setIsLoginModalOpen(false);
+        } catch (error: any) {
+            console.error('Authentication process ended or failed:', error.code, error.message);
+            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Sign-in Failed',
+                    description: 'Could not sign in with Google. Please try again.',
+                });
+            }
+        } finally {
+            setIsAuthLoading(false);
         }
     };
 
-    useEffect(() => {
-        // If loading is finished and there's no user, redirect to home.
-        if (!isUserLoading && !user) {
-            router.push('/');
+    const handleLogout = async () => {
+        if (auth) {
+            try {
+                await signOut(auth);
+                console.log("User logged out successfully.");
+            } catch (error) {
+                console.error("Error logging out:", error);
+            }
         }
-    }, [isUserLoading, user, router]);
+    };
 
-    if (isUserLoading || !user) {
-        // Show a loader while checking for user auth or during the redirect.
+    if (isUserLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <Loader className="animate-spin h-8 w-8 text-primary" />
+            <div className="flex justify-center items-center h-screen">
+                <Loader className="animate-spin h-8 w-8" />
+            </div>
+        )
+    }
+
+    if (!user) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <MarketplaceHeader />
+                <main className="flex-grow flex items-center justify-center">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold mb-4">Please Log In</h1>
+                        <p className="text-muted-foreground mb-6">You need to be logged in to view this page.</p>
+                        <Button onClick={() => setIsLoginModalOpen(true)}>Log In / Sign Up</Button>
+                    </div>
+                </main>
+                 <Dialog open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Welcome</DialogTitle>
+                            <DialogDescription>
+                                Sign in or create an account to continue.
+                            </DialogDescription>
+                        </DialogHeader>
+                         <Button
+                            onClick={handleGoogleSignInButtonClick}
+                            className="w-full"
+                            disabled={isAuthLoading}
+                        >
+                            {isAuthLoading ? <Loader className="animate-spin" /> : 'Continue with Google'}
+                        </Button>
+                    </DialogContent>
+                </Dialog>
+                <Footer />
             </div>
         );
     }
 
 
-  return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold mb-6">My Profile</h1>
-        <Tabs defaultValue="orders" className="w-full">
-            <TabsList>
-                <TabsTrigger value="orders">Order History</TabsTrigger>
-                <TabsTrigger value="settings">Account Settings</TabsTrigger>
-            </TabsList>
-            <TabsContent value="orders">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Your Orders</CardTitle>
-                        <CardDescription>View your past purchases and their status.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-8">
-                        {pastOrders.length > 0 ? pastOrders.map(order => (
-                            <div key={order.id}>
-                                <div className="flex justify-between items-center mb-4">
-                                    <div>
-                                        <h3 className="font-semibold">Order #{order.id}</h3>
-                                        <p className="text-sm text-muted-foreground">Date: {order.date}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold">Total: ₹{order.total.toLocaleString('en-IN')}</p>
-                                        <p className="text-sm text-green-600 font-medium">{order.status}</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                {order.items.map((item:any) => (
-                                    <div key={item.id} className="flex items-center gap-4">
-                                        <Image src={item.image.src} alt={item.name} width={64} height={64} className="rounded-md bg-muted"/>
-                                        <div>
-                                            <p className="font-medium">{item.name}</p>
-                                            <p className="text-sm text-muted-foreground">₹{item.price.toLocaleString('en-IN')}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                                </div>
-                                <Separator className="mt-6"/>
-                            </div>
-                        )) : (
-                            <p>You have no past orders.</p>
-                        )}
-                    </CardContent>
-                </Card>
-            </TabsContent>
-            <TabsContent value="settings">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Account Information</CardTitle>
-                        <CardDescription>Manage your personal information.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 max-w-md">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
-                            <Input id="name" defaultValue={user.displayName || ''} />
-                        </div>
-                        <div className="space-y-2">
-                             <Label htmlFor="email">Email Address</Label>
-                            <Input id="email" type="email" defaultValue={user.email || ''} readOnly/>
-                        </div>
-                         <p className="text-sm text-muted-foreground">Member since {user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'N/A'}.</p>
-                        <div className="flex gap-4 pt-4">
-                             <Button>Save Changes</Button>
-                             <Button variant="outline" onClick={handleLogout}>Logout</Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-        </Tabs>
-      </div>
-  );
-}
-
-export default function ProfilePage() {
-  return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow">
-        <div className="bg-background min-h-screen">
-          <Suspense fallback={<div><div className="h-20"></div><div className="flex justify-center items-center h-64"><Loader className="animate-spin h-8 w-8" /></div></div>}>
-            <MarketplaceHeader />
-            <ProfileContent />
-          </Suspense>
+    return (
+        <div className="flex flex-col min-h-screen">
+             <MarketplaceHeader />
+            <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                 <div className="max-w-2xl mx-auto">
+                    <h1 className="text-3xl font-bold mb-6">My Profile</h1>
+                    <div className="space-y-4">
+                        <p><strong>Name:</strong> {user.displayName}</p>
+                        <p><strong>Email:</strong> {user.email}</p>
+                        <p><strong>UID:</strong> {user.uid}</p>
+                    </div>
+                    <Button onClick={handleLogout} className="mt-6">Log Out</Button>
+                </div>
+            </main>
+            <Footer />
         </div>
-      </main>
-      <Footer />
-    </div>
-  );
-}
+    );
+};
+
+export default ProfilePage;
