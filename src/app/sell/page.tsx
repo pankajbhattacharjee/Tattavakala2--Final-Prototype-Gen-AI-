@@ -257,6 +257,7 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
+    // 1. Validation
     if (!user || !firestore) {
       toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
       return;
@@ -277,18 +278,18 @@ function SellContent() {
       });
       return;
     }
-  
+
     setIsPublishing(true);
-    
+
     try {
-      // 1. Upload image to Storage
+      // 2. Upload image to Storage
       const storage = getStorage(firebaseApp);
       const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
       const imageRef = ref(storage, imagePath);
       const uploadResult = await uploadBytes(imageRef, photo);
       const imageUrl = await getDownloadURL(uploadResult.ref);
-  
-      // 2. Prepare product data
+
+      // 3. Prepare product data
       const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
       const newProduct = {
         id: productId,
@@ -304,20 +305,19 @@ function SellContent() {
           hint: productName.toLowerCase().split(' ').slice(0, 2).join(' '),
         },
       };
-  
-      // 3. Write document to Firestore
+
+      // 4. Write document to the correct Firestore path
       const productDocRef = doc(firestore, `artisans/${user.uid}/products/${productId}`);
       await setDoc(productDocRef, newProduct);
-  
-      // 4. Success feedback and navigation
+
+      // 5. Success feedback and navigation
       toast({
         title: 'Product Published!',
         description: `${productName} is now live on the marketplace.`,
       });
       router.push('/marketplace');
-  
+
     } catch (error: any) {
-      // Catch ANY error from the try block
       console.error('Failed to publish product:', error);
       toast({
         variant: 'destructive',
