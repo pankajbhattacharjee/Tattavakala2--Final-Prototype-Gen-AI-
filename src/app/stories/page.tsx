@@ -1,5 +1,5 @@
+
 'use client';
-import React, 'use client';
 import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
