@@ -18,7 +18,7 @@ import Footer from '@/components/footer';
 import { useFirestore, useUser } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import Link from 'next/link';
+import type { SocialCaption } from '@/ai/flows';
 
 
 const regions = [
@@ -48,6 +48,7 @@ function SellContent() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [generatedStory, setGeneratedStory] = useState('');
+  const [socialCaptions, setSocialCaptions] = useState<SocialCaption[]>([]);
   const [translatedStory, setTranslatedStory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -172,6 +173,7 @@ function SellContent() {
       // Reset generated content when a new file is chosen
       setGeneratedStory('');
       setTranslatedStory('');
+      setSocialCaptions([]);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -180,6 +182,16 @@ function SellContent() {
       reader.readAsDataURL(file);
     }
   };
+
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+  }
+
 
   const handleGenerateStory = async () => {
     if (!photo || !productName || !locationContext) {
@@ -198,35 +210,24 @@ function SellContent() {
     setIsLoading(true);
     setGeneratedStory('');
     setTranslatedStory('');
-
+    setSocialCaptions([]);
     try {
-        const storage = getStorage();
-        // Use a temporary path for story generation to avoid polluting the main products folder
-        const tempImagePath = `temp-story-gen/${user.uid}/${photo.name}-${Date.now()}`;
-        const tempImageRef = ref(storage, tempImagePath);
-
-        // 1. Upload the image
-        const uploadResult = await uploadBytes(tempImageRef, photo);
-
-        // 2. Get the download URL
-        const photoUrl = await getDownloadURL(uploadResult.ref);
-
-        // 3. Call the server action with the URL
+        const photoDataUri = await fileToDataUri(photo);
         const result = await generateProductStory({
-            photoUrl,
+            photoDataUri,
             productName,
             locationContext,
             language: 'en', // Always generate in English first
         });
-
         setGeneratedStory(result.story);
+        setSocialCaptions(result.captions);
 
     } catch (error: any) {
       console.error("AI Story Generation Failed:", error);
       toast({
         variant: 'destructive',
         title: 'AI Story Generation Failed',
-        description: error.message || 'Could not generate a story. Please check permissions and try again.',
+        description: error.message || 'Could not generate a story. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -331,7 +332,8 @@ function SellContent() {
   };
   
   const getShareableContent = () => {
-    return generatedStory || userDescription;
+    const caption = socialCaptions.find(c => c.platform === 'facebook')?.caption || generatedStory;
+    return `${caption} ${socialCaptions.find(c => c.platform === 'facebook')?.hashtags || ''}`;
   }
 
   const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest' | 'whatsapp' | 'instagram') => {
@@ -502,6 +504,28 @@ function SellContent() {
                                      )}
                                 </div>
 
+                                <h3 className="text-lg font-semibold mb-4">Social Media Captions</h3>
+                                <div className="space-y-4 flex-grow">
+                                     {isLoading ? (
+                                         <div className="flex items-center justify-center h-full text-muted-foreground"><Loader className="animate-spin text-primary"/></div>
+                                     ) : socialCaptions.length > 0 ? (
+                                        socialCaptions.map((caption, index) => (
+                                            <div key={index} className="flex items-start gap-4">
+                                                {caption.platform === 'instagram' && <Instagram className="h-6 w-6 text-pink-700 mt-1"/>}
+                                                {caption.platform === 'facebook' && <Facebook className="h-6 w-6 text-blue-600 mt-1"/>}
+                                                <div className="flex-grow">
+                                                    <p className="text-foreground">{caption.caption} <span className="text-blue-800">{caption.hashtags}</span></p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="flex items-center justify-center h-full bg-secondary rounded-lg text-muted-foreground">
+                                            {generatedStory ? <p>No captions generated.</p> : <p>AI-generated captions will appear here.</p>}
+                                        </div>
+                                    )}
+                                </div>
+
+
                                  <div className="flex justify-end mt-4 gap-2">
                                      <Button variant="outline" onClick={() => setIsShareModalOpen(true)} disabled={isPublishing || (!userDescription && !generatedStory)}>
                                         <Share2 className="mr-2 h-4 w-4"/>
@@ -540,7 +564,7 @@ function SellContent() {
                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('pinterest')}>
                     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 fill-current">
                         <title>Pinterest</title>
-                        <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.027-.655 2.56-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.159-1.492-.695-2.433-2.878-2.433-4.646 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+                        <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.027-.655 2.56-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.159-1.492-.695-2.433-2.878-2.433-4.646 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.c271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
                     </svg>
                     <span className="text-sm">Pinterest</span>
                 </div>
