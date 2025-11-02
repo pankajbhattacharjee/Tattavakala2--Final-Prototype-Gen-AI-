@@ -261,15 +261,7 @@ function SellContent() {
       });
       return;
     }
-    if (!userDescription && !generatedStory) {
-      toast({
-        variant: 'destructive',
-        title: 'Missing Description',
-        description: 'Please either generate an AI story or write your own description before publishing.',
-      });
-      return;
-    }
-
+    
     setIsPublishing(true);
     try {
       // 1. Upload image to Firebase Storage
@@ -524,7 +516,7 @@ function SellContent() {
                                         <Share2 className="mr-2 h-4 w-4"/>
                                         Share
                                     </Button>
-                                    <Button onClick={handlePublish} disabled={isPublishing || !user || !firestore || (!userDescription && !generatedStory)}>
+                                    <Button onClick={handlePublish} disabled={isPublishing || isUserLoading || !firestore || !user || (!userDescription && !generatedStory)}>
                                         {isPublishing ? <Loader className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         {isPublishing ? 'Publishing...' : 'Publish to Marketplace'}
                                     </Button>

@@ -31,7 +31,7 @@ const tutorials = [
     },
     {
         title: "How to Create a Google Business Profile",
-        embedUrl: "https://youtube.com/shorts/BElTnAVTYq4?feature=share"
+        embedUrl: "https://www.youtube.com/embed/BElTnAVTYq4"
     }
 ];
 
@@ -213,7 +213,7 @@ function ArtisanContentWithSearchParams() {
                                     <iframe 
                                         width="100%" 
                                         height="100%" 
-                                        src={tutorial.embedUrl.replace("shorts/", "embed/").split('?')[0]}
+                                        src={tutorial.embedUrl}
                                         title={tutorial.title}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                         allowFullScreen>
