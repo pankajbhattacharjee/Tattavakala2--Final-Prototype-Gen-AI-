@@ -30,16 +30,3 @@ export async function speechToText(
 ): Promise<SpeechToTextOutput> {
   return await speechToTextFlow(input);
 }
-
-export async function placeOrder(userEmail: string | null) {
-  if (!userEmail) {
-    console.error('Order placement failed: User email not provided.');
-    return { success: false, message: 'User not logged in.' };
-  }
-  console.log(`--- SIMULATING ORDER CONFIRMATION ---`);
-  console.log(`Sending confirmation email to: ${userEmail}`);
-  console.log(`Order Details: [Dummy Order Details]`);
-  console.log(`--- SIMULATION COMPLETE ---`);
-
-  return { success: true, message: 'Order placed successfully.' };
-}

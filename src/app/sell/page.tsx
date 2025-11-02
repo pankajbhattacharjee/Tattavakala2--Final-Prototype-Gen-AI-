@@ -18,7 +18,8 @@ import Footer from '@/components/footer';
 import { useUser, useFirestore } from '@/firebase';
 import type { SocialCaption } from '@/ai/flows';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, collection } from 'firebase/firestore';
+import { doc, setDoc, collection, Firestore } from 'firebase/firestore';
+import type { User } from 'firebase/auth';
 
 
 const regions = [
@@ -57,22 +58,35 @@ function SellContent() {
   const [isPublishing, setIsPublishing] = useState(false);
   const recognitionRef = useRef<any>(null);
   const router = useRouter();
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
 
+  // Robustly get Firebase services and user state
+  const { user: authUser, isUserLoading } = useUser();
+  const firestoreDb = useFirestore();
+  const [user, setUser] = useState<User | null>(null);
+  const [firestore, setFirestore] = useState<Firestore | null>(null);
 
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        navigator.permissions.query({ name: 'microphone' as PermissionName }).then(permissionStatus => {
-            setHasMicPermission(permissionStatus.state === 'granted');
-            permissionStatus.onchange = () => {
-                setHasMicPermission(permissionStatus.state === 'granted');
-            };
-        });
+  // Effect to safely set user and firestore only when they are available
+  useEffect(() => {
+    if (authUser) {
+      setUser(authUser);
+    } else {
+      setUser(null);
+    }
+  }, [authUser]);
 
+  useEffect(() => {
+    if (firestoreDb) {
+      setFirestore(firestoreDb);
+    } else {
+      setFirestore(null);
+    }
+  }, [firestoreDb]);
+
+
+    useEffect(() => {
       if (typeof window !== 'undefined') {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
@@ -94,13 +108,7 @@ function SellContent() {
             };
 
             recognition.onerror = (event: any) => {
-                if (event.error === 'not-allowed') {
-                     toast({
-                        variant: 'destructive',
-                        title: 'Microphone Access Denied',
-                        description: 'Please enable microphone permissions in your browser settings.',
-                    });
-                } else {
+                if (event.error !== 'not-allowed') {
                     toast({
                         variant: 'destructive',
                         title: 'Voice Recognition Error',
@@ -118,23 +126,7 @@ function SellContent() {
       }
     }, [toast]);
     
-    const requestMicPermission = async () => {
-        try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            setHasMicPermission(true);
-            return true;
-        } catch (error) {
-            setHasMicPermission(false);
-            toast({
-                variant: 'destructive',
-                title: 'Microphone Access Denied',
-                description: 'Please enable microphone permissions in your browser settings.',
-            });
-            return false;
-        }
-    };
-    
-    const handleListen = async () => {
+    const handleListen = () => {
         if (!recognitionRef.current) {
              toast({
                 variant: 'destructive',
@@ -148,15 +140,17 @@ function SellContent() {
             recognitionRef.current.stop();
             setIsListening(false);
         } else {
-            const permissionGranted = hasMicPermission === true || (await requestMicPermission());
-            if (permissionGranted) {
-                try {
-                    recognitionRef.current.start();
-                    setIsListening(true);
-                    toast({ title: 'Listening...', description: 'Start speaking to add context.' });
-                } catch (e) {
-                    setIsListening(false);
-                }
+            try {
+                recognitionRef.current.start();
+                setIsListening(true);
+                toast({ title: 'Listening...', description: 'Start speaking to add context.' });
+            } catch (e) {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Could not start listening',
+                    description: 'Please ensure microphone permissions are enabled.',
+                });
+                setIsListening(false);
             }
         }
     };
@@ -253,10 +247,12 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
-    if (!user || !user.email) {
-      toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
+    // Critical validation: ensure firestore and user are loaded
+    if (!firestore || !user || !user.email) {
+      toast({ variant: 'destructive', title: 'Not Ready', description: 'Please wait a moment and ensure you are logged in before publishing.' });
       return;
     }
+
     if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
       toast({
         variant: 'destructive',
@@ -305,7 +301,7 @@ function SellContent() {
         },
       };
 
-      // 4. Save data to Firestore
+      // 4. Save data to Firestore (Artisan and Product)
       await setDoc(artisanDocRef, { id: user.uid, name: artisanName, contactEmail: user.email }, { merge: true });
       await setDoc(productDocRef, newProduct);
       
@@ -320,9 +316,10 @@ function SellContent() {
       toast({
         variant: 'destructive',
         title: 'Publishing Failed',
-        description: error.message || 'An unexpected error occurred. Please try again.',
+        description: error.message || 'An unexpected error occurred. Please check console for details and try again.',
       });
     } finally {
+      // Guaranteed to run, preventing the button from being stuck
       setIsPublishing(false);
     }
   };
@@ -527,7 +524,7 @@ function SellContent() {
                                         <Share2 className="mr-2 h-4 w-4"/>
                                         Share
                                     </Button>
-                                    <Button onClick={handlePublish} disabled={isPublishing || !user || (!userDescription && !generatedStory)}>
+                                    <Button onClick={handlePublish} disabled={isPublishing || !user || !firestore || (!userDescription && !generatedStory)}>
                                         {isPublishing ? <Loader className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         {isPublishing ? 'Publishing...' : 'Publish to Marketplace'}
                                     </Button>

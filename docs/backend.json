@@ -18,6 +18,14 @@
           "type": "string",
           "description": "The name of the product."
         },
+        "artisanName": {
+          "type": "string",
+          "description": "The name of the artisan who created the product."
+        },
+        "description": {
+            "type": "string",
+            "description": "The story or description of the product."
+        },
         "location": {
           "type": "string",
           "description": "The state/region where the product is from."
@@ -38,7 +46,8 @@
         "id",
         "artisanId",
         "name",
-        "location"
+        "location",
+        "description"
       ]
     },
     "Artisan": {
