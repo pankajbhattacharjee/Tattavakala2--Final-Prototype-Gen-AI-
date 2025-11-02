@@ -79,8 +79,8 @@ function StoriesContent() {
                 </div>
                 </CardHeader>
                 <CardContent className="p-6">
-                <CardTitle className="text-xl font-semibold mb-2">{story.storyTitle}</CardTitle>
-                <CardDescription className="line-clamp-3">{story.storyContent}</CardDescription>
+                <CardTitle className="text-xl font-semibold mb-2">{story.name}</CardTitle>
+                <CardDescription className="line-clamp-3">{story.description}</CardDescription>
                 </CardContent>
             </Card>
           )

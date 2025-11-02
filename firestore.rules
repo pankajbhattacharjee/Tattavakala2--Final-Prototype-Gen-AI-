@@ -10,13 +10,19 @@ service cloud.firestore {
     }
 
     match /artisans/{artisanId} {
-      allow read, write: if request.auth != null && request.auth.uid == artisanId;
+      // Artisans can read and update their own profile. Deletion is blocked.
+      allow read, update: if request.auth != null && request.auth.uid == artisanId;
+      // Allow a user to create their own artisan document.
+      allow create: if request.auth != null && request.auth.uid == artisanId;
       allow delete: if false;
       
+      // Rule for the nested 'products' subcollection.
       match /products/{productId} {
         // The read rule is handled by the collectionGroup query rule above.
         // These rules handle direct writes to a specific product document.
+        // Allow create if the user is authenticated and the new product's artisanId matches their UID.
         allow create: if request.auth != null && request.resource.data.artisanId == request.auth.uid;
+        // Allow update/delete if the user is authenticated and the existing product's artisanId matches their UID.
         allow update, delete: if request.auth != null && resource.data.artisanId == request.auth.uid;
       }
     }
