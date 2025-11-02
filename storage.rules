@@ -7,8 +7,13 @@ service firebase.storage {
       allow read;
     }
 
-    // Allow authenticated users to write to a path scoped by their UID.
+    // Allow authenticated users to write to a path scoped by their UID for final products.
     match /products/{userId}/{allPaths=**} {
+      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to write to a temporary path for AI story generation.
+    match /temp-story-gen/{userId}/{allPaths=**} {
       allow create, update, delete: if request.auth != null && request.auth.uid == userId;
     }
   }

@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { generateProductStory, translateProductStory, speechToText } from '../actions';
+import { generateProductStory, translateProductStory } from '../actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link as LinkIcon, Store, Share2, Bot, Send } from 'lucide-react';
+import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link as LinkIcon, Share2, Bot, Send } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -231,12 +231,12 @@ function SellContent() {
         setGeneratedStory(result.story);
         setSocialCaptions(result.captions);
 
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("AI Story Generation Failed:", error);
       toast({
         variant: 'destructive',
         title: 'AI Story Generation Failed',
-        description: 'Could not generate a story. Please try again.',
+        description: error.message || 'Could not generate a story. Please check permissions and try again.',
       });
     } finally {
       setIsLoading(false);
@@ -583,6 +583,7 @@ function SellContent() {
              <Button onClick={() => setIsShareModalOpen(false)} className="w-full">Close</Button>
         </DialogContent>
       </Dialog>
+      <Footer/>
     </>
   );
 }
