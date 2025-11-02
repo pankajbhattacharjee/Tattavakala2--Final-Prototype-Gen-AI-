@@ -34,8 +34,9 @@ const ProfilePage = () => {
             console.log('Google Sign-In successful for user:', userCredential.user.uid);
             setIsLoginModalOpen(false);
         } catch (error: any) {
-            console.error('Authentication process ended or failed:', error.code, error.message);
+            // Gracefully handle popup-closed-by-user, which is not a true "error".
             if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                 console.error('Authentication process ended or failed:', error.code, error.message);
                  toast({
                     variant: 'destructive',
                     title: 'Sign-in Failed',

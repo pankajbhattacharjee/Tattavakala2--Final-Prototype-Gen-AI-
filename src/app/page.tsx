@@ -64,9 +64,9 @@ export default function LandingPage() {
             // We can now safely close the modal.
             setIsLoginModalOpen(false);
         } catch (error: any) {
-            // This will catch any errors, including 'auth/popup-closed-by-user' or 'auth/popup-blocked'.
-            console.log('Authentication process ended or failed:', error.code, error.message);
+            // Gracefully handle popup-closed-by-user, which is not a true "error".
             if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                console.error('Authentication process ended or failed:', error.code, error.message);
                 toast({
                     variant: 'destructive',
                     title: 'Sign-in Failed',

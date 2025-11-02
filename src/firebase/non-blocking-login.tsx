@@ -28,8 +28,10 @@ export async function initiateGoogleSignIn(authInstance: Auth): Promise<UserCred
     const result = await signInWithPopup(authInstance, provider);
     return result;
   } catch (error: any) {
-    // Log the error internally and re-throw so the caller can handle it.
-    console.error("Error during signInWithPopup:", error.code, error.message);
+    // Gracefully handle popup-closed-by-user, which is not a true "error".
+    if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+      console.error("Error during signInWithPopup:", error.code, error.message);
+    }
     throw error; // Re-throw to propagate to the calling function's catch block
   }
 }
