@@ -17,10 +17,11 @@ export async function generateProductStory(
   input: GenerateProductStoryInput
 ): Promise<GenerateProductStoryOutput> {
   try {
+    // Directly invoke the AI flow function
     return await generateProductStoryFlow(input);
   } catch (error: any) {
     console.error('[AI] Generate Product Story Failed:', error);
-    // Re-throw a more user-friendly error or a generic one
+    // Re-throw a more user-friendly error or a generic one to be caught by the client
     throw new Error(`Failed to generate product story: ${error.message}`);
   }
 }

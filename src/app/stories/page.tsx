@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import Image from 'next/image';
@@ -39,9 +38,8 @@ function StoriesContent() {
     if (allProducts) {
         const generatedStories = allProducts.map(p => ({
         ...p,
-        storyTitle: p.name,
-        // Use the actual description from the product data as the story content
-        storyContent: p.description
+        storyTitle: p.name, // Use product name for the story title
+        storyContent: p.description // Use the actual description from the product data
         }));
         setStories(generatedStories.reverse());
     }

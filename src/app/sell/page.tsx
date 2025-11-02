@@ -58,31 +58,21 @@ function SellContent() {
   const [isPublishing, setIsPublishing] = useState(false);
   const recognitionRef = useRef<any>(null);
   const router = useRouter();
-
-  // Robustly get Firebase services and user state
   const { user: authUser, isUserLoading } = useUser();
   const firestoreDb = useFirestore();
   const [user, setUser] = useState<User | null>(null);
   const [firestore, setFirestore] = useState<Firestore | null>(null);
-
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Effect to safely set user and firestore only when they are available
   useEffect(() => {
-    if (authUser) {
-      setUser(authUser);
-    } else {
-      setUser(null);
-    }
+    if (authUser) setUser(authUser);
+    else setUser(null);
   }, [authUser]);
 
   useEffect(() => {
-    if (firestoreDb) {
-      setFirestore(firestoreDb);
-    } else {
-      setFirestore(null);
-    }
+    if (firestoreDb) setFirestore(firestoreDb);
+    else setFirestore(null);
   }, [firestoreDb]);
 
 
@@ -211,7 +201,7 @@ function SellContent() {
             language: 'en',
         });
         setGeneratedStory(result.story);
-        setSocialCaptions(result.captions);
+        setSocialCaptions(result.captions || []);
 
     } catch (error: any) {
       console.error("AI Story Generation Failed:", error);
@@ -247,17 +237,23 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
-    // Critical validation: ensure firestore and user are loaded
-    if (!firestore || !user || !user.email) {
-      toast({ variant: 'destructive', title: 'Not Ready', description: 'Please wait a moment and ensure you are logged in before publishing.' });
-      return;
-    }
-
     if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
         description: 'Please ensure all required fields are filled, a photo is uploaded, and the price is valid.',
+      });
+      return;
+    }
+    if (!firestore || !user || !user.email) {
+      toast({ variant: 'destructive', title: 'Not Ready', description: 'Please log in and wait for services to load.' });
+      return;
+    }
+    if (!userDescription && !generatedStory) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Description',
+        description: 'Please either generate an AI story or write your own description before publishing.',
       });
       return;
     }
@@ -311,7 +307,6 @@ function SellContent() {
         description: error.message || 'An unexpected error occurred. Please check console for details and try again.',
       });
     } finally {
-      // Guaranteed to run, preventing the button from being stuck
       setIsPublishing(false);
     }
   };
