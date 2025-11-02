@@ -189,15 +189,6 @@ function SellContent() {
     }
   };
 
-  const fileToDataUri = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-  }
-
   const handleGenerateStory = async () => {
     if (!photo || !productName || !locationContext) {
       toast({
@@ -207,6 +198,10 @@ function SellContent() {
       });
       return;
     }
+    if (!user) {
+      toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to generate a story.' });
+      return;
+    }
 
     setIsLoading(true);
     setGeneratedStory('');
@@ -214,15 +209,28 @@ function SellContent() {
     setSocialCaptions([]);
 
     try {
-        const photoDataUri = await fileToDataUri(photo);
+        const storage = getStorage();
+        // Use a temporary path for story generation to avoid polluting the main products folder
+        const tempImagePath = `temp-story-gen/${user.uid}/${photo.name}-${Date.now()}`;
+        const tempImageRef = ref(storage, tempImagePath);
+
+        // 1. Upload the image
+        const uploadResult = await uploadBytes(tempImageRef, photo);
+
+        // 2. Get the download URL
+        const photoUrl = await getDownloadURL(uploadResult.ref);
+
+        // 3. Call the server action with the URL
         const result = await generateProductStory({
-            photoDataUri,
+            photoUrl,
             productName,
             locationContext,
             language: 'en', // Always generate in English first
         });
+
         setGeneratedStory(result.story);
         setSocialCaptions(result.captions);
+
     } catch (error) {
       console.error(error);
       toast({
@@ -261,7 +269,6 @@ function SellContent() {
       toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
       return;
     }
-    // Updated validation
     if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
       toast({
         variant: 'destructive',
@@ -285,23 +292,18 @@ function SellContent() {
       const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
       const imageRef = ref(storage, imagePath);
       
-      // Step 1: Upload the image and AWAIT completion.
       const uploadResult = await uploadBytes(imageRef, photo);
-      // Step 2: Get the download URL only AFTER the upload is complete.
       const imageUrl = await getDownloadURL(uploadResult.ref);
 
       const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
       
-      // Step 3: Create or update the artisan's main document.
       const artisanDocRef = doc(firestore, 'artisans', user.uid);
       await setDoc(artisanDocRef, {
         id: user.uid,
         name: artisanName,
         contactEmail: user.email,
-        // any other artisan-specific info can go here
-      }, { merge: true }); // Use merge to avoid overwriting existing artisan data
+      }, { merge: true });
 
-      // Step 4: Create the new product document in the subcollection.
       const newProduct = {
         id: productId,
         artisanId: user.uid,
@@ -334,7 +336,6 @@ function SellContent() {
         description: error.message || 'An unexpected error occurred. Please try again.',
       });
     } finally {
-      // GUARANTEED to run, preventing the UI from getting stuck.
       setIsPublishing(false);
     }
   };
@@ -369,8 +370,6 @@ function SellContent() {
               url = `https://api.whatsapp.com/send?text=${'\'\'\'' + shareText}%20${'\'\'\'' + encodeURIComponent(shareUrl)}`;
               break;
           case 'instagram':
-              // Instagram sharing is more complex and usually requires using their API or sharing from a mobile device.
-              // This is a placeholder to inform the user.
               toast({title: 'Share on Instagram', description: 'To share on Instagram, please save the image and post it from your mobile device.'});
               return;
       }

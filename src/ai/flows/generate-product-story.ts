@@ -12,11 +12,9 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateProductStoryInputSchema = z.object({
-  photoDataUri: z
+  photoUrl: z
     .string()
-    .describe(
-      "A photo of the product, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
+    .describe('A public URL of a photo of the product.'),
   productName: z.string().describe('The name of the product.'),
   locationContext: z.string().describe('The location (state/region) where the product is made.'),
   language: z.string().default('en').describe('The language for the generated story (e.g., en, es, fr).'),
@@ -49,7 +47,7 @@ const prompt = ai.definePrompt({
 
   Product Name: {{{productName}}}
   Location Context: {{{locationContext}}}
-  Product Photo: {{media url=photoDataUri}}
+  Product Photo: {{media url=photoUrl}}
   `,
 });
 
