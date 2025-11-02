@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { generateProductStory, translateProductStory } from '../actions';
+import { generateProductStory } from '../actions';
 import { useToast } from '@/hooks/use-toast';
 import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link as LinkIcon, Share2, Bot, Send } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -50,9 +50,8 @@ function SellContent() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [generatedStory, setGeneratedStory] = useState('');
   const [socialCaptions, setSocialCaptions] = useState<SocialCaption[]>([]);
-  const [translatedStory, setTranslatedStory] = useState('');
+  const [generationLanguage, setGenerationLanguage] = useState('en');
   const [isLoading, setIsLoading] = useState(false);
-  const [isTranslating, setIsTranslating] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -153,7 +152,6 @@ function SellContent() {
       setFileName(file.name);
       
       setGeneratedStory('');
-      setTranslatedStory('');
       setSocialCaptions([]);
 
       const reader = new FileReader();
@@ -190,7 +188,6 @@ function SellContent() {
 
     setIsLoading(true);
     setGeneratedStory('');
-    setTranslatedStory('');
     setSocialCaptions([]);
     try {
         const photoDataUri = await fileToDataUri(photo);
@@ -198,7 +195,7 @@ function SellContent() {
             photoDataUri,
             productName,
             locationContext,
-            language: 'en',
+            language: generationLanguage,
         });
         setGeneratedStory(result.story);
         setSocialCaptions(result.captions || []);
@@ -214,27 +211,6 @@ function SellContent() {
       setIsLoading(false);
     }
   };
-  
-  const handleTranslate = async (language: string) => {
-    if (!generatedStory) return;
-    setIsTranslating(true);
-    try {
-        const result = await translateProductStory({
-            story: generatedStory,
-            language,
-        });
-        setTranslatedStory(result.translatedStory);
-    } catch (error) {
-        console.error(error);
-        toast({
-            variant: "destructive",
-            title: "Translation Failed",
-            description: "Could not translate the story. Please try again."
-        });
-    } finally {
-        setIsTranslating(false);
-    }
-  }
 
   const handlePublish = async () => {
     if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
@@ -462,7 +438,7 @@ function SellContent() {
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-lg font-semibold">Generate AI Story</h3>
                                     <div className="flex items-center gap-4">
-                                        <Select defaultValue='en' onValueChange={handleTranslate} disabled={!generatedStory}>
+                                        <Select value={generationLanguage} onValueChange={setGenerationLanguage}>
                                             <SelectTrigger className="w-[120px]">
                                                 <SelectValue placeholder="Language" />
                                             </SelectTrigger>
@@ -480,7 +456,7 @@ function SellContent() {
                                      {isLoading ? (
                                         <div className="flex items-center justify-center h-full"><Loader className="animate-spin text-primary"/></div>
                                      ) : (
-                                        <p className="whitespace-pre-wrap">{isTranslating ? <Loader className="animate-spin" /> : (translatedStory || generatedStory || 'Your generated story will appear here...')}</p>
+                                        <p className="whitespace-pre-wrap">{generatedStory || 'Your generated story will appear here...'}</p>
                                      )}
                                 </div>
 

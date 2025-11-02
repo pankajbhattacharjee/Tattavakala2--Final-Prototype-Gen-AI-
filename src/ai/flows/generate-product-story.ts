@@ -61,7 +61,7 @@ const prompt = ai.definePrompt({
 
   Task:
   1. Create a compelling story for the following product, incorporating its name, origin, and visual details. Focus on evoking emotion and highlighting the craftsmanship. The story should be in the language: {{{language}}}.
-  2. Generate 2 social media captions (one for Instagram, one for Facebook) to promote the product. The captions should be engaging and include relevant hashtags.
+  2. Generate 2 social media captions (one for Instagram, one for Facebook) to promote the product. The captions should be engaging, in the language {{{language}}}, and include relevant hashtags.
 
   Product Name: {{{productName}}}
   Location Context: {{{locationContext}}}
