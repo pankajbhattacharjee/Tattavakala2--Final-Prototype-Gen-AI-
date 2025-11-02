@@ -130,7 +130,7 @@ export default function ProductGrid({ searchQuery = '', filters }: ProductGridPr
           {selectedProduct && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-3xl font-bold">{`The Art of ${selectedProduct.name}`}</DialogTitle>
+                <DialogTitle className="text-3xl font-bold">{selectedProduct.name}</DialogTitle>
                 <DialogDescription className="text-md pt-2">{selectedProduct.region} | {selectedProduct.category}</DialogDescription>
               </DialogHeader>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 overflow-hidden flex-grow">

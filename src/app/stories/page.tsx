@@ -39,7 +39,7 @@ function StoriesContent() {
     if (allProducts) {
         const generatedStories = allProducts.map(p => ({
         ...p,
-        storyTitle: `The Art of ${p.name}`,
+        storyTitle: p.name,
         // Use the actual description from the product data as the story content
         storyContent: p.description
         }));
