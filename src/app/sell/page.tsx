@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { generateProductStory, translateProductStory, uploadProduct } from '../actions';
+import { generateProductStory, translateProductStory } from '../actions';
 import { useToast } from '@/hooks/use-toast';
 import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link as LinkIcon, Share2, Bot, Send } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -15,8 +15,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import type { SocialCaption } from '@/ai/flows';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, setDoc, collection } from 'firebase/firestore';
 
 
 const regions = [
@@ -56,6 +58,7 @@ function SellContent() {
   const recognitionRef = useRef<any>(null);
   const router = useRouter();
   const { user } = useUser();
+  const firestore = useFirestore();
   const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
 
 
@@ -254,7 +257,7 @@ function SellContent() {
       toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
       return;
     }
-    if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext || !photoPreview) {
+    if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
@@ -273,27 +276,44 @@ function SellContent() {
 
     setIsPublishing(true);
     try {
-      const result = await uploadProduct({
-        userId: user.uid,
-        userEmail: user.email,
-        photoDataUri: photoPreview,
-        productName,
-        artisanName,
-        price,
-        category,
-        locationContext,
-        description: userDescription || generatedStory
-      });
+      // 1. Upload image to Firebase Storage
+      const storage = getStorage();
+      const imagePath = `products/${user.uid}/${productName.replace(/\s+/g, '-')}-${Date.now()}`;
+      const imageRef = ref(storage, imagePath);
+      const uploadResult = await uploadBytes(imageRef, photo);
+      
+      // 2. Get public URL
+      const imageUrl = await getDownloadURL(uploadResult.ref);
 
-      if (result.success) {
-        toast({
-          title: 'Product Published!',
-          description: `${productName} is now live on the marketplace.`,
-        });
-        router.push('/marketplace');
-      } else {
-        throw new Error(result.message);
-      }
+      // 3. Prepare product data
+      const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
+      const artisanDocRef = doc(firestore, 'artisans', user.uid);
+      const productDocRef = doc(artisanDocRef, 'products', productId);
+
+      const newProduct = {
+        id: productId,
+        artisanId: user.uid,
+        name: productName,
+        artisanName: artisanName,
+        description: userDescription || generatedStory,
+        category: category,
+        region: locationContext,
+        price: price,
+        image: {
+          src: imageUrl,
+          hint: productName.toLowerCase().split(' ').slice(0, 2).join(' '),
+        },
+      };
+
+      // 4. Save data to Firestore
+      await setDoc(artisanDocRef, { id: user.uid, name: artisanName, contactEmail: user.email }, { merge: true });
+      await setDoc(productDocRef, newProduct);
+      
+      toast({
+        title: 'Product Published!',
+        description: `${productName} is now live on the marketplace.`,
+      });
+      router.push('/marketplace');
 
     } catch (error: any) {
       console.error('Failed to publish product:', error);
