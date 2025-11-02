@@ -8,64 +8,21 @@ import type {
   TranslateProductStoryInput,
   TranslateProductStoryOutput,
 } from '@/ai/flows';
-import {
-  generateProductStoryFlow,
-  translateProductStoryFlow,
-} from '@/ai/flows/generate-product-story';
-import {speechToTextFlow} from '@/ai/flows/speech-to-text';
-
-// This is the base URL for the Genkit flows API.
-// In development, it points directly to the local Genkit server.
-// In production, it would point to the deployed Cloud Run service URL.
-const GENKIT_API_BASE =
-  process.env.GENKIT_API_BASE || 'http://127.0.0.1:3400/flows';
-
-async function callGenkitFlow<T_IN, T_OUT>(
-  flowId: string,
-  input: T_IN
-): Promise<T_OUT> {
-  const url = `${GENKIT_API_BASE}/${flowId}`;
-  console.log(`Calling Genkit flow at: ${url}`);
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({input}),
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error(
-        `Genkit flow '${flowId}' failed with status ${response.status}:`,
-        errorBody
-      );
-      throw new Error(`Request to AI flow failed: ${response.statusText}`);
-    }
-
-    const result = await response.json();
-    return result.output as T_OUT;
-  } catch (error) {
-    console.error(`Error calling Genkit flow '${flowId}':`, error);
-    // Re-throw the error to be handled by the calling component
-    throw error;
-  }
-}
+import { generateProductStoryFlow } from '@/ai/flows';
+import { speechToTextFlow } from '@/ai/flows/speech-to-text';
+import { translateProductStoryFlow } from '@/ai/flows/translate-product-story';
+import { getFirebaseAdmin } from '@/firebase/firebase-admin';
 
 export async function generateProductStory(
   input: GenerateProductStoryInput
 ): Promise<GenerateProductStoryOutput> {
-  // The flow is now called directly as a function, avoiding network issues.
   return await generateProductStoryFlow(input);
 }
 
 export async function translateProductStory(
   input: TranslateProductStoryInput
 ): Promise<TranslateProductStoryOutput> {
-  // The flowId here must match the 'name' of the flow defined with `ai.defineFlow`
-  return await callGenkitFlow('translateProductStoryFlow', input);
+  return await translateProductStoryFlow(input);
 }
 
 export async function speechToText(
@@ -77,18 +34,109 @@ export async function speechToText(
 export async function placeOrder(userEmail: string | null) {
   if (!userEmail) {
     console.error('Order placement failed: User email not provided.');
-    return {success: false, message: 'User not logged in.'};
+    return { success: false, message: 'User not logged in.' };
   }
-
-  // In a real application, you would add logic here to:
-  // 1. Save the order to a database.
-  // 2. Process payment with a payment gateway.
-  // 3. Send a real confirmation email using a service like SendGrid, Resend, or Nodemailer.
-
   console.log(`--- SIMULATING ORDER CONFIRMATION ---`);
   console.log(`Sending confirmation email to: ${userEmail}`);
   console.log(`Order Details: [Dummy Order Details]`);
   console.log(`--- SIMULATION COMPLETE ---`);
 
-  return {success: true, message: 'Order placed successfully.'};
+  return { success: true, message: 'Order placed successfully.' };
+}
+
+type UploadProductInput = {
+  userId: string;
+  userEmail: string;
+  photoDataUri: string;
+  productName: string;
+  artisanName: string;
+  price: number;
+  category: string;
+  locationContext: string;
+  description: string;
+};
+
+export async function uploadProduct(
+  input: UploadProductInput
+): Promise<{ success: boolean; message: string }> {
+  const {
+    userId,
+    userEmail,
+    photoDataUri,
+    productName,
+    artisanName,
+    price,
+    category,
+    locationContext,
+    description,
+  } = input;
+
+  try {
+    const { storage, firestore } = getFirebaseAdmin();
+    const bucket = storage.bucket();
+
+    // 1. Upload image from data URI
+    const mimeType = photoDataUri.match(/data:(.*);base64,/)?.[1];
+    if (!mimeType) {
+      throw new Error('Invalid data URI.');
+    }
+    const base64Data = photoDataUri.split(',')[1];
+    const imageBuffer = Buffer.from(base64Data, 'base64');
+    const fileExtension = mimeType.split('/')[1];
+    const imagePath = `products/${userId}/${productName.replace(
+      /\s+/g,
+      '-'
+    )}-${Date.now()}.${fileExtension}`;
+    const file = bucket.file(imagePath);
+
+    await file.save(imageBuffer, {
+      metadata: { contentType: mimeType },
+    });
+    
+    // Get public URL
+    const [imageUrl] = await file.getSignedUrl({
+        action: 'read',
+        expires: '03-09-2491' // Far-future expiration date
+    });
+
+
+    // 2. Prepare product data
+    const productId = `prod_${userId.slice(0, 5)}_${Date.now()}`;
+    const artisanDocRef = firestore.collection('artisans').doc(userId);
+    const productDocRef = artisanDocRef.collection('products').doc(productId);
+
+    const newProduct = {
+      id: productId,
+      artisanId: userId,
+      name: productName,
+      artisanName: artisanName,
+      description: description,
+      category: category,
+      region: locationContext,
+      price: price,
+      image: {
+        src: imageUrl,
+        hint: productName.toLowerCase().split(' ').slice(0, 2).join(' '),
+      },
+    };
+
+    // 3. Save data to Firestore in a batch
+    const batch = firestore.batch();
+    batch.set(
+      artisanDocRef,
+      { id: userId, name: artisanName, contactEmail: userEmail },
+      { merge: true }
+    );
+    batch.set(productDocRef, newProduct);
+
+    await batch.commit();
+
+    return { success: true, message: 'Product published successfully!' };
+  } catch (error: any) {
+    console.error('Failed to publish product:', error);
+    return {
+      success: false,
+      message: error.message || 'An unexpected error occurred.',
+    };
+  }
 }

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { generateProductStory, translateProductStory } from '../actions';
+import { generateProductStory, translateProductStory, uploadProduct } from '../actions';
 import { useToast } from '@/hooks/use-toast';
 import { Loader, Languages, Facebook, Instagram, Upload, FileImage, Mic, Link as LinkIcon, Share2, Bot, Send } from 'lucide-react';
 import MarketplaceHeader from '@/components/marketplace-header';
@@ -15,9 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useRouter } from 'next/navigation';
 import { categories } from '@/lib/categories';
 import Footer from '@/components/footer';
-import { useFirestore, useUser } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useUser } from '@/firebase';
 import type { SocialCaption } from '@/ai/flows';
 
 
@@ -57,7 +55,6 @@ function SellContent() {
   const [isPublishing, setIsPublishing] = useState(false);
   const recognitionRef = useRef<any>(null);
   const router = useRouter();
-  const firestore = useFirestore();
   const { user } = useUser();
   const [hasMicPermission, setHasMicPermission] = useState<boolean | null>(null);
 
@@ -66,7 +63,6 @@ function SellContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        // Check for microphone permission on component mount
         navigator.permissions.query({ name: 'microphone' as PermissionName }).then(permissionStatus => {
             setHasMicPermission(permissionStatus.state === 'granted');
             permissionStatus.onchange = () => {
@@ -156,7 +152,6 @@ function SellContent() {
                     setIsListening(true);
                     toast({ title: 'Listening...', description: 'Start speaking to add context.' });
                 } catch (e) {
-                    // This might catch errors if speech recognition is already active
                     setIsListening(false);
                 }
             }
@@ -170,7 +165,6 @@ function SellContent() {
       setPhoto(file);
       setFileName(file.name);
       
-      // Reset generated content when a new file is chosen
       setGeneratedStory('');
       setTranslatedStory('');
       setSocialCaptions([]);
@@ -217,7 +211,7 @@ function SellContent() {
             photoDataUri,
             productName,
             locationContext,
-            language: 'en', // Always generate in English first
+            language: 'en',
         });
         setGeneratedStory(result.story);
         setSocialCaptions(result.captions);
@@ -256,11 +250,11 @@ function SellContent() {
   }
 
   const handlePublish = async () => {
-    if (!user || !firestore) {
+    if (!user || !user.email) {
       toast({ variant: 'destructive', title: 'Not Logged In', description: 'Please log in to publish a product.' });
       return;
     }
-    if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext) {
+    if (!photo || !productName || !artisanName || price === '' || price <= 0 || !category || !locationContext || !photoPreview) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
@@ -279,45 +273,27 @@ function SellContent() {
 
     setIsPublishing(true);
     try {
-      const storage = getStorage();
-      const imagePath = `products/${user.uid}/${photo.name}-${Date.now()}`;
-      const imageRef = ref(storage, imagePath);
-      
-      const uploadResult = await uploadBytes(imageRef, photo);
-      const imageUrl = await getDownloadURL(uploadResult.ref);
-
-      const productId = `prod_${user.uid.slice(0, 5)}_${Date.now()}`;
-      
-      const artisanDocRef = doc(firestore, 'artisans', user.uid);
-      await setDoc(artisanDocRef, {
-        id: user.uid,
-        name: artisanName,
-        contactEmail: user.email,
-      }, { merge: true });
-
-      const newProduct = {
-        id: productId,
-        artisanId: user.uid,
-        name: productName,
-        artisanName: artisanName,
-        description: userDescription || generatedStory,
-        category: category,
-        region: locationContext,
-        price: price,
-        image: {
-          src: imageUrl,
-          hint: productName.toLowerCase().split(' ').slice(0, 2).join(' '),
-        },
-      };
-
-      const productDocRef = doc(artisanDocRef, 'products', productId);
-      await setDoc(productDocRef, newProduct);
-
-      toast({
-        title: 'Product Published!',
-        description: `${productName} is now live on the marketplace.`,
+      const result = await uploadProduct({
+        userId: user.uid,
+        userEmail: user.email,
+        photoDataUri: photoPreview,
+        productName,
+        artisanName,
+        price,
+        category,
+        locationContext,
+        description: userDescription || generatedStory
       });
-      router.push('/marketplace');
+
+      if (result.success) {
+        toast({
+          title: 'Product Published!',
+          description: `${productName} is now live on the marketplace.`,
+        });
+        router.push('/marketplace');
+      } else {
+        throw new Error(result.message);
+      }
 
     } catch (error: any) {
       console.error('Failed to publish product:', error);
@@ -337,28 +313,28 @@ function SellContent() {
   }
 
   const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest' | 'whatsapp' | 'instagram') => {
-      const shareUrl = window.location.origin + '/marketplace'; // A generic link to the marketplace
+      const shareUrl = window.location.origin + '/marketplace'; 
       const shareText = encodeURIComponent(getShareableContent());
       const shareImage = encodeURIComponent(photoPreview || '');
 
       let url = '';
       switch(platform) {
           case 'facebook':
-              url = `https://www.facebook.com/sharer/sharer.php?u=${'\'\'\'' + encodeURIComponent(shareUrl)}&quote=${'\'\'\'' + shareText}`;
+              url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${shareText}`;
               break;
           case 'twitter':
-              url = `https://twitter.com/intent/tweet?url=${'\'\'\'' + encodeURIComponent(shareUrl)}&text=${'\'\'\'' + shareText}`;
+              url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareText}`;
               break;
           case 'pinterest':
               if(photoPreview) {
-                url = `https://pinterest.com/pin/create/button/?url=${'\'\'\'' + encodeURIComponent(shareUrl)}&media=${'\'\'\'' + shareImage}&description=${'\'\'\'' + shareText}`;
+                url = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&media=${shareImage}&description=${shareText}`;
               } else {
                  toast({variant: 'destructive', title: 'No Image', description: 'Please upload an image to share on Pinterest.'});
                  return;
               }
               break;
           case 'whatsapp':
-              url = `https://api.whatsapp.com/send?text=${'\'\'\'' + shareText}%20${'\'\'\'' + encodeURIComponent(shareUrl)}`;
+              url = `https://api.whatsapp.com/send?text=${shareText}%20${encodeURIComponent(shareUrl)}`;
               break;
           case 'instagram':
               toast({title: 'Share on Instagram', description: 'To share on Instagram, please save the image and post it from your mobile device.'});
@@ -564,7 +540,7 @@ function SellContent() {
                 <div className="flex flex-col items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md" onClick={() => handleSocialShare('pinterest')}>
                     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600 fill-current">
                         <title>Pinterest</title>
-                        <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.027-.655 2.56-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.159-1.492-.695-2.433-2.878-2.433-4.646 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.c271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+                        <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.027-.655 2.56-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.159-1.492-.695-2.433-2.878-2.433-4.646 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
                     </svg>
                     <span className="text-sm">Pinterest</span>
                 </div>
