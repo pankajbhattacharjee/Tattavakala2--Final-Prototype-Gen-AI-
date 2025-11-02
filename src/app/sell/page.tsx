@@ -37,12 +37,6 @@ const languages = [
     { value: 'te', label: 'Telugu' },
 ];
 
-type SocialCaption = {
-    platform: 'instagram' | 'facebook';
-    caption: string;
-    hashtags: string;
-};
-
 function SellContent() {
   const [productName, setProductName] = useState('');
   const [artisanName, setArtisanName] = useState('');
@@ -54,7 +48,6 @@ function SellContent() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [generatedStory, setGeneratedStory] = useState('');
-  const [socialCaptions, setSocialCaptions] = useState<SocialCaption[]>([]);
   const [translatedStory, setTranslatedStory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -179,7 +172,6 @@ function SellContent() {
       // Reset generated content when a new file is chosen
       setGeneratedStory('');
       setTranslatedStory('');
-      setSocialCaptions([]);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -206,7 +198,6 @@ function SellContent() {
     setIsLoading(true);
     setGeneratedStory('');
     setTranslatedStory('');
-    setSocialCaptions([]);
 
     try {
         const storage = getStorage();
@@ -229,7 +220,6 @@ function SellContent() {
         });
 
         setGeneratedStory(result.story);
-        setSocialCaptions(result.captions);
 
     } catch (error: any) {
       console.error("AI Story Generation Failed:", error);
@@ -341,8 +331,7 @@ function SellContent() {
   };
   
   const getShareableContent = () => {
-    const caption = socialCaptions.find(c => c.platform === 'facebook')?.caption || generatedStory;
-    return `${caption} ${socialCaptions.find(c => c.platform === 'facebook')?.hashtags || ''}`;
+    return generatedStory || userDescription;
   }
 
   const handleSocialShare = (platform: 'facebook' | 'twitter' | 'pinterest' | 'whatsapp' | 'instagram') => {
@@ -505,7 +494,7 @@ function SellContent() {
                                     </div>
                                 </div>
                                 
-                                <div className="bg-secondary rounded-lg p-4 min-h-[120px] text-muted-foreground mb-6">
+                                <div className="bg-secondary rounded-lg p-4 min-h-[120px] text-muted-foreground mb-6 flex-grow">
                                      {isLoading ? (
                                         <div className="flex items-center justify-center h-full"><Loader className="animate-spin text-primary"/></div>
                                      ) : (
@@ -513,32 +502,12 @@ function SellContent() {
                                      )}
                                 </div>
 
-                                <h3 className="text-lg font-semibold mb-4">Social Media Captions</h3>
-                                <div className="space-y-4 flex-grow">
-                                     {isLoading ? (
-                                         <div className="flex items-center justify-center h-full text-muted-foreground"><Loader className="animate-spin text-primary"/></div>
-                                     ) : socialCaptions.length > 0 ? (
-                                        socialCaptions.map((caption, index) => (
-                                            <div key={index} className="flex items-start gap-4">
-                                                {caption.platform === 'instagram' && <Instagram className="h-6 w-6 text-pink-700 mt-1"/>}
-                                                {caption.platform === 'facebook' && <Facebook className="h-6 w-6 text-blue-600 mt-1"/>}
-                                                <div className="flex-grow">
-                                                    <p className="text-foreground">{caption.caption} <span className="text-blue-800">{caption.hashtags}</span></p>
-                                                </div>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="flex items-center justify-center h-full bg-secondary rounded-lg text-muted-foreground">
-                                            {generatedStory ? <p>No captions generated.</p> : <p>AI-generated captions will appear here.</p>}
-                                        </div>
-                                    )}
-                                </div>
                                  <div className="flex justify-end mt-4 gap-2">
                                      <Button variant="outline" onClick={() => setIsShareModalOpen(true)} disabled={isPublishing || (!userDescription && !generatedStory)}>
                                         <Share2 className="mr-2 h-4 w-4"/>
                                         Share
                                     </Button>
-                                    <Button onClick={handlePublish} disabled={isPublishing || !user}>
+                                    <Button onClick={handlePublish} disabled={isPublishing || !user || (!userDescription && !generatedStory)}>
                                         {isPublishing ? <Loader className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         {isPublishing ? 'Publishing...' : 'Publish to Marketplace'}
                                     </Button>
