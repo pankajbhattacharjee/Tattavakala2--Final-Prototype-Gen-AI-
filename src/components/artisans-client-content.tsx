@@ -213,7 +213,7 @@ function ArtisanContentWithSearchParams() {
                                     <iframe 
                                         width="100%" 
                                         height="100%" 
-                                        src={tutorial.embedUrl}
+                                        src={tutorial.embedUrl.replace('/shorts/', '/embed/')}
                                         title={tutorial.title}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                         allowFullScreen>
